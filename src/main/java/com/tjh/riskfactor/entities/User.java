@@ -3,6 +3,7 @@ package com.tjh.riskfactor.entities;
 import lombok.Data;
 import lombok.Getter;
 import lombok.AllArgsConstructor;
+import lombok.experimental.Accessors;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
@@ -11,8 +12,8 @@ import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.Id;
 
-@Entity
-@Data
+@Entity @Data
+@Accessors(chain = true)
 public class User {
 
     @AllArgsConstructor
@@ -40,12 +41,12 @@ public class User {
     @Enumerated(EnumType.STRING)
     private Status status;
 
-    public void setRole(String role) {
-        this.role = Role.valueOf(role);
+    public User setRole(String role) {
+        this.role = Role.valueOf(role); return this;
     }
 
-    public void setStatus(String status) {
-        this.status = Status.valueOf(status);
+    public User setStatus(String status) {
+        this.status = Status.valueOf(status); return this;
     }
 
     public boolean disabled() {

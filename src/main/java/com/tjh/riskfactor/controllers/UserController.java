@@ -7,9 +7,10 @@ import com.fasterxml.jackson.databind.JsonNode;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
 import com.tjh.riskfactor.entities.User;
-import com.tjh.riskfactor.services.UserService;
+import com.tjh.riskfactor.repos.UserRepository;
 import com.tjh.riskfactor.utils.HttpUtils;
 
 import java.util.List;
@@ -19,22 +20,28 @@ import java.util.List;
 @RequiredArgsConstructor
 public class UserController {
 
-    private final UserService service;
+    private final UserRepository repo;
+
+    private User getUserOrThrow(String username) {
+        return repo.findById(username)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,
+                        String.format("user [%s] not found", username)));
+    }
 
     @RequestMapping(value = "", method = RequestMethod.GET)
     List<User> getUsers() {
-        return service.getUsers();
+        return repo.findAll();
     }
 
     @RequestMapping(value = "/{username}", method = RequestMethod.GET)
     User getUser(@PathVariable String username) {
-        return service.getUser(username);
+        return getUserOrThrow(username);
     }
 
     @RequestMapping(value = "/{username}", method = RequestMethod.DELETE)
     @ResponseStatus(HttpStatus.OK)
     void deleteUser(@PathVariable String username) {
-        service.deleteUser(username);
+        repo.deleteById(username);
     }
 
     @RequestMapping(value = "/{username}", method = RequestMethod.POST)
@@ -43,19 +50,17 @@ public class UserController {
         val password = HttpUtils.jsonNode(body, "password").asText();
         val role = HttpUtils.jsonNode(body, "role").asText();
         val status = HttpUtils.jsonNode(body, "status").asText();
-        val user = new User();
-        user.setUsername(username);
-        user.setPassword(password);
-        user.setRole(role);
-        user.setStatus(status);
-        service.addUser(user);
+        val user = new User().setUsername(username).setPassword(password)
+                        .setRole(role).setStatus(status);
+        repo.save(user);
     }
 
     @RequestMapping(value = "/{username}/password", method = RequestMethod.POST)
     @ResponseStatus(HttpStatus.OK)
     void changePassword(@PathVariable String username, @RequestBody JsonNode body) {
         val password = HttpUtils.jsonNode(body, "password").asText();
-        service.changePassword(username, password);
+        val user = getUserOrThrow(username).setPassword(password);
+        repo.save(user);
     }
 
 }

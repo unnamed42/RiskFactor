@@ -8,7 +8,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
-import java.util.Calendar;
+import java.util.Date;
 
 @Entity
 @Data
@@ -23,7 +23,7 @@ public class BasicInfo {
 
     // 出生日期（年月日）
     @Temporal(TemporalType.DATE)
-    private Calendar birth;
+    private Date birth;
 
     // 性别
     private String gender;

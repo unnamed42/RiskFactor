@@ -34,7 +34,7 @@ public class AuthorizeConfig extends AuthorizationServerConfigurerAdapter {
     private String scopeRead;
 
     @Value("${security.jwt.scope-write}")
-    private String scopeWrite = "write";
+    private String scopeWrite;
 
     @Value("${security.jwt.resource-ids}")
     private String resourceIds;

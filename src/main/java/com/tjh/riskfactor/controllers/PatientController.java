@@ -6,7 +6,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import com.tjh.riskfactor.entities.Patient;
-import com.tjh.riskfactor.services.PatientService;
+import com.tjh.riskfactor.repos.PatientRepository;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 
@@ -15,22 +16,24 @@ import java.util.List;
 @RequiredArgsConstructor
 public class PatientController {
 
-    private final PatientService service;
+    private final PatientRepository repo;
 
     @RequestMapping(value = "", method = RequestMethod.GET)
     List<Patient> getPatients() {
-        return service.getAll();
+        return repo.findAll();
     }
 
     @RequestMapping(value = "/{id}", method = RequestMethod.GET)
     Patient getPatient(@PathVariable Integer id) {
-        return service.getOne(id);
+        return repo.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,
+                        String.format("patient record with id [%d] not found", id)));
     }
 
     @RequestMapping(value = "/{id}", method = RequestMethod.DELETE)
     @ResponseStatus(HttpStatus.OK)
     void deletePatient(@PathVariable Integer id) {
-        service.deleteOne(id);
+        repo.deleteById(id);
     }
 
 }
