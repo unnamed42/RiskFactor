@@ -1,70 +1,61 @@
 package com.tjh.riskfactor.controllers;
 
-import lombok.Data;
 import lombok.val;
+import lombok.RequiredArgsConstructor;
+
+import com.fasterxml.jackson.databind.JsonNode;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import com.tjh.riskfactor.entities.User;
-import com.tjh.riskfactor.repos.UserRepository;
+import com.tjh.riskfactor.services.UserService;
 import com.tjh.riskfactor.utils.HttpUtils;
-import com.tjh.riskfactor.utils.CollectionUtils;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/users")
+@RequiredArgsConstructor
 public class UserController {
 
-    private final UserRepository userRepository;
-
-    @Autowired
-    public UserController(UserRepository userRepository) {
-        this.userRepository = userRepository;
-    }
-
-    /**
-     * Hide password from <c>User</c> entity.
-     */
-    @Data
-    private static class UserJson {
-        private String name;
-        private String role;
-        private String status;
-
-        UserJson(User user) {
-            this.name = user.getUsername();
-            this.role = user.getRole().name();
-            this.status = user.getStatus().name();
-        }
-    }
+    private final UserService service;
 
     @RequestMapping(value = "", method = RequestMethod.GET)
-    List<UserJson> getUsers() {
-        return CollectionUtils.asStream(userRepository.findAll())
-                .map(UserJson::new).collect(Collectors.toList());
+    List<User> getUsers() {
+        return service.getUsers();
     }
 
-    @RequestMapping(value = "/{userName}", method = RequestMethod.GET)
-    void getUser(@PathVariable String userName) {
-        val user = HttpUtils.getById(userRepository, userName);
+    @RequestMapping(value = "/{username}", method = RequestMethod.GET)
+    User getUser(@PathVariable String username) {
+        return service.getUser(username);
     }
 
-    @RequestMapping(value = "/{userName}", method = RequestMethod.DELETE)
+    @RequestMapping(value = "/{username}", method = RequestMethod.DELETE)
     @ResponseStatus(HttpStatus.OK)
-    void deleteUser(@PathVariable String userName) {
-        userRepository.deleteById(userName);
+    void deleteUser(@PathVariable String username) {
+        service.deleteUser(username);
     }
 
-    @RequestMapping(value = "/{userName}/password", method = RequestMethod.POST)
+    @RequestMapping(value = "/{username}", method = RequestMethod.POST)
     @ResponseStatus(HttpStatus.OK)
-    void changePassword(@PathVariable String userName, @RequestBody String password) {
-        val user = HttpUtils.getById(userRepository, userName);
+    void addUser(@PathVariable String username, @RequestBody JsonNode body) {
+        val password = HttpUtils.jsonNode(body, "password").asText();
+        val role = HttpUtils.jsonNode(body, "role").asText();
+        val status = HttpUtils.jsonNode(body, "status").asText();
+        val user = new User();
+        user.setUsername(username);
         user.setPassword(password);
-        userRepository.save(user);
+        user.setRole(role);
+        user.setStatus(status);
+        service.addUser(user);
+    }
+
+    @RequestMapping(value = "/{username}/password", method = RequestMethod.POST)
+    @ResponseStatus(HttpStatus.OK)
+    void changePassword(@PathVariable String username, @RequestBody JsonNode body) {
+        val password = HttpUtils.jsonNode(body, "password").asText();
+        service.changePassword(username, password);
     }
 
 }

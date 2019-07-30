@@ -1,6 +1,7 @@
 package com.tjh.riskfactor.controllers;
 
 import lombok.val;
+import lombok.RequiredArgsConstructor;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -20,17 +21,13 @@ import javax.servlet.http.HttpServletResponse;
  */
 @RestController
 @RequestMapping("/error")
+@RequiredArgsConstructor
 public class ErrorJsonController implements ErrorController {
 
     @Value("${debug}")
     private boolean includeStacktrace;
 
     private final ErrorAttributes errorAttributes;
-
-    @Autowired
-    public ErrorJsonController(ErrorAttributes errorAttributes) {
-        this.errorAttributes = errorAttributes;
-    }
 
     @RequestMapping("/")
     Map<String, Object> error(HttpServletRequest req, HttpServletResponse resp) {

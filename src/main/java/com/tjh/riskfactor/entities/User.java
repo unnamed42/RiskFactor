@@ -4,6 +4,8 @@ import lombok.Data;
 import lombok.Getter;
 import lombok.AllArgsConstructor;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
@@ -29,11 +31,25 @@ public class User {
 
     private @Id String username;
 
+    @JsonIgnore
     private String password;
 
-    @Enumerated(EnumType.ORDINAL)
+    @Enumerated(EnumType.STRING)
     private Role role;
 
-    @Enumerated(EnumType.ORDINAL)
+    @Enumerated(EnumType.STRING)
     private Status status;
+
+    public void setRole(String role) {
+        this.role = Role.valueOf(role);
+    }
+
+    public void setStatus(String status) {
+        this.status = Status.valueOf(status);
+    }
+
+    public boolean disabled() {
+        return status == Status.DISABLED;
+    }
+
 }

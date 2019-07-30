@@ -1,6 +1,7 @@
 package com.tjh.riskfactor.services;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
+
 import org.springframework.stereotype.Service;
 
 import com.tjh.riskfactor.entities.Patient;
@@ -11,14 +12,10 @@ import com.tjh.riskfactor.utils.HttpUtils;
 import java.util.List;
 
 @Service
+@RequiredArgsConstructor
 public class PatientService {
 
     private final PatientRepository repo;
-
-    @Autowired
-    public PatientService(PatientRepository repository) {
-        this.repo = repository;
-    }
 
     public List<Patient> getAll() {
         return CollectionUtils.toList(repo.findAll());

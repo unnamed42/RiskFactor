@@ -1,25 +1,21 @@
 package com.tjh.riskfactor.controllers;
 
+import lombok.RequiredArgsConstructor;
 
-import com.tjh.riskfactor.services.PatientService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import com.tjh.riskfactor.entities.Patient;
+import com.tjh.riskfactor.services.PatientService;
 
 import java.util.List;
 
 @RestController
 @RequestMapping("/patients")
+@RequiredArgsConstructor
 public class PatientController {
 
     private final PatientService service;
-
-    @Autowired
-    public PatientController(PatientService service) {
-        this.service = service;
-    }
 
     @RequestMapping(value = "", method = RequestMethod.GET)
     List<Patient> getPatients() {

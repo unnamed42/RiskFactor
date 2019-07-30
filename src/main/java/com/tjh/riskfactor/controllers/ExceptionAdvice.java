@@ -15,7 +15,7 @@ import javax.servlet.http.HttpServletRequest;
 import java.util.Date;
 
 @RestControllerAdvice
-public class CustomExceptionHandler {
+public class ExceptionAdvice {
 
     @Getter @AllArgsConstructor
     private static class Error {
