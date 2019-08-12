@@ -1,10 +1,13 @@
 package com.tjh.riskfactor.controllers;
 
+import lombok.val;
+
 import com.fasterxml.jackson.databind.JsonNode;
+
+import org.springframework.web.bind.annotation.*;
+
 import com.tjh.riskfactor.utils.HttpUtils;
 import com.tjh.riskfactor.utils.JsonBuilder;
-import lombok.val;
-import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/test")
