@@ -1,12 +1,12 @@
-package com.tjh.riskfactor.controllers;
+package com.tjh.riskfactor.controller;
 
 import lombok.RequiredArgsConstructor;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
-import com.tjh.riskfactor.entities.Patient;
-import com.tjh.riskfactor.repos.PatientRepository;
+import com.tjh.riskfactor.entity.Patient;
+import com.tjh.riskfactor.repo.PatientRepository;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;

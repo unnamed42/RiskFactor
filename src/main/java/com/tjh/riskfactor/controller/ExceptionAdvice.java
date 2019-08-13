@@ -1,4 +1,4 @@
-package com.tjh.riskfactor.controllers;
+package com.tjh.riskfactor.controller;
 
 import lombok.val;
 
@@ -16,7 +16,7 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 
 import javax.servlet.http.HttpServletRequest;
 
-import com.tjh.riskfactor.entities.ApiError;
+import com.tjh.riskfactor.json.ApiError;
 
 @RestControllerAdvice
 public class ExceptionAdvice extends ResponseEntityExceptionHandler {
@@ -62,13 +62,13 @@ public class ExceptionAdvice extends ResponseEntityExceptionHandler {
     @ExceptionHandler({ Exception.class })
     public ResponseEntity<Object> defaultHandler(Exception ex, HttpServletRequest req) {
         return new ApiError().setStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-                .setMessage(ex.getMessage()).setUri(req.getRequestURI()).toResponseEntity();
+                .setMessage(ex.getMessage()).setUri(req).toResponseEntity();
     }
 
     @ExceptionHandler({ ResponseStatusException.class })
     public ResponseEntity<Object> responseExHandler(ResponseStatusException ex, HttpServletRequest req) {
         return new ApiError().setStatus(ex.getStatus())
-                .setMessage(ex.getMessage()).setUri(req.getRequestURI()).toResponseEntity();
+                .setMessage(ex.getMessage()).setUri(req).toResponseEntity();
     }
 
 }

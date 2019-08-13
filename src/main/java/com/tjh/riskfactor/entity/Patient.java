@@ -1,4 +1,4 @@
-package com.tjh.riskfactor.entities;
+package com.tjh.riskfactor.entity;
 
 import lombok.Data;
 

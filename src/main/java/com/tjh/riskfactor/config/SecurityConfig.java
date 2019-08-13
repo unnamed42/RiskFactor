@@ -1,12 +1,10 @@
-package com.tjh.riskfactor.configs;
+package com.tjh.riskfactor.config;
 
-import lombok.val;
 import lombok.RequiredArgsConstructor;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Primary;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
@@ -16,63 +14,50 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.oauth2.provider.token.DefaultTokenServices;
-import org.springframework.security.oauth2.provider.token.TokenStore;
-import org.springframework.security.oauth2.provider.token.store.JwtAccessTokenConverter;
-import org.springframework.security.oauth2.provider.token.store.JwtTokenStore;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+
+import com.tjh.riskfactor.security.JwtTokenFilter;
 
 @Configuration
 @EnableWebSecurity
-@EnableGlobalMethodSecurity(prePostEnabled = true)
+@EnableGlobalMethodSecurity(
+    prePostEnabled = true, securedEnabled = true, jsr250Enabled = true
+)
 @RequiredArgsConstructor
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
-    @Value("${security.signing-key}")
-    private String signingKey;
-
-    @Value("${security.encoding-strength}")
-    private Integer encodingStrength;
-
-    @Value("${security.security-realm}")
+    @Value("${security.jwt.security-realm}")
     private String securityRealm;
 
     private final UserDetailsService service;
+    private final JwtTokenFilter jwtFilter;
 
     @Bean @Override
     protected AuthenticationManager authenticationManager() throws Exception {
         return super.authenticationManager();
     }
 
+    @Bean
+    protected PasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
+    }
+
     @Override
     protected void configure(AuthenticationManagerBuilder builder) throws Exception {
-        builder.userDetailsService(service).passwordEncoder(new BCryptPasswordEncoder());
+        builder.userDetailsService(service).passwordEncoder(passwordEncoder());
     }
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-        http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-            .and().httpBasic().realmName(this.securityRealm)
-            .and().csrf().disable();
-    }
-
-    @Bean
-    public JwtAccessTokenConverter accessTokenConverter() {
-        val converter = new JwtAccessTokenConverter();
-        converter.setSigningKey(this.signingKey);
-        return converter;
-    }
-
-    @Bean
-    public TokenStore tokenStore() {
-        return new JwtTokenStore(accessTokenConverter());
-    }
-
-    @Bean @Primary
-    public DefaultTokenServices tokenServices() {
-        val services = new DefaultTokenServices();
-        services.setTokenStore(tokenStore());
-        services.setSupportRefreshToken(true);
-        return services;
+        http.httpBasic().disable()
+            .csrf().disable()
+            .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
+            .authorizeRequests()
+                .antMatchers("/auth").permitAll()
+                .anyRequest().authenticated().and()
+            .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
     }
 
 }
+

@@ -1,4 +1,4 @@
-package com.tjh.riskfactor.entities;
+package com.tjh.riskfactor.json;
 
 import lombok.Setter;
 import lombok.Getter;
@@ -9,12 +9,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.context.request.ServletWebRequest;
 
+import javax.servlet.http.HttpServletRequest;
+
 import java.util.Date;
 
-/**
- * Returns when error occurs on api access
- * Not a database entity
- */
 @Getter @Setter
 @Accessors(chain = true)
 public class ApiError {
@@ -33,9 +31,12 @@ public class ApiError {
         return this;
     }
 
+    public ApiError setUri(HttpServletRequest request) {
+        return this.setUri(request.getRequestURI());
+    }
+
     public ApiError setUri(WebRequest request) {
-        this.setUri(((ServletWebRequest)request).getRequest().getRequestURI());
-        return this;
+        return this.setUri(((ServletWebRequest)request).getRequest());
     }
 
     public ResponseEntity<Object> toResponseEntity() {

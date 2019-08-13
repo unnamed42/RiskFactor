@@ -1,4 +1,4 @@
-package com.tjh.riskfactor.utils;
+package com.tjh.riskfactor.util;
 
 import lombok.val;
 

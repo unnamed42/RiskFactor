@@ -1,8 +1,11 @@
-package com.tjh.riskfactor.entities;
+package com.tjh.riskfactor.entity;
 
 import lombok.Data;
 
+import javax.persistence.Table;
+
 @Data
+@Table(name = "personal_history")
 public class PersonalHistory {
     private Integer historyId;
     private Integer userId;

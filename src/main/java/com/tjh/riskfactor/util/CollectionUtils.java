@@ -1,4 +1,4 @@
-package com.tjh.riskfactor.utils;
+package com.tjh.riskfactor.util;
 
 import java.util.ArrayList;
 import java.util.List;

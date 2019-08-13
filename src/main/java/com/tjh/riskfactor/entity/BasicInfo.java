@@ -1,17 +1,14 @@
-package com.tjh.riskfactor.entities;
+package com.tjh.riskfactor.entity;
 
 import lombok.Data;
 
-import javax.persistence.Id;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
+import javax.persistence.*;
 
 import java.util.Date;
 
-@Entity
 @Data
+@Entity
+@Table(name = "basic_info")
 public class BasicInfo {
 
     // 中心编号（预设）
@@ -55,3 +52,4 @@ public class BasicInfo {
     // 地址-县
     private String addrCounty;
 }
+
