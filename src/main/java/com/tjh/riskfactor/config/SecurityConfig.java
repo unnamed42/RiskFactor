@@ -16,8 +16,12 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.authentication.logout.LogoutFilter;
 
 import com.tjh.riskfactor.security.JwtTokenFilter;
+import com.tjh.riskfactor.security.JwtAuthenticationEntryPoint;
+import com.tjh.riskfactor.error.AccessDeniedHandler;
+import com.tjh.riskfactor.error.FilterChainExceptionHandler;
 
 @Configuration
 @EnableWebSecurity
@@ -32,6 +36,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     private final UserDetailsService service;
     private final JwtTokenFilter jwtFilter;
+    private final JwtAuthenticationEntryPoint unauthorizedHandler;
+    private final AccessDeniedHandler accessDeniedHandler;
+    private final FilterChainExceptionHandler chainExceptionHandler;
 
     @Bean @Override
     protected AuthenticationManager authenticationManager() throws Exception {
@@ -50,13 +57,18 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-        http.httpBasic().disable()
+        http.cors().and()
+            .httpBasic().disable()
             .csrf().disable()
             .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
             .authorizeRequests()
                 .antMatchers("/auth").permitAll()
                 .anyRequest().authenticated().and()
-            .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
+            .exceptionHandling()
+                .authenticationEntryPoint(unauthorizedHandler)
+                .accessDeniedHandler(accessDeniedHandler).and()
+            .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
+            .addFilterBefore(chainExceptionHandler, LogoutFilter.class);
     }
 
 }

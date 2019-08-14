@@ -6,8 +6,7 @@ import javax.persistence.*;
 
 import java.util.Date;
 
-@Data
-@Entity
+@Data @Entity
 @Table(name = "basic_info")
 public class BasicInfo {
 

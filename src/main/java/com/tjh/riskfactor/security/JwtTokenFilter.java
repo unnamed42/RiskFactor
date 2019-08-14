@@ -1,7 +1,7 @@
 package com.tjh.riskfactor.security;
 
-import lombok.RequiredArgsConstructor;
 import lombok.val;
+import lombok.RequiredArgsConstructor;
 
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.GenericFilterBean;
@@ -26,8 +26,8 @@ public class JwtTokenFilter extends GenericFilterBean {
                          FilterChain filterChain) throws IOException, ServletException {
         val auth = provider.resolveToken((HttpServletRequest)request)
                     .filter(provider::validateToken)
-                    .map(provider::getAuthentication);
-        SecurityContextHolder.getContext().setAuthentication(auth.orElse(null));
+                    .map(provider::getAuthentication).orElse(null);
+        SecurityContextHolder.getContext().setAuthentication(auth);
 
         filterChain.doFilter(request, response);
     }

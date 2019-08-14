@@ -1,5 +1,6 @@
-package com.tjh.riskfactor.json;
+package com.tjh.riskfactor.error;
 
+import lombok.val;
 import lombok.Setter;
 import lombok.Getter;
 import lombok.experimental.Accessors;
@@ -13,22 +14,28 @@ import javax.servlet.http.HttpServletRequest;
 
 import java.util.Date;
 
-@Getter @Setter
+@Getter
 @Accessors(chain = true)
 public class ApiError {
 
     private Date timestamp;
-    private HttpStatus status;
-    private String message;
+    private Integer status;
+    private String error;
+    @Setter private String message;
     private String uri;
 
     public ApiError() {
         this.timestamp = new Date();
     }
 
-    public ApiError setUri(String uri) {
-        this.uri = uri;
+    public ApiError setStatus(HttpStatus status) {
+        this.status = status.value();
+        this.error = status.getReasonPhrase();
         return this;
+    }
+
+    public ApiError setUri(String uri) {
+        this.uri = uri; return this;
     }
 
     public ApiError setUri(HttpServletRequest request) {
@@ -40,7 +47,8 @@ public class ApiError {
     }
 
     public ResponseEntity<Object> toResponseEntity() {
-        return new ResponseEntity<>(this, this.getStatus());
+        val status = HttpStatus.valueOf(this.getStatus());
+        return new ResponseEntity<>(this, status);
     }
 
 }

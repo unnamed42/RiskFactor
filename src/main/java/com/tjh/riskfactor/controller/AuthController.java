@@ -2,9 +2,11 @@ package com.tjh.riskfactor.controller;
 
 import lombok.val;
 import lombok.RequiredArgsConstructor;
+
+import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.bind.annotation.*;
 
 import com.tjh.riskfactor.repo.UserRepository;
@@ -24,22 +26,28 @@ public class AuthController {
     @RequestMapping(method = RequestMethod.POST)
     String login(@RequestBody AuthInfo json) {
         String username = json.getUsername(), password = json.getPassword();
-        val roles = repo.findByUsername(username).orElseThrow(() -> {
+        if(!repo.existsById(username)) {
             val message = String.format("username [%s] not found", username);
-            return new UsernameNotFoundException(message);
-        }).getRoles();
-        authManager.authenticate(new UsernamePasswordAuthenticationToken(username, password));
-        val token = provider.generateToken(username, roles);
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, message);
+        }
+        val auth = authManager.authenticate(new UsernamePasswordAuthenticationToken(username, password));
+        val token = provider.generateToken(auth);
         return new JsonBuilder().add("username", username)
                     .add("token", token).build();
     }
 
-//    @RequestMapping(method = RequestMethod.GET)
-//    String currentUser(@AuthenticationPrincipal UserDetails details) {
-//        val roles = details.getAuthorities().stream()
-//                .map(GrantedAuthority::getAuthority).collect(Collectors.toList());
-//        return new JsonBuilder().add("username", details.getUsername())
-//                .add("roles", roles).build();
-//    }
+    @RequestMapping(method = RequestMethod.GET)
+    String info(@RequestHeader("Authorization") String bearer) {
+        val claims = provider.resolveToken(bearer)
+                .map(provider::parseClaims).orElseThrow(() -> {
+            val message = "request does not contain valid token";
+            return new ResponseStatusException(HttpStatus.UNAUTHORIZED, message);
+        });
+        return new JsonBuilder().add("subject", claims.getSubject())
+                .add("issued_at", claims.getIssuedAt())
+                .add("expiry", claims.getExpiration())
+                .add("privileges", claims.get("privileges"))
+                .build();
+    }
 
 }

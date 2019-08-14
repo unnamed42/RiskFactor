@@ -7,43 +7,30 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import javax.persistence.*;
 
-import java.util.List;
-import java.util.Collections;
-
-import com.tjh.riskfactor.enums.UserRole;
-import com.tjh.riskfactor.enums.UserStatus;
+import java.util.Collection;
 
 @Entity @Data
 @Table(name = "user")
 @Accessors(chain = true)
 public class User {
 
-    @Id
+    @Id @GeneratedValue
+    private Integer id;
     private String username;
-
     @JsonIgnore
     private String password;
+    private String email;
 
-    @Enumerated(EnumType.STRING)
-    private UserRole role;
-
-    @Enumerated(EnumType.STRING)
-    private UserStatus status;
-
-    public User setRole(String role) {
-        this.role = UserRole.valueOf(role); return this;
-    }
-
-    public User setStatus(String status) {
-        this.status = UserStatus.valueOf(status); return this;
-    }
-
-    public List<String> getRoles() {
-        return Collections.singletonList(role.name());
-    }
+    @ManyToMany
+    @JoinTable(name = "users_roles",
+        joinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id"),
+        inverseJoinColumns = @JoinColumn(name = "role_id", referencedColumnName = "id")
+    )
+    @JsonIgnore
+    private Collection<Role> roles;
 
     public boolean disabled() {
-        return status == UserStatus.DISABLED;
+        return roles.stream().anyMatch(role -> role.getName().equals("ROLE_FROZEN"));
     }
 
 }

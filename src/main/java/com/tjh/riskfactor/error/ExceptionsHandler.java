@@ -1,4 +1,4 @@
-package com.tjh.riskfactor.controller;
+package com.tjh.riskfactor.error;
 
 import lombok.val;
 
@@ -16,31 +16,35 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 
 import javax.servlet.http.HttpServletRequest;
 
-import com.tjh.riskfactor.json.ApiError;
+import java.util.Collection;
 
 @RestControllerAdvice
-public class ExceptionAdvice extends ResponseEntityExceptionHandler {
+public class ExceptionsHandler extends ResponseEntityExceptionHandler {
+
+    private String join(Collection<?> list) {
+        val sb = new StringBuilder().append('[');
+        if(list != null)
+            list.forEach(item -> sb.append(' ').append(item));
+        sb.append(" ]");
+        return sb.toString();
+    }
 
     @Override
     protected ResponseEntity<Object> handleHttpRequestMethodNotSupported(
         HttpRequestMethodNotSupportedException ex,
         HttpHeaders headers, HttpStatus status, WebRequest request) {
-        val sb = new StringBuilder().append(ex.getMethod())
-                        .append(" is not supported on this URI. Supported methods are: [");
-        val methods = ex.getSupportedHttpMethods();
-        if(methods != null)
-            methods.forEach(t -> sb.append(' ').append(t));
-        sb.append(" ]");
-
+        val message = ex.getMethod() +
+                " is not supported on requested uri. Supported methods are: " +
+                join(ex.getSupportedHttpMethods());
         return new ApiError().setStatus(HttpStatus.BAD_REQUEST)
-                .setMessage(sb.toString()).setUri(request).toResponseEntity();
+                .setMessage(message).setUri(request).toResponseEntity();
     }
 
     @Override
     protected ResponseEntity<Object> handleNoHandlerFoundException(
             NoHandlerFoundException ex, HttpHeaders headers, HttpStatus status, WebRequest request) {
         val message = "no handler for method " + ex.getHttpMethod();
-        return new ApiError().setStatus(HttpStatus.NOT_FOUND)
+        return new ApiError().setStatus(HttpStatus.BAD_REQUEST)
                 .setMessage(message).setUri(request).toResponseEntity();
     }
 
@@ -48,15 +52,11 @@ public class ExceptionAdvice extends ResponseEntityExceptionHandler {
     protected ResponseEntity<Object> handleHttpMediaTypeNotSupported(
         HttpMediaTypeNotSupportedException ex,
         HttpHeaders headers, HttpStatus status, WebRequest request) {
-        val sb = new StringBuilder().append(ex.getContentType())
-                    .append(" media type is not supported. Supported types are: [");
-        val types = ex.getSupportedMediaTypes();
-        if(types != null)
-            types.forEach(t -> sb.append(' ').append(t));
-        sb.append(" ]");
-
+        val message = ex.getContentType() +
+                " media type is not supported. Supported types are: " +
+                join(ex.getSupportedMediaTypes());
         return new ApiError().setStatus(HttpStatus.UNSUPPORTED_MEDIA_TYPE)
-                .setMessage(sb.toString()).setUri(request).toResponseEntity();
+                .setMessage(message).setUri(request).toResponseEntity();
     }
 
     @ExceptionHandler({ Exception.class })
@@ -68,7 +68,7 @@ public class ExceptionAdvice extends ResponseEntityExceptionHandler {
     @ExceptionHandler({ ResponseStatusException.class })
     public ResponseEntity<Object> responseExHandler(ResponseStatusException ex, HttpServletRequest req) {
         return new ApiError().setStatus(ex.getStatus())
-                .setMessage(ex.getMessage()).setUri(req).toResponseEntity();
+                .setMessage(ex.getReason()).setUri(req).toResponseEntity();
     }
 
 }
