@@ -4,19 +4,19 @@ import lombok.Data;
 import lombok.experimental.Accessors;
 
 import javax.persistence.*;
+
 import java.util.Collection;
 
 @Data @Entity
-@Table(name = "user_privileges")
+@Table(name = "groups")
 @Accessors(chain = true)
-public class Privilege {
+public class Group {
 
     @Id @GeneratedValue
     private Integer id;
-
     private String name;
 
-    @ManyToMany(mappedBy = "privileges")
-    private Collection<Role> roles;
+    @ManyToMany(mappedBy = "groups")
+    private Collection<User> members;
 
 }

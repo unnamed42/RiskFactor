@@ -10,7 +10,7 @@ import javax.persistence.*;
 import java.util.Collection;
 
 @Entity @Data
-@Table(name = "user")
+@Table(name = "users")
 @Accessors(chain = true)
 public class User {
 
@@ -22,14 +22,14 @@ public class User {
     private String email;
 
     @ManyToMany
-    @JoinTable(name = "users_roles",
-        joinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id"),
-        inverseJoinColumns = @JoinColumn(name = "role_id", referencedColumnName = "id")
+    @JoinTable(name = "group_members",
+            joinColumns = { @JoinColumn(name = "uid", referencedColumnName = "id") },
+            inverseJoinColumns = { @JoinColumn(name = "gid", referencedColumnName = "id") }
     )
-    private Collection<Role> roles;
+    private Collection<Group> groups;
 
     public boolean disabled() {
-        return roles.stream().anyMatch(role -> role.getName().equals("ROLE_FROZEN"));
+        return groups.stream().anyMatch(group -> group.getName().equals("nobody"));
     }
 
 }

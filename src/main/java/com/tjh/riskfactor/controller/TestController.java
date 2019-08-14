@@ -4,6 +4,7 @@ import lombok.val;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import com.tjh.riskfactor.util.HttpUtils;
@@ -14,6 +15,7 @@ import com.tjh.riskfactor.util.JsonBuilder;
 public class TestController {
 
     @RequestMapping(value = "", method = RequestMethod.GET)
+    @PreAuthorize("hasAuthority('users')")
     String test() {
         return new JsonBuilder().add("lhs", "rhs").add("abc", new int[1])
                 .build();

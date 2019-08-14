@@ -1,15 +1,15 @@
 package com.tjh.riskfactor.repo;
 
-import com.tjh.riskfactor.entity.Privilege;
-
 import org.springframework.stereotype.Repository;
 import org.springframework.data.jpa.repository.JpaRepository;
+
+import com.tjh.riskfactor.entity.Group;
 
 import java.util.Optional;
 
 @Repository
-public interface PrivilegeRepository extends JpaRepository<Privilege, Integer> {
+public interface GroupRepository extends JpaRepository<Group, Integer> {
 
-    Optional<Privilege> findByName(String name);
+    Optional<Group> findByName(String name);
 
 }

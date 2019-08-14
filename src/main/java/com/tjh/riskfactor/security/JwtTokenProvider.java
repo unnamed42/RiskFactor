@@ -1,8 +1,9 @@
 package com.tjh.riskfactor.security;
 
-import io.jsonwebtoken.*;
 import lombok.val;
 import lombok.RequiredArgsConstructor;
+
+import io.jsonwebtoken.*;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
@@ -12,6 +13,8 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.web.server.ResponseStatusException;
+
+import com.tjh.riskfactor.util.JsonBuilder;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -29,7 +32,7 @@ public class JwtTokenProvider {
     @Value("${security.jwt.expiry-hours}")
     private Integer expiryHours;
 
-    @Value("${security.jwt.claimed-property")
+    @Value("${security.jwt.claimed-property}")
     private String claimedProperty;
 
     private final UserDetailsService userDetailsService;
@@ -46,32 +49,15 @@ public class JwtTokenProvider {
                 .setIssuedAt(now).setExpiration(expiry).compact();
     }
 
-    public String extractUsername(String token) {
-        return Jwts.parser().setSigningKey(signingKey)
-                .parseClaimsJws(token).getBody().getSubject();
+    public String tokenToJson(String token) {
+        val claims = parseClaims(token);
+        return new JsonBuilder().add("username", claims.getSubject())
+                .add(claimedProperty, claims.get(claimedProperty))
+                .add("issued_at", claims.getIssuedAt())
+                .add("expire_at", claims.getExpiration()).build();
     }
 
-    public Authentication getAuthentication(String token) {
-        val details = userDetailsService.loadUserByUsername(extractUsername(token));
-        return new UsernamePasswordAuthenticationToken(details, "", details.getAuthorities());
-    }
-
-    public Optional<String> resolveToken(HttpServletRequest request) {
-        return resolveToken(request.getHeader("Authorization"));
-    }
-
-    /**
-     * Extract JWT from HTTP Authorization header
-     * @param bearer content of Authorization header, nullable
-     * @return empty if {@code bearer} is null, token string otherwise
-     */
-    public Optional<String> resolveToken(String bearer) {
-        return Optional.ofNullable(bearer)
-                .filter(token -> token.startsWith("Bearer "))
-                .map(token -> token.substring(7));
-    }
-
-    public Claims parseClaims(String token) {
+    private Claims parseClaims(String token) {
         try {
             return Jwts.parser().setSigningKey(signingKey).parseClaimsJws(token).getBody();
         } catch(IllegalArgumentException e) {
@@ -86,12 +72,20 @@ public class JwtTokenProvider {
         }
     }
 
-    public boolean validateToken(String token) {
-        return validateToken(parseClaims(token));
+    Authentication getAuthentication(String token) {
+        val username = parseClaims(token).getSubject();
+        val details = userDetailsService.loadUserByUsername(username);
+        return new UsernamePasswordAuthenticationToken(details, "", details.getAuthorities());
     }
 
-    public boolean validateToken(Claims claims) {
-        return claims.getExpiration().after(new Date());
+    public Optional<String> resolveToken(HttpServletRequest request) {
+        return Optional.ofNullable(request.getHeader("Authorization"))
+                .filter(token -> token.startsWith("Bearer "))
+                .map(token -> token.substring(7));
+    }
+
+    boolean validateToken(String token) {
+        return parseClaims(token).getExpiration().after(new Date());
     }
 
 }
