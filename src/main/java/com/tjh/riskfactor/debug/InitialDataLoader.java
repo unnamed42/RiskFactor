@@ -20,6 +20,7 @@ import com.tjh.riskfactor.repo.UserRepository;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.function.Function;
 
 @Component
 @RequiredArgsConstructor
@@ -44,17 +45,25 @@ public class InitialDataLoader implements ApplicationListener<ContextRefreshedEv
         val userRole = createRoleIfNotFound("ROLE_USER", Collections.singletonList(read));
         createRoleIfNotFound("ROLE_FROZEN", Collections.emptyList());
 
-        users.save(new User().setUsername("admin")
-                .setPassword(encoder.encode("admin"))
-                .setEmail("mail@example.com")
-                .setRoles(Collections.singletonList(adminRole))
+        createUserIfNotFound("admin", name -> new User()
+            .setUsername(name)
+            .setPassword(encoder.encode(name))
+            .setEmail("admin@example.com")
+            .setRoles(Collections.singletonList(adminRole))
         );
-        users.save(new User().setUsername("user")
-                .setPassword(encoder.encode("user"))
-                .setEmail("mail@example.com")
-                .setRoles(Collections.singletonList(userRole))
+        createUserIfNotFound("user", name -> new User()
+            .setUsername(name)
+            .setPassword(encoder.encode(name))
+            .setEmail("user@example.com")
+            .setRoles(Collections.singletonList(userRole))
         );
         done = true;
+    }
+
+    @Transactional
+    void createUserIfNotFound(String username, Function<String, User> f) {
+        if(!users.existsByUsername(username))
+            users.save(f.apply(username));
     }
 
     @Transactional

@@ -1,6 +1,5 @@
 package com.tjh.riskfactor.controller;
 
-import com.tjh.riskfactor.entity.Role;
 import lombok.val;
 import lombok.RequiredArgsConstructor;
 
@@ -14,6 +13,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
 import com.tjh.riskfactor.entity.User;
+import com.tjh.riskfactor.entity.Role;
 import com.tjh.riskfactor.util.HttpUtils;
 import com.tjh.riskfactor.repo.UserRepository;
 import com.tjh.riskfactor.repo.RoleRepository;
@@ -58,7 +58,7 @@ public class UserController {
     }
 
     @RequestMapping(value = "", method = RequestMethod.GET)
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAuthority('READ')")
     List<User> getUsers() {
         return users.findAll();
     }

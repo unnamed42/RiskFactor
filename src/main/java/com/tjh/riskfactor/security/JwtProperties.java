@@ -14,6 +14,7 @@ public class JwtProperties {
 
     private String signingKey;
     private String securityRealm;
-    private Integer expiryMs;
+    private String claimedProperty;
+    private Integer expiryHours;
 
 }

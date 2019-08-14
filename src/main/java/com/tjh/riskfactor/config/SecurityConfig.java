@@ -20,13 +20,12 @@ import org.springframework.security.web.authentication.logout.LogoutFilter;
 
 import com.tjh.riskfactor.security.JwtTokenFilter;
 import com.tjh.riskfactor.security.JwtAuthenticationEntryPoint;
-import com.tjh.riskfactor.error.AccessDeniedHandler;
 import com.tjh.riskfactor.error.FilterChainExceptionHandler;
 
 @Configuration
 @EnableWebSecurity
 @EnableGlobalMethodSecurity(
-    prePostEnabled = true, securedEnabled = true, jsr250Enabled = true
+    prePostEnabled = true
 )
 @RequiredArgsConstructor
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
@@ -37,7 +36,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     private final UserDetailsService service;
     private final JwtTokenFilter jwtFilter;
     private final JwtAuthenticationEntryPoint unauthorizedHandler;
-    private final AccessDeniedHandler accessDeniedHandler;
     private final FilterChainExceptionHandler chainExceptionHandler;
 
     @Bean @Override
@@ -65,8 +63,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/auth").permitAll()
                 .anyRequest().authenticated().and()
             .exceptionHandling()
-                .authenticationEntryPoint(unauthorizedHandler)
-                .accessDeniedHandler(accessDeniedHandler).and()
+                .authenticationEntryPoint(unauthorizedHandler).and()
             .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
             .addFilterBefore(chainExceptionHandler, LogoutFilter.class);
     }

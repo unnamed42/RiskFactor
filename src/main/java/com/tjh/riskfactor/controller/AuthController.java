@@ -8,6 +8,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.beans.factory.annotation.Value;
 
 import com.tjh.riskfactor.repo.UserRepository;
 import com.tjh.riskfactor.util.JsonBuilder;
@@ -19,21 +20,23 @@ import com.tjh.riskfactor.security.JwtTokenProvider;
 @RequiredArgsConstructor
 public class AuthController {
 
-    private final UserRepository repo;
+    private final UserRepository users;
     private final AuthenticationManager authManager;
     private final JwtTokenProvider provider;
+
+    @Value("${security.jwt.claimed-property}")
+    private String claimedProperty;
 
     @RequestMapping(method = RequestMethod.POST)
     String login(@RequestBody AuthInfo json) {
         String username = json.getUsername(), password = json.getPassword();
-        if(!repo.existsById(username)) {
+        if(!users.existsByUsername(username)) {
             val message = String.format("username [%s] not found", username);
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, message);
         }
         val auth = authManager.authenticate(new UsernamePasswordAuthenticationToken(username, password));
-        val token = provider.generateToken(auth);
         return new JsonBuilder().add("username", username)
-                    .add("token", token).build();
+                    .add("token", provider.generateToken(auth)).build();
     }
 
     @RequestMapping(method = RequestMethod.GET)
@@ -46,7 +49,7 @@ public class AuthController {
         return new JsonBuilder().add("subject", claims.getSubject())
                 .add("issued_at", claims.getIssuedAt())
                 .add("expiry", claims.getExpiration())
-                .add("privileges", claims.get("privileges"))
+                .add(claimedProperty, claims.get(claimedProperty))
                 .build();
     }
 

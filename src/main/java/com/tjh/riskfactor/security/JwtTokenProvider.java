@@ -26,8 +26,11 @@ public class JwtTokenProvider {
     @Value("${security.jwt.signing-key}")
     private String signingKey;
 
-    @Value("${security.jwt.expiry-ms}")
-    private Integer expiryMs;
+    @Value("${security.jwt.expiry-hours}")
+    private Integer expiryHours;
+
+    @Value("${security.jwt.claimed-property")
+    private String claimedProperty;
 
     private final UserDetailsService userDetailsService;
 
@@ -35,9 +38,10 @@ public class JwtTokenProvider {
         val authorities = auth.getAuthorities().stream()
                 .map(GrantedAuthority::getAuthority)
                 .collect(Collectors.joining(","));
+        val expiryMs = expiryHours.longValue() * 3600000L;
         Date now = new Date(), expiry = new Date(now.getTime() + expiryMs);
         return Jwts.builder().setSubject(auth.getName())
-                .claim("privileges", authorities)
+                .claim(claimedProperty, authorities)
                 .signWith(SignatureAlgorithm.HS256, signingKey)
                 .setIssuedAt(now).setExpiration(expiry).compact();
     }

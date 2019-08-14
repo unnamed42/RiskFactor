@@ -5,6 +5,7 @@ import lombok.val;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -60,15 +61,21 @@ public class ExceptionsHandler extends ResponseEntityExceptionHandler {
     }
 
     @ExceptionHandler({ Exception.class })
-    public ResponseEntity<Object> defaultHandler(Exception ex, HttpServletRequest req) {
+    public ResponseEntity<Object> handleDefault(Exception ex, HttpServletRequest req) {
         return new ApiError().setStatus(HttpStatus.INTERNAL_SERVER_ERROR)
                 .setMessage(ex.getMessage()).setUri(req).toResponseEntity();
     }
 
     @ExceptionHandler({ ResponseStatusException.class })
-    public ResponseEntity<Object> responseExHandler(ResponseStatusException ex, HttpServletRequest req) {
+    public ResponseEntity<Object> handleResponse(ResponseStatusException ex, HttpServletRequest req) {
         return new ApiError().setStatus(ex.getStatus())
                 .setMessage(ex.getReason()).setUri(req).toResponseEntity();
+    }
+
+    @ExceptionHandler({ BadCredentialsException.class })
+    public ResponseEntity<Object> handleAuthenticationFailed(Exception ex, HttpServletRequest req) {
+        return new ApiError().setStatus(HttpStatus.UNAUTHORIZED)
+                .setMessage(ex.getMessage()).setUri(req).toResponseEntity();
     }
 
 }
