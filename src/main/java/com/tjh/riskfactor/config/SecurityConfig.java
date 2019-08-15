@@ -1,8 +1,8 @@
 package com.tjh.riskfactor.config;
 
+import com.tjh.riskfactor.error.AccessDeniedHandler;
 import lombok.RequiredArgsConstructor;
 
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -15,14 +15,11 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.HttpStatusEntryPoint;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import org.springframework.security.web.authentication.logout.LogoutFilter;
 
 import com.tjh.riskfactor.security.JwtTokenFilter;
-import com.tjh.riskfactor.error.FilterChainExceptionHandler;
 
 @Configuration
 @EnableWebSecurity
@@ -32,26 +29,19 @@ import com.tjh.riskfactor.error.FilterChainExceptionHandler;
 @RequiredArgsConstructor
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
-    @Value("${security.jwt.security-realm}")
-    private String securityRealm;
-
+    private final PasswordEncoder passwordEncoder;
     private final UserDetailsService service;
     private final JwtTokenFilter jwtFilter;
-    private final FilterChainExceptionHandler chainExceptionHandler;
+    private final AccessDeniedHandler accessDeniedHandler;
 
     @Bean @Override
     protected AuthenticationManager authenticationManager() throws Exception {
         return super.authenticationManager();
     }
 
-    @Bean
-    protected PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
-    }
-
     @Override
     protected void configure(AuthenticationManagerBuilder builder) throws Exception {
-        builder.userDetailsService(service).passwordEncoder(passwordEncoder());
+        builder.userDetailsService(service).passwordEncoder(passwordEncoder);
     }
 
     @Override
@@ -65,10 +55,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/test", "/test/**").permitAll()
                 .anyRequest().authenticated().and()
             .exceptionHandling()
-                .authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED)).and()
-            .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
-            .addFilterBefore(chainExceptionHandler, LogoutFilter.class);
+                .authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED))
+                .accessDeniedHandler(accessDeniedHandler).and()
+            .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
     }
 
 }
-

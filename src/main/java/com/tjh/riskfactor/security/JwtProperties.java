@@ -7,14 +7,13 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 
 @Data
 @Component
-@ConfigurationProperties(
-    prefix = "security.jwt"
-)
+@ConfigurationProperties("security.jwt")
 public class JwtProperties {
 
     private String signingKey;
     private String securityRealm;
     private String claimedProperty;
     private Integer expiryHours;
+    private Integer encodingStrength;
 
 }

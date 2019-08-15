@@ -3,16 +3,16 @@ package com.tjh.riskfactor.security;
 import lombok.val;
 import lombok.RequiredArgsConstructor;
 
-import io.jsonwebtoken.*;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.SignatureAlgorithm;
 
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.web.server.ResponseStatusException;
 
 import com.tjh.riskfactor.util.JsonBuilder;
 
@@ -58,18 +58,7 @@ public class JwtTokenProvider {
     }
 
     private Claims parseClaims(String token) {
-        try {
-            return Jwts.parser().setSigningKey(signingKey).parseClaimsJws(token).getBody();
-        } catch(IllegalArgumentException e) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
-                    "cannot parse content from token");
-        } catch(ExpiredJwtException e) {
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED,
-                    "token expired");
-        } catch(SignatureException e) {
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED,
-                    "authentication failed");
-        }
+        return Jwts.parser().setSigningKey(signingKey).parseClaimsJws(token).getBody();
     }
 
     Authentication getAuthentication(String token) {

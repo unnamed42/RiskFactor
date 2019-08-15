@@ -1,5 +1,6 @@
 package com.tjh.riskfactor.error;
 
+import com.tjh.riskfactor.util.JsonBuilder;
 import lombok.val;
 import lombok.Setter;
 import lombok.Getter;
@@ -44,6 +45,10 @@ public class ApiError {
 
     public ApiError setUri(WebRequest request) {
         return this.setUri(((ServletWebRequest)request).getRequest());
+    }
+
+    public String toJson() {
+        return JsonBuilder.from(this);
     }
 
     public ResponseEntity<Object> toResponseEntity() {

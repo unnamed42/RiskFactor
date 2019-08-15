@@ -1,10 +1,10 @@
 package com.tjh.riskfactor.security;
 
 import lombok.val;
+import lombok.RequiredArgsConstructor;
 
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
-import org.springframework.context.annotation.Lazy;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.User;
@@ -13,26 +13,16 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.tjh.riskfactor.entity.Group;
-import com.tjh.riskfactor.service.UserService;
+import com.tjh.riskfactor.repo.UserRepository;
 
 import java.util.Collection;
 import java.util.stream.Collectors;
 
 @Service
+@RequiredArgsConstructor
 public class JwtUserDetailsService implements UserDetailsService {
 
-    private final UserService users;
-
-    /**
-     * This component has to be initialized lazily because we have a dependency loop:
-     *      JwtUserDetailsService -> UserService -> PasswordEncoder
-     *      -> SecurityConfig -> JwtUserDetailsService
-     * Once the loop is resolved, this constructor can be made an auto-generated one.
-     */
-    @Autowired
-    public JwtUserDetailsService(@Lazy UserService users) {
-        this.users = users;
-    }
+    private final UserRepository users;
 
     private Collection<? extends GrantedAuthority> toAuthorities(Collection<Group> groups) {
         return groups.stream().map(Group::getName)
@@ -42,11 +32,16 @@ public class JwtUserDetailsService implements UserDetailsService {
     @Override
     @Transactional(readOnly = true)
     public UserDetails loadUserByUsername(String username) {
-        val user = users.getUser(username);
+        val user = users.findByUsername(username).orElseThrow(() -> {
+            val message = String.format("user [%s] not found", username);
+            return new UsernameNotFoundException(message);
+        });
         val authorities = toAuthorities(user.getGroups());
-        return User.builder().username(user.getUsername())
+        return User.withUsername(user.getUsername())
                 .password(user.getPassword())
+                .accountExpired(false)
                 .accountLocked(user.disabled())
                 .authorities(authorities).build();
     }
+
 }
