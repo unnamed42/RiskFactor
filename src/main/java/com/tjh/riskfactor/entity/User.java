@@ -9,16 +9,21 @@ import javax.persistence.*;
 
 import java.util.Collection;
 
-@Entity @Data
+@Data @Entity
 @Table(name = "users")
 @Accessors(chain = true)
 public class User {
 
     @Id @GeneratedValue
     private Integer id;
+
+    @Column(unique = true, nullable = false)
     private String username;
+
     @JsonIgnore
+    @Column(nullable = false)
     private String password;
+
     private String email;
 
     @ManyToMany

@@ -14,6 +14,8 @@ public class Group {
 
     @Id @GeneratedValue
     private Integer id;
+
+    @Column(unique = true, nullable = false)
     private String name;
 
     @ManyToMany(mappedBy = "groups")
