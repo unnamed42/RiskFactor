@@ -9,11 +9,12 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.bind.annotation.*;
 
 import com.tjh.riskfactor.util.JsonBuilder;
-import com.tjh.riskfactor.json.AuthInfo;
+import com.tjh.riskfactor.entity.json.Login;
 import com.tjh.riskfactor.security.JwtTokenProvider;
 
 import javax.servlet.http.HttpServletRequest;
@@ -36,11 +37,14 @@ public class AuthController {
         } catch (BadCredentialsException e) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED,
                     "wrong username or password");
+        } catch (UsernameNotFoundException e) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND,
+                    e.getMessage());
         }
     }
 
     @RequestMapping(method = RequestMethod.POST)
-    String requestToken(@RequestBody AuthInfo json) {
+    String requestToken(@RequestBody Login json) {
         String username = json.getUsername(), password = json.getPassword();
 //        users.ensureUserExists(username);
         val auth = authenticate(username, password);

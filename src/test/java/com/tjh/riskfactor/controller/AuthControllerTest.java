@@ -13,7 +13,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
-import com.tjh.riskfactor.json.AuthInfo;
+import com.tjh.riskfactor.entity.json.Login;
 import com.tjh.riskfactor.repo.UserRepository;
 
 import java.util.Map;
@@ -31,15 +31,24 @@ public class AuthControllerTest extends RestTestBase {
 
     @Test
     public void authFailure() throws Exception {
-        val user = new AuthInfo("howcanthisnameexists", "whateverpassword");
+        // non-exist user
+        val user = new Login("howcanthisnameexists", "whateverpassword");
         val request = MockMvcRequestBuilders.post("/auth")
                 .contentType(MediaType.APPLICATION_JSON_UTF8).content(toJson(user));
         mvc.perform(request).andExpect(
             MockMvcResultMatchers.status().isNotFound());
+
+        // wrong password
+        val user2 = new Login("admin", "admi");
+        val request2 = MockMvcRequestBuilders.post("/auth")
+                .contentType(MediaType.APPLICATION_JSON_UTF8).content(toJson(user2));
+        mvc.perform(request2).andExpect(
+            MockMvcResultMatchers.status().isUnauthorized()
+        );
     }
 
     private Map<String, Object> authToken() throws Exception {
-        val user = new AuthInfo("admin", "admin");
+        val user = new Login("admin", "admin");
         val request = MockMvcRequestBuilders.post("/auth")
                 .contentType(MediaType.APPLICATION_JSON_UTF8).content(toJson(user));
         val body = mvc.perform(request).andExpect(
@@ -66,7 +75,7 @@ public class AuthControllerTest extends RestTestBase {
 
         val response = fromJson(body);
         Assert.assertTrue(response.containsKey("issued_at"));
-        Assert.assertTrue(response.containsKey("expiry"));
+        Assert.assertTrue(response.containsKey("expire_at"));
         Assert.assertTrue(response.containsKey(claimedProperty));
     }
 

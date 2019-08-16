@@ -7,13 +7,14 @@ import com.tjh.riskfactor.entity.User;
 
 import java.util.Collection;
 import java.util.Optional;
+import java.util.Set;
 
 @Repository
 public interface UserRepository extends JpaRepository<User, Integer> {
 
     Optional<User> findByUsername(String username);
 
-    Collection<User> findByUsernameIn(Collection<String> usernames);
+    Set<User> findByUsernameIn(Collection<String> names);
 
     boolean existsByUsername(String username);
 

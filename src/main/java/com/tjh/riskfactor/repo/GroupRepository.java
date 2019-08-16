@@ -7,12 +7,15 @@ import com.tjh.riskfactor.entity.Group;
 
 import java.util.Collection;
 import java.util.Optional;
+import java.util.Set;
 
 @Repository
 public interface GroupRepository extends JpaRepository<Group, Integer> {
 
     Optional<Group> findByName(String name);
 
-    Collection<Group> findByNameIn(Collection<String> names);
+    Set<Group> findByNameIn(Collection<String> names);
+
+    boolean existsByName(String name);
 
 }

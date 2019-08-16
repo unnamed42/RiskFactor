@@ -15,6 +15,9 @@ public class AppConfig {
     @Value("${security.jwt.encoding-strength}")
     private Integer strength;
 
+    /**
+     * This bean must not be put in {@code SecurityConfig}, otherwise it would cause dependency loop
+     */
     @Bean
     protected PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder(strength);

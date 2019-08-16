@@ -1,11 +1,11 @@
-package com.tjh.riskfactor.json;
+package com.tjh.riskfactor.entity.json;
 
 import lombok.Data;
 
 import java.util.Collection;
 
 @Data
-public class AddUserRequest {
+public class NewUser {
 
     // username is contained in PathVariable
     // private final String username;

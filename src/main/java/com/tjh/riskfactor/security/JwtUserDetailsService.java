@@ -3,13 +3,13 @@ package com.tjh.riskfactor.security;
 import lombok.val;
 import lombok.RequiredArgsConstructor;
 
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.tjh.riskfactor.entity.Group;
@@ -24,8 +24,8 @@ public class JwtUserDetailsService implements UserDetailsService {
 
     private final UserRepository users;
 
-    private Collection<? extends GrantedAuthority> toAuthorities(Collection<Group> groups) {
-        return groups.stream().map(Group::getName)
+    private Collection<? extends GrantedAuthority> toAuthorities(Collection<Group> groupNames) {
+        return groupNames.stream().map(Group::getName)
                 .map(SimpleGrantedAuthority::new).collect(Collectors.toList());
     }
 

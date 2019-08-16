@@ -1,14 +1,12 @@
 package com.tjh.riskfactor.controller;
 
-import com.tjh.riskfactor.entity.User;
-import com.tjh.riskfactor.service.UserService;
+import com.tjh.riskfactor.service.AccountService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Collection;
-import java.util.List;
 
 @RestController
 @RequestMapping("/group")
@@ -16,16 +14,31 @@ import java.util.List;
 @PreAuthorize("hasAnyAuthority('root', 'admin')")
 public class GroupController {
 
-    private final UserService service;
+    private final AccountService service;
+
+    @RequestMapping(method = RequestMethod.GET)
+    Collection<String> listGroups() {
+        return service.listGroups();
+    }
 
     @RequestMapping(value = "/{group}", method = RequestMethod.GET)
     Collection<String> groupMembers(@PathVariable String group) {
-        return service.groupMembers(group);
+        return service.listGroupMembers(group);
+    }
+
+    @RequestMapping(value = "/{group}", method = RequestMethod.POST)
+    void createGroup(@PathVariable String group, @RequestBody(required = false) Collection<String> users) {
+        service.createGroup(group, users);
     }
 
     @RequestMapping(value = "/{group}", method = RequestMethod.PUT)
-    void appendMember(@PathVariable String group, @RequestBody List<String> users) {
-        service.appendMembers(group, users);
+    void appendMember(@PathVariable String group, @RequestBody Collection<String> users) {
+        service.addGroupMembers(group, users);
+    }
+
+    @RequestMapping(value = "/{group}", method = RequestMethod.DELETE)
+    void deleteGroup(@PathVariable String group) {
+        service.deleteGroup(group);
     }
 
 }

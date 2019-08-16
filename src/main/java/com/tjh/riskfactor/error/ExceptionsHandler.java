@@ -1,11 +1,12 @@
 package com.tjh.riskfactor.error;
 
 import lombok.val;
+import lombok.RequiredArgsConstructor;
 
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -20,14 +21,17 @@ import javax.servlet.http.HttpServletRequest;
 import java.util.Collection;
 
 @RestControllerAdvice
+@RequiredArgsConstructor
 public class ExceptionsHandler extends ResponseEntityExceptionHandler {
 
-    private String join(Collection<?> list) {
+    private final ApiErrorBuilder builder;
+
+    private static String join(Collection<?> list) {
+        if(list == null)
+            return "[]";
         val sb = new StringBuilder().append('[');
-        if(list != null)
-            list.forEach(item -> sb.append(' ').append(item));
-        sb.append(" ]");
-        return sb.toString();
+        list.forEach(item -> sb.append(' ').append(item));
+        return sb.append(" ]").toString();
     }
 
     @Override
@@ -37,16 +41,16 @@ public class ExceptionsHandler extends ResponseEntityExceptionHandler {
         val message = ex.getMethod() +
                 " is not supported on requested uri. Supported methods are: " +
                 join(ex.getSupportedHttpMethods());
-        return new ApiError().setStatus(HttpStatus.BAD_REQUEST)
-                .setMessage(message).setUri(request).toResponseEntity();
+        return builder.builder().status(HttpStatus.BAD_REQUEST)
+                .request(request).message(message).exception(ex).response();
     }
 
     @Override
     protected ResponseEntity<Object> handleNoHandlerFoundException(
             NoHandlerFoundException ex, HttpHeaders headers, HttpStatus status, WebRequest request) {
         val message = "no handler for method " + ex.getHttpMethod();
-        return new ApiError().setStatus(HttpStatus.BAD_REQUEST)
-                .setMessage(message).setUri(request).toResponseEntity();
+        return builder.builder().status(HttpStatus.BAD_REQUEST)
+                .request(request).message(message).exception(ex).response();
     }
 
     @Override
@@ -56,26 +60,26 @@ public class ExceptionsHandler extends ResponseEntityExceptionHandler {
         val message = ex.getContentType() +
                 " media type is not supported. Supported types are: " +
                 join(ex.getSupportedMediaTypes());
-        return new ApiError().setStatus(HttpStatus.UNSUPPORTED_MEDIA_TYPE)
-                .setMessage(message).setUri(request).toResponseEntity();
+        return builder.builder().status(HttpStatus.UNSUPPORTED_MEDIA_TYPE)
+                .request(request).message(message).exception(ex).response();
     }
 
-    @ExceptionHandler({ Exception.class })
+    @ExceptionHandler(Exception.class)
     public ResponseEntity<Object> handleDefault(Exception ex, HttpServletRequest req) {
-        return new ApiError().setStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-                .setMessage(ex.getMessage()).setUri(req).toResponseEntity();
+        return builder.builder().status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .request(req).exception(ex).response();
     }
 
-    @ExceptionHandler({ ResponseStatusException.class })
+    @ExceptionHandler(ResponseStatusException.class)
     public ResponseEntity<Object> handleResponse(ResponseStatusException ex, HttpServletRequest req) {
-        return new ApiError().setStatus(ex.getStatus())
-                .setMessage(ex.getReason()).setUri(req).toResponseEntity();
+        return builder.builder().status(ex.getStatus())
+                .request(req).message(ex.getReason()).exception(ex).response();
     }
 
-    @ExceptionHandler({ BadCredentialsException.class })
-    public ResponseEntity<Object> handleAuthenticationFailed(Exception ex, HttpServletRequest req) {
-        return new ApiError().setStatus(HttpStatus.UNAUTHORIZED)
-                .setMessage(ex.getMessage()).setUri(req).toResponseEntity();
+    @ExceptionHandler(AccessDeniedException.class)
+    public ResponseEntity<Object> handleAccessDenied(AccessDeniedException ex, HttpServletRequest req) {
+        return builder.builder().status(HttpStatus.FORBIDDEN)
+                .request(req).exception(ex).response();
     }
 
 }

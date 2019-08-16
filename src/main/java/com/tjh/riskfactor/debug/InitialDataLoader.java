@@ -16,6 +16,7 @@ import com.tjh.riskfactor.repo.UserRepository;
 import com.tjh.riskfactor.repo.GroupRepository;
 
 import java.util.Arrays;
+import java.util.HashSet;
 
 @Component
 @RequiredArgsConstructor
@@ -50,7 +51,7 @@ public class InitialDataLoader implements ApplicationListener<ContextRefreshedEv
         users.save(new User().setUsername(username)
             .setPassword(encoder.encode(username))
             .setEmail(username + "@example.com")
-            .setGroups(Arrays.asList(groups))
+            .setGroups(new HashSet<>(Arrays.asList(groups)))
         );
     }
 
