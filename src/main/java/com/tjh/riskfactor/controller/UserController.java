@@ -18,25 +18,25 @@ public class UserController {
 
     private final AccountService service;
 
-    @RequestMapping(value = "/{username}", method = RequestMethod.GET)
+    @GetMapping("/{username}")
     @PreAuthorize ("#username == principal.username")
     User getUser(@PathVariable String username) {
         return service.getUser(username);
     }
 
-    @RequestMapping(value = "/{username}", method = RequestMethod.DELETE)
+    @DeleteMapping("/{username}")
     @PreAuthorize ("#username == authentication.principal.username")
     void deleteUser(@PathVariable String username) {
         service.deleteUser(username);
     }
 
-    @RequestMapping(value = "/{username}", method = RequestMethod.POST)
+    @PostMapping("/{username}")
     @PreAuthorize ("#username == authentication.principal.username")
     void addUser(@PathVariable String username, @RequestBody NewUser json) {
         service.createUser(username, json);
     }
 
-    @RequestMapping(value = "/{username}/password", method = RequestMethod.POST)
+    @PostMapping("/{username}/password")
     @PreAuthorize ("#username == authentication.principal.username")
     void changePassword(@PathVariable String username, @RequestBody NewPassword body) {
         service.changePassword(username, body.getPassword());

@@ -10,7 +10,7 @@ import com.tjh.riskfactor.util.JsonBuilder;
 @PreAuthorize("hasAnyAuthority('root', 'admin')")
 public class TestController {
 
-    @RequestMapping(value = "", method = RequestMethod.GET)
+    @GetMapping
     @PreAuthorize("isAuthenticated()")
     String test() {
         return new JsonBuilder().add("lhs", "rhs").add("abc", new int[1])

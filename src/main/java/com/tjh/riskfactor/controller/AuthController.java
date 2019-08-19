@@ -27,10 +27,10 @@ public class AuthController {
     private final AuthenticationManager authManager;
     private final JwtTokenProvider provider;
 
-    private Authentication authenticate(String username, String password) {
+    private String authenticate(String username, String password) {
         try {
             val authToken = new UsernamePasswordAuthenticationToken(username, password);
-            return authManager.authenticate(authToken);
+            return provider.generateToken(authManager.authenticate(authToken));
         } catch (DisabledException e) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN,
                     String.format("user [%s] is disabled", username));
@@ -43,16 +43,16 @@ public class AuthController {
         }
     }
 
-    @RequestMapping(method = RequestMethod.POST)
+    @PostMapping
     String requestToken(@RequestBody Login json) {
         String username = json.getUsername(), password = json.getPassword();
 //        users.ensureUserExists(username);
-        val auth = authenticate(username, password);
+        val token = authenticate(username, password);
         return new JsonBuilder().add("username", username)
-                    .add("token", provider.generateToken(auth)).build();
+                    .add("token", token).build();
     }
 
-    @RequestMapping(method = RequestMethod.GET)
+    @GetMapping
     String tokenInfo(HttpServletRequest request) {
         // the token is validated before here, no need for invalidity report
         return provider.resolveToken(request).map(provider::tokenToJson).get();

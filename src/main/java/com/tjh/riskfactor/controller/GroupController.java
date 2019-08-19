@@ -16,27 +16,27 @@ public class GroupController {
 
     private final AccountService service;
 
-    @RequestMapping(method = RequestMethod.GET)
+    @GetMapping
     Collection<String> listGroups() {
         return service.listGroups();
     }
 
-    @RequestMapping(value = "/{group}", method = RequestMethod.GET)
+    @GetMapping("/{group}")
     Collection<String> groupMembers(@PathVariable String group) {
         return service.listGroupMembers(group);
     }
 
-    @RequestMapping(value = "/{group}", method = RequestMethod.POST)
+    @PostMapping("/{group}")
     void createGroup(@PathVariable String group, @RequestBody(required = false) Collection<String> users) {
         service.createGroup(group, users);
     }
 
-    @RequestMapping(value = "/{group}", method = RequestMethod.PUT)
+    @PutMapping("/{group}")
     void appendMember(@PathVariable String group, @RequestBody Collection<String> users) {
         service.addGroupMembers(group, users);
     }
 
-    @RequestMapping(value = "/{group}", method = RequestMethod.DELETE)
+    @DeleteMapping("/{group}")
     void deleteGroup(@PathVariable String group) {
         service.deleteGroup(group);
     }

@@ -10,6 +10,9 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 @ConfigurationProperties("security.jwt")
 public class JwtProperties {
 
+    /**
+     * Top secret used to sign tokens
+     */
     private String signingKey;
     private String securityRealm;
     private String claimedProperty;

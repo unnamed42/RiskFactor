@@ -18,20 +18,19 @@ public class PatientController {
 
     private final PatientRepository repo;
 
-    @RequestMapping(value = "", method = RequestMethod.GET)
+    @GetMapping
     List<Patient> getPatients() {
         return repo.findAll();
     }
 
-    @RequestMapping(value = "/{id}", method = RequestMethod.GET)
+    @GetMapping("/{id}")
     Patient getPatient(@PathVariable Integer id) {
         return repo.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,
                         String.format("patient record with id [%d] not found", id)));
     }
 
-    @RequestMapping(value = "/{id}", method = RequestMethod.DELETE)
-    @ResponseStatus(HttpStatus.OK)
+    @DeleteMapping("/{id}")
     void deletePatient(@PathVariable Integer id) {
         repo.deleteById(id);
     }
