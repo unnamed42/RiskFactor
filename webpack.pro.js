@@ -1,5 +1,5 @@
 const merge = require("webpack-merge");
-const common = require("./webpack.common");
+const common = require("./scripts/webpack");
 const WebpackCdnPlugin = require("webpack-cdn-plugin");
 
 module.exports = merge(common, {
