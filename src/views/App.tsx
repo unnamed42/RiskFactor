@@ -1,9 +1,17 @@
-import React, { FC } from "react";
+import React, { Component } from "react";
 
-const App: FC = () => (
-  <div>
-    <h1>Hello, world!</h1>
-  </div>
-);
+export default class App extends Component {
+  async logout(e: React.MouseEvent) {
+    ;
+  }
 
-export default App;
+  render() {
+    return (
+      <div>
+        <h1>Hello, world!</h1>
+        <p>Our API base url is <a href={process.env.API_BASE}>{process.env.API_BASE}</a></p>
+        <button onClick={this.logout}>Logout</button>
+      </div>
+    );
+  }
+}

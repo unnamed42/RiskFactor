@@ -10,10 +10,6 @@ module.exports = merge(common, {
         name: "react-dom",
         var: "ReactDOM",
         path: "cjs/react-dom.production.min.js"
-      }, {
-        name: "react",
-        var: "React",
-        path: "cjs/react.production.min.js"
       }]
     })
   ]

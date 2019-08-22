@@ -1,5 +1,8 @@
 import React from 'react';
 import { render } from "react-dom";
+
+import "@/plugins";
+
 import App from "@/views/App";
 
 render(<App/>, document.getElementById("root"));
