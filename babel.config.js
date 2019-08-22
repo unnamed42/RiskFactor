@@ -1,6 +1,6 @@
 module.exports = {
     presets: [
-        "@babel/preset-env",
+        ["@babel/preset-env"],
         "@babel/preset-react",
         "@babel/preset-typescript"
     ],
@@ -10,12 +10,13 @@ module.exports = {
         "babel-plugin-transform-async-to-promises",
         // enables this to use more modern features
         ["@babel/plugin-transform-runtime", {
-            regenerator: false
+            regenerator: false,
+            // corejs: 3
         }],
-        ["import", {
-            libraryName: "antd",
-            libraryDirectory: "es",
-            style: true
-        }]
+        // ["import", {
+        //     libraryName: "antd",
+        //     libraryDirectory: "es",
+        //     style: true
+        // }]
     ]
 };

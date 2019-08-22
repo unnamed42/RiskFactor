@@ -12,8 +12,6 @@
     "strict": true,
     "alwaysStrict": true,
     "allowUnreachableCode": false,
-    "noImplicitAny": true,
-    "noImplicitThis": true,
     "noUnusedLocals": true,
     "noImplicitReturns": true,
     "noFallthroughCasesInSwitch": true,
@@ -25,11 +23,8 @@
       "@/*": ["src/*"]
     },
     "lib": [
-      "es2015",
-      "dom",
-      "dom.iterable",
-      "es2016.array.include",
-      "es2017.object"
+      "es6",
+      "dom"
     ]
   },
   "include": [

@@ -55,7 +55,7 @@ const config = {
   }
 };
 
-module.exports = ["antd", "env", "style", "moment"].reduce((config, name) => {
+module.exports = [ /* "antd", */ "env", "style", "moment"].reduce((config, name) => {
   const partialConfig = require(`./${name}`);
   return merge(config, partialConfig);
 }, config);

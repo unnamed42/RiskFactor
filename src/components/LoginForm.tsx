@@ -1,10 +1,11 @@
 import React, { FC } from "react";
-import { Form, DatePicker } from "antd";
+import { DatePicker } from "@blueprintjs/datetime";
+import { Button } from "@blueprintjs/core";
 
 const LoginForm: FC = () => (
   <div>
     <DatePicker/>
-    <Form/>
+    <Button/>
   </div>
 );
 
