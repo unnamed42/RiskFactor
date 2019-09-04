@@ -42,7 +42,6 @@ const config = {
   },
   optimization: {
     splitChunks: {
-      chunks: chunk => chunk.name !== "antd-icons",
       cacheGroups: {
         vendor: {
           test: /node_modules/,
@@ -55,7 +54,13 @@ const config = {
   }
 };
 
-module.exports = [ /* "antd", */ "env", "style", "moment"].reduce((config, name) => {
-  const partialConfig = require(`./${name}`);
-  return merge(config, partialConfig);
-}, config);
+const enabled = [
+  "antd",
+  "style",
+  "moment",
+  "env"
+];
+
+module.exports = enabled.reduce((config, name) =>
+  merge(config, require(`./${name}`))
+, config);

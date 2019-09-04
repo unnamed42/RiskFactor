@@ -5,6 +5,7 @@ module.exports = {
         "@babel/preset-typescript"
     ],
     plugins: [
+        "@babel/plugin-syntax-dynamic-import",
         "@babel/proposal-class-properties",
         "@babel/proposal-object-rest-spread",
         "babel-plugin-transform-async-to-promises",
@@ -13,10 +14,10 @@ module.exports = {
             regenerator: false,
             // corejs: 3
         }],
-        // ["import", {
-        //     libraryName: "antd",
-        //     libraryDirectory: "es",
-        //     style: true
-        // }]
+        ["import", {
+            libraryName: "antd",
+            libraryDirectory: "es",
+            style: true
+        }]
     ]
 };

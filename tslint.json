@@ -18,7 +18,6 @@
     "quotemark": [true, "double"],
     "arrow-parens": [true, "ban-single-arg-parens"],
     "curly": [true, "as-needed", "ignore-same-line"],
-    "trailing-comma": true,
     "whitespace": [false, "check-branch"],
     "member-access": false
   }
