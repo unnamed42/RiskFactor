@@ -1,11 +1,12 @@
 import React, { FC, useState } from "react";
 import { Link } from "react-router-dom";
-import { useSelector, useDispatch, connect } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 
-import { Layout, Menu, Icon, Dropdown, Avatar, Card } from "antd";
+import { Layout, Menu, Icon, Dropdown, Avatar } from "antd";
 
 import { StoreType } from "@/redux";
 import { logout } from "@/redux/auth";
+import AppRoutes from "./AppRoutes";
 
 import "./index.less";
 
@@ -58,7 +59,7 @@ const App: FC = props => {
           </div>
         </Layout.Header>
         <Layout.Content style={{ margin: "24px 16px", padding: 24, background: "#fff", minHeight: 280 }}>
-          <Card title="已有表单" bordered={false}/>
+          <AppRoutes/>
         </Layout.Content>
       </Layout>
 
