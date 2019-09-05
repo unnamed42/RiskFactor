@@ -1,20 +1,21 @@
-import React, { FC } from "react";
-import { BrowserRouter, Route } from "react-router-dom";
+import React, { FC, Suspense, lazy } from "react";
+import { HashRouter, Route, Switch } from "react-router-dom";
 
-import loadable from "@loadable/component";
-import PrivateRoute from './PrivateRoute';
+import PrivateRoute from "./PrivateRoute";
+import { PageLoading } from "@/components";
 
-const Loading: FC = () => (<p>加载中……</p>);
-
-const Login = loadable(() => import("@/views/Login"), {
-  fallback: <Loading />
-});
+const Login = lazy(() => import("@/views/Login"));
+const Home =  lazy(() => import("@/views/App"));
 
 const Routes: FC = () => (
-  <BrowserRouter>
-    <PrivateRoute path="/"/>
-    <Route path="/login" component={ (props: any) => <Login {...props}/> }/>
-  </BrowserRouter>
+  <HashRouter>
+    <Suspense fallback={<PageLoading/>}>
+      <Switch>
+        <Route exact path="/login" component={Login} />
+        <PrivateRoute exact path="/" component={Home} />
+      </Switch>
+    </Suspense>
+  </HashRouter>
 );
 
 export default Routes;

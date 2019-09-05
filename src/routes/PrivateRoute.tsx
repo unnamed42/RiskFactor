@@ -5,16 +5,15 @@ import { auth } from "@/api/persist";
 
 interface PrivateRouteProps {
     component: Component;
-    redirect: string;
 }
 
-const PrivateRoute: FC<RouteProps | PrivateRouteProps> = ({ component, redirect, ...rest }) => {
+const PrivateRoute: FC<RouteProps | PrivateRouteProps> = ({ component, ...rest }) => {
     const isLoggedIn = auth.token !== "";
     return (
         <Route {...rest}
             render={ props => isLoggedIn ?
                 (<Component {...props}/>):
-                (<Redirect to={{ pathname: redirect, state: { from: props.location } }}/>)
+                (<Redirect exact to={{ pathname: "/login", state: { from: props.location } }}/>)
             }
         />
     );

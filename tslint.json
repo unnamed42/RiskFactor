@@ -15,6 +15,7 @@
     "no-consecutive-blank-lines": false,
     "object-literal-sort-keys": false,
     "ordered-imports": false,
+    "trailing-comma": false,
     "quotemark": [true, "double"],
     "arrow-parens": [true, "ban-single-arg-parens"],
     "curly": [true, "as-needed", "ignore-same-line"],
