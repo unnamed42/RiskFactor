@@ -1,14 +1,18 @@
 import React, { FC, useState } from "react";
 import { Link } from "react-router-dom";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch, connect } from "react-redux";
 
 import { Layout, Menu, Icon, Dropdown, Avatar, Card } from "antd";
 
 import { StoreType } from "@/redux";
+import { logout } from "@/redux/auth";
+
 import "./index.less";
 
-const App: FC = () => {
+const App: FC = props => {
   const [collapsed, setCollapsed] = useState(false);
+  const dispatch = useDispatch();
+
   const username = useSelector((state: StoreType) => state.auth.username);
 
   const toggle = () => setCollapsed(!collapsed);
@@ -22,7 +26,7 @@ const App: FC = () => {
       <Menu.Divider/>
       <Menu.Item key="2">
         <Icon type="logout" />
-        <Link to="/login">退出登录</Link>
+        <Link to="/login" onClick={() => dispatch(logout())}>退出登录</Link>
       </Menu.Item>
     </Menu>
   );
@@ -49,7 +53,7 @@ const App: FC = () => {
           <Icon className="trigger" type={collapsed ? "menu-unfold" : "menu-fold"} onClick={toggle} />
           <div className="main-navbar">
             <Dropdown overlay={userDropdown} trigger={["click"]}>
-              <span><Avatar icon="user" /> { username }<Icon type="down" className="navbar-icon"/></span>
+              <span><Avatar icon="user" /> { username || "" }<Icon type="down" className="navbar-icon"/></span>
             </Dropdown>
           </div>
         </Layout.Header>
