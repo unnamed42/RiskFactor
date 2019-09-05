@@ -1,46 +1,63 @@
 import React, { FC, useState } from "react";
+import { Link } from "react-router-dom";
+import { useSelector } from "react-redux";
 
-import { Layout, Menu, Icon } from "antd";
+import { Layout, Menu, Icon, Dropdown, Avatar, Card } from "antd";
 
+import { StoreType } from "@/redux";
 import "./index.less";
 
 const App: FC = () => {
   const [collapsed, setCollapsed] = useState(false);
+  const username = useSelector((state: StoreType) => state.auth.username);
+
+  const toggle = () => setCollapsed(!collapsed);
+
+  const userDropdown = (
+    <Menu className="main-user-dropdown">
+      <Menu.Item key="1">
+        <Icon type="user" />
+        <Link to="">个人中心</Link>
+      </Menu.Item>
+      <Menu.Divider/>
+      <Menu.Item key="2">
+        <Icon type="logout" />
+        <Link to="/login">退出登录</Link>
+      </Menu.Item>
+    </Menu>
+  );
 
   return (
-    <Layout className="main-layout">
-      <Layout.Sider collapsible collapsed={collapsed} onCollapse={setCollapsed}>
+    <Layout className="main-panel">
+
+      <Layout.Sider trigger={null} collapsible collapsed={collapsed}>
         <div className="logo" />
-        <Menu theme="dark" defaultSelectedKeys={["1"]} mode="inline">
+        <Menu theme="dark" mode="inline" defaultSelectedKeys={["1"]}>
           <Menu.Item key="1">
-            <Icon type="pie-chart" />
-            <span>Option 1</span>
+            <Icon type="dashboard" />
+            <span>概览</span>
           </Menu.Item>
-
           <Menu.Item key="2">
-              <Icon type="desktop" />
-              <span>Option 2</span>
+            <Icon type="form" />
+            <span>表格</span>
           </Menu.Item>
-
-          <Menu.SubMenu key="sub1" title={
-            <span><Icon type="user"/><span>User</span></span>
-          }>
-            <Menu.Item key="3">Tom</Menu.Item>
-            <Menu.Item key="4">Bill</Menu.Item>
-            <Menu.Item key="5">Alex</Menu.Item>
-          </Menu.SubMenu>
         </Menu>
       </Layout.Sider>
 
       <Layout>
-        <Layout.Header className="main-header"/>
-        <Layout.Content>
-          <div className="main-content">content</div>
+        <Layout.Header style={{ background: "#fff", padding: 0 }}>
+          <Icon className="trigger" type={collapsed ? "menu-unfold" : "menu-fold"} onClick={toggle} />
+          <div className="main-navbar">
+            <Dropdown overlay={userDropdown} trigger={["click"]}>
+              <span><Avatar icon="user" /> { username }<Icon type="down" className="navbar-icon"/></span>
+            </Dropdown>
+          </div>
+        </Layout.Header>
+        <Layout.Content style={{ margin: "24px 16px", padding: 24, background: "#fff", minHeight: 280 }}>
+          <Card title="已有表单" bordered={false}/>
         </Layout.Content>
-        <Layout.Footer className="main-footer">
-          TJH Dannang RiskFactor
-        </Layout.Footer>
       </Layout>
+
     </Layout>
   );
 };

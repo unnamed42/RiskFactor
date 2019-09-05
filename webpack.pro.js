@@ -1,6 +1,7 @@
 const merge = require("webpack-merge");
 const common = require("./scripts/webpack");
 const WebpackCdnPlugin = require("webpack-cdn-plugin");
+const { BundleAnalyzerPlugin } = require("webpack-bundle-analyzer");
 
 module.exports = merge(common, {
   mode: "production",
@@ -11,6 +12,7 @@ module.exports = merge(common, {
         var: "ReactDOM",
         path: "cjs/react-dom.production.min.js"
       }]
-    })
+    }),
+    new BundleAnalyzerPlugin()
   ]
 });

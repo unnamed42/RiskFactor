@@ -1,11 +1,11 @@
 import { request } from "@/api/http";
 
-type LoginRequest = Readonly<{
+type LoginPayload = Readonly<{
     username: string,
     password: string
 }>;
 
-async function login(payload: LoginRequest): Promise<ApiToken> {
+async function login(payload: LoginPayload): Promise<ApiToken> {
     return await request<ApiToken>({
         url: "/auth", data: payload, method: "POST"
     });
@@ -23,5 +23,5 @@ function logout(): void {
 }
 
 export {
-    login, logout, tokenInfo
+    login, logout, tokenInfo, LoginPayload
 };

@@ -1,6 +1,5 @@
 const { join } = require("path");
 const merge = require("webpack-merge");
-const { BundleAnalyzerPlugin } = require("webpack-bundle-analyzer");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
 const { CleanWebpackPlugin } = require("clean-webpack-plugin");
 const FriendlyErrorsWebpackPlugin = require("friendly-errors-webpack-plugin");
@@ -26,8 +25,7 @@ const config = {
     new HtmlWebpackPlugin({
       template: `${root}/src/index.html`
     }),
-    new FriendlyErrorsWebpackPlugin(),
-    new BundleAnalyzerPlugin()
+    new FriendlyErrorsWebpackPlugin()
   ],
   module: {
     rules: [{

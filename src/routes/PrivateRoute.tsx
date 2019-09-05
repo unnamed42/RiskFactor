@@ -1,22 +1,20 @@
-import React, { FC, Component } from "react";
+import React, { FC } from "react";
 import { Route, Redirect, RouteProps } from "react-router";
+import { useSelector } from "react-redux";
 
-import { auth } from "@/api/persist";
+import { StoreType } from "@/redux";
 
-interface PrivateRouteProps {
-    component: Component;
-}
-
-const PrivateRoute: FC<RouteProps | PrivateRouteProps> = ({ component, ...rest }) => {
-    const isLoggedIn = auth.token !== "";
-    return (
-        <Route {...rest}
-            render={ props => isLoggedIn ?
-                (<Component {...props}/>):
-                (<Redirect exact to={{ pathname: "/login", state: { from: props.location } }}/>)
-            }
-        />
-    );
+const PrivateRoute: FC<RouteProps> = ({ component, ...rest }) => {
+  const token = useSelector((state: StoreType) => state.auth.token);
+  const Component = component;
+  return (
+    <Route {...rest}
+      render={ props => token !== "" ?
+        (<Component {...props}/>):
+        (<Redirect exact to={{ pathname: "/login", state: { from: props.location } }}/>)
+      }
+    />
+  );
 };
 
 export default PrivateRoute;

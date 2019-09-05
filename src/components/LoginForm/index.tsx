@@ -1,19 +1,29 @@
 import React, { FormEvent, FC, useState } from "react";
+import { useDispatch } from "react-redux";
 
 import { Form, Icon, Input, Button, Checkbox, Tabs } from "antd";
 import { FormComponentProps } from "antd/lib/form";
 
 import { IntervalButton } from "@/components";
+import { login as auth_login } from "@/redux/auth";
 
 import "./index.less";
 
 // 匹配所有号码（手机卡 + 数据卡 + 上网卡） https://github.com/VincentSit/ChinaMobilePhoneNumberRegex
 const phoneRegex = /^(?:\+?86)?1(?:3\d{3}|5[^4\D]\d{2}|8\d{3}|7(?:[01356789]\d{2}|4(?:0\d|1[0-2]|9\d))|9[189]\d{2}|6[567]\d{2}|4(?:[14]0\d{3}|[68]\d{4}|[579]\d{2}))\d{6}$/;
 
+interface UsernameFields { username: string; password: string; }
+interface PhoneFields { phone: string; captcha: string; }
+type FormFields<T = UsernameFields | PhoneFields> = { remember: boolean; } & T;
 
-const LoginForm: FC<FormComponentProps> = props => {
+interface LoginFormEvenets { onLoginSuccess?: () => void; }
+
+type LoginFormProps = FormComponentProps<FormFields> & LoginFormEvenets;
+
+const LoginForm: FC<LoginFormProps> = props => {
 
   const [tab, setTab] = useState("1");
+  const dispatch = useDispatch();
 
   const login = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -21,12 +31,12 @@ const LoginForm: FC<FormComponentProps> = props => {
       // username login
       props.form.validateFields(["username", "password", "remember"], (err, values) => {
         if (err) return;
-        const { username, password, remember } = values;
-        console.log({ username, password });
+        dispatch(auth_login(values as FormFields<UsernameFields>, props.onLoginSuccess));
       });
     } else {
       props.form.validateFields(["phone", "captcha", "remember"], (err, values) => {
         if (err) return;
+        // dispatch({ type: "auth/login-phone", payload: values as FormFields<PhoneFields> });
       });
     }
   };
@@ -93,7 +103,7 @@ const LoginForm: FC<FormComponentProps> = props => {
       <Form.Item>
         { getFieldDecorator("remember", {
           valuePropName: "checked", initialValue: false
-        })(<Checkbox>保持登录</Checkbox>) }
+        })(<Checkbox className="login-form-remember">保持登录</Checkbox>) }
         <a className="login-form-forget" href="">忘记密码？</a>
         <Button type="primary" htmlType="submit" className="login-form-submit">登录</Button>
       </Form.Item>
@@ -101,4 +111,4 @@ const LoginForm: FC<FormComponentProps> = props => {
   );
 };
 
-export default Form.create()(LoginForm);
+export default Form.create<LoginFormProps>()(LoginForm);
