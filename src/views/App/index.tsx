@@ -1,4 +1,5 @@
-import React, { FC, useState } from "react";
+import React, { useState } from "react";
+import { withRouter } from "react-router";
 import { Link } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 
@@ -10,7 +11,7 @@ import AppRoutes from "./AppRoutes";
 
 import "./index.less";
 
-const App: FC = props => {
+const App = withRouter(({ location, ...props }) => {
   const [collapsed, setCollapsed] = useState(false);
   const dispatch = useDispatch();
 
@@ -22,7 +23,7 @@ const App: FC = props => {
     <Menu className="main-user-dropdown">
       <Menu.Item key="1">
         <Icon type="user" />
-        <Link to="">个人中心</Link>
+        <Link to="/">个人中心</Link>
       </Menu.Item>
       <Menu.Divider/>
       <Menu.Item key="2">
@@ -35,16 +36,20 @@ const App: FC = props => {
   return (
     <Layout className="main-panel">
 
-      <Layout.Sider trigger={null} collapsible collapsed={collapsed}>
+      <Layout.Sider trigger={null} collapsible collapsed={collapsed} className="main-sider">
         <div className="logo" />
-        <Menu theme="dark" mode="inline" defaultSelectedKeys={["1"]}>
-          <Menu.Item key="1">
-            <Icon type="dashboard" />
-            <span>概览</span>
+        <Menu theme="dark" mode="inline" defaultSelectedKeys={[location.pathname]}>
+          <Menu.Item key="/overview">
+            <Link to="/overview">
+              <Icon type="dashboard" />
+              <span>概览</span>
+            </Link>
           </Menu.Item>
-          <Menu.Item key="2">
-            <Icon type="form" />
-            <span>表格</span>
+          <Menu.Item key="/forms">
+            <Link to="/forms">
+              <Icon type="form" />
+              <span>表格</span>
+            </Link>
           </Menu.Item>
         </Menu>
       </Layout.Sider>
@@ -65,6 +70,6 @@ const App: FC = props => {
 
     </Layout>
   );
-};
+});
 
 export default App;

@@ -2,8 +2,7 @@ import React, { FC, Suspense, lazy } from "react";
 import { Router, Route, Switch } from "react-router-dom";
 import { createHashHistory } from "history";
 
-import PrivateRoute from "./PrivateRoute";
-import { PageLoading } from "@/components";
+import { PageLoading, PrivateRoute } from "@/components";
 
 const Login = lazy(() => import("@/views/Login"));
 const Home =  lazy(() => import("@/views/App"));
@@ -15,7 +14,7 @@ const Routes: FC = () => (
     <Suspense fallback={<PageLoading/>}>
       <Switch>
         <Route exact path="/login" component={Login} />
-        <PrivateRoute exact path="/" component={Home} />
+        <PrivateRoute path="/" component={Home} />
       </Switch>
     </Suspense>
   </Router>

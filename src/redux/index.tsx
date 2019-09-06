@@ -1,5 +1,6 @@
 import { combineReducers, createStore, applyMiddleware } from "redux";
 import thunkMiddleware from "redux-thunk";
+import { composeWithDevTools } from "redux-devtools-extension";
 
 import { reducer as auth } from "./auth";
 
@@ -8,8 +9,10 @@ const reducers = combineReducers({
 });
 
 const store = createStore(reducers,
-  applyMiddleware(
-    thunkMiddleware
+  composeWithDevTools(
+    applyMiddleware(
+      thunkMiddleware
+    )
   )
 );
 

@@ -1,19 +1,20 @@
 import React, { FC, lazy, Suspense } from "react";
-import { Switch, Route, Router } from "react-router";
+import { Switch } from "react-router";
 
-import { PageLoading } from "@/components";
-import { history } from "@/routes";
+import { PageLoading, PrivateRoute } from "@/components";
 
-const Overview = lazy(() => import("./Overview"));
+const Overview = lazy(() => import("./views/Overview"));
+const Forms = lazy(() => import("./views/Forms"));
+const Success = lazy(() => import("./views/Success"));
 
-const AppRoutes: FC = props => (
-  <Router history={history}>
-  <Suspense fallback={PageLoading}>
+const AppRoutes: FC = () => (
+  <Suspense fallback={<PageLoading/>}>
     <Switch>
-        <Route path="overview" component={Overview}/>
+      <PrivateRoute path="/overview" component={Overview} />
+      <PrivateRoute path="/forms" component={Forms} />
+      <PrivateRoute path="/success" component={Success} />
     </Switch>
-    </Suspense>
-    </Router>
+  </Suspense>
 );
 
 export default AppRoutes;

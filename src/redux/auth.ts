@@ -14,8 +14,6 @@ const storageProps = () => ({
 /// types
 ///
 export enum AuthAction {
-  LOGIN_USERNAME = "auth/login-username",
-  LOGIN_PHONE = "auth/login-phone",
   AUTH_INFO = "auth/info",
   LOGOUT = "auth/logout",
   // types for async loading
@@ -39,7 +37,7 @@ interface LoginPayload extends api.LoginPayload {
 }
 interface AuthActionType {
   type: AuthAction;
-  payload?: LoginPayload | Readonly<{ error: string; }>;
+  payload?: Readonly<{ token: string; username: string; expiry: number; }> | Readonly<{ error: string; }>;
 }
 
 type AuthActionThunk = ThunkAction<void, typeof initState, null, Action<AuthAction>>;
@@ -63,7 +61,7 @@ export const login = (payload: LoginPayload, onLoginSuccess?: () => void): AuthA
 
 export const logout = (): AuthActionType => {
   auth.clear();
-  return { type: AuthAction.LOGOUT, ...storageProps() };
+  return { type: AuthAction.LOGOUT, payload: { username: "", token: "", expiry: -1 } };
 };
 
 ///
@@ -71,13 +69,11 @@ export const logout = (): AuthActionType => {
 ///
 export const reducer = (state = initState, action: AuthActionType) => {
   switch (action.type) {
-    case AuthAction.LOGOUT: // fallthrough
-    case AuthAction.LOGIN_USERNAME:
+    case AuthAction.LOGOUT:
       return { ...state, ...(action.payload) };
     case AuthAction.LOGIN_POSTING:
       return { ...state, posting: true };
-    case AuthAction.LOGIN_SUCCESS:
-      return { ...state, posting: false };
+    case AuthAction.LOGIN_SUCCESS: // fallthrough
     case AuthAction.LOGIN_FAILURE:
       return { ...state, posting: false, ...(action.payload) };
     default: return state;

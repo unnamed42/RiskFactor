@@ -27,7 +27,7 @@ const Overview: FC = props => {
     <Card title="已有表单" bordered={false}>
       <Table columns={columns}></Table>
     </Card>
-  )
+  );
 };
 
 export default Overview;

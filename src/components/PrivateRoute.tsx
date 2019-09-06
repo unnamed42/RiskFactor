@@ -6,7 +6,7 @@ import { StoreType } from "@/redux";
 
 const PrivateRoute: FC<RouteProps> = ({ component, ...rest }) => {
   const token = useSelector((state: StoreType) => state.auth.token);
-  const Component = component;
+  const Component = component!;
   return (
     <Route {...rest}
       render={ props => token !== "" ?
