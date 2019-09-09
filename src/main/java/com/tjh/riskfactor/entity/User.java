@@ -8,11 +8,14 @@ import lombok.experimental.Accessors;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import javax.persistence.*;
+import org.hibernate.annotations.NaturalId;
+import org.hibernate.annotations.NaturalIdCache;
 
 import java.util.Set;
 
 @Data @Entity
 @Table(name = "users")
+@NaturalIdCache
 @Accessors(chain = true)
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class User {
@@ -21,6 +24,7 @@ public class User {
     @EqualsAndHashCode.Include
     private Integer id;
 
+    @NaturalId
     @Column(unique = true, nullable = false)
     private String username;
 

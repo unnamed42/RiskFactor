@@ -3,7 +3,6 @@ package com.tjh.riskfactor.service;
 import lombok.val;
 import lombok.RequiredArgsConstructor;
 
-import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -14,6 +13,8 @@ import com.tjh.riskfactor.entity.Group;
 import com.tjh.riskfactor.repo.UserRepository;
 import com.tjh.riskfactor.repo.GroupRepository;
 import com.tjh.riskfactor.entity.json.NewUser;
+import static com.tjh.riskfactor.service.Errors.notFound;
+import static com.tjh.riskfactor.service.Errors.conflict;
 
 import java.util.*;
 import java.util.function.Function;
@@ -26,16 +27,6 @@ public class AccountService {
     private final UserRepository users;
     private final GroupRepository groups;
     private final PasswordEncoder encoder;
-
-    private static ResponseStatusException notFound(String field, String ...names) {
-        val message = String.format("requested %s(s) [%s] not found", field, String.join(",", names));
-        return new ResponseStatusException(HttpStatus.NOT_FOUND, message);
-    }
-
-    private static ResponseStatusException conflict(String field, String name) {
-        val message = String.format("%s [%s] already exists", field, name);
-        return new ResponseStatusException(HttpStatus.CONFLICT, message);
-    }
 
     /**
      * Find and ensure existence of all requested elements in {@code request}.
