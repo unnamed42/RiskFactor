@@ -4,7 +4,6 @@ import lombok.Setter;
 import lombok.Getter;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.fasterxml.jackson.annotation.JsonInclude;
 
 import java.util.Date;
 
@@ -23,10 +22,8 @@ public class ApiError {
 
     private String uri;
 
-    @JsonInclude(JsonInclude.Include.NON_NULL)
     private String body = null;
 
-    @JsonInclude(JsonInclude.Include.NON_NULL)
     private String stacktrace = null;
 
 }

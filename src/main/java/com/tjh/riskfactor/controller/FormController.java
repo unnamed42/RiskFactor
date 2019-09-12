@@ -1,12 +1,14 @@
 package com.tjh.riskfactor.controller;
 
-import com.tjh.riskfactor.entity.form.Section;
-import com.tjh.riskfactor.service.FormService;
 import lombok.RequiredArgsConstructor;
+
 import org.springframework.web.bind.annotation.*;
 
-@RequestMapping("/form")
+import com.tjh.riskfactor.entity.form.Section;
+import com.tjh.riskfactor.service.FormService;
+
 @RestController
+@RequestMapping("/form")
 @RequiredArgsConstructor
 public class FormController {
 

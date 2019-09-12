@@ -41,7 +41,7 @@ public class ExceptionsHandler extends ResponseEntityExceptionHandler {
         val message = ex.getMethod() +
                 " is not supported on requested uri. Supported methods are: " +
                 join(ex.getSupportedHttpMethods());
-        return builder.builder().status(HttpStatus.BAD_REQUEST)
+        return builder.withStatus(HttpStatus.BAD_REQUEST)
                 .request(request).message(message).exception(ex).response();
     }
 
@@ -49,7 +49,7 @@ public class ExceptionsHandler extends ResponseEntityExceptionHandler {
     protected ResponseEntity<Object> handleNoHandlerFoundException(
             NoHandlerFoundException ex, HttpHeaders headers, HttpStatus status, WebRequest request) {
         val message = "no handler for method " + ex.getHttpMethod();
-        return builder.builder().status(HttpStatus.BAD_REQUEST)
+        return builder.withStatus(HttpStatus.BAD_REQUEST)
                 .request(request).message(message).exception(ex).response();
     }
 
@@ -60,25 +60,25 @@ public class ExceptionsHandler extends ResponseEntityExceptionHandler {
         val message = ex.getContentType() +
                 " media type is not supported. Supported types are: " +
                 join(ex.getSupportedMediaTypes());
-        return builder.builder().status(HttpStatus.UNSUPPORTED_MEDIA_TYPE)
+        return builder.withStatus(HttpStatus.UNSUPPORTED_MEDIA_TYPE)
                 .request(request).message(message).exception(ex).response();
     }
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<Object> handleDefault(Exception ex, HttpServletRequest req) {
-        return builder.builder().status(HttpStatus.INTERNAL_SERVER_ERROR)
+        return builder.withStatus(HttpStatus.INTERNAL_SERVER_ERROR)
                 .request(req).exception(ex).response();
     }
 
     @ExceptionHandler(ResponseStatusException.class)
     public ResponseEntity<Object> handleResponse(ResponseStatusException ex, HttpServletRequest req) {
-        return builder.builder().status(ex.getStatus())
+        return builder.withStatus(ex.getStatus())
                 .request(req).message(ex.getReason()).exception(ex).response();
     }
 
     @ExceptionHandler(AccessDeniedException.class)
     public ResponseEntity<Object> handleAccessDenied(AccessDeniedException ex, HttpServletRequest req) {
-        return builder.builder().status(HttpStatus.FORBIDDEN)
+        return builder.withStatus(HttpStatus.FORBIDDEN)
                 .request(req).exception(ex).response();
     }
 

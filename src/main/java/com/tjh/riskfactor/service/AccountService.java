@@ -13,13 +13,16 @@ import com.tjh.riskfactor.entity.Group;
 import com.tjh.riskfactor.repo.UserRepository;
 import com.tjh.riskfactor.repo.GroupRepository;
 import com.tjh.riskfactor.entity.json.NewUser;
-import static com.tjh.riskfactor.service.Errors.notFound;
-import static com.tjh.riskfactor.service.Errors.conflict;
+import static com.tjh.riskfactor.error.ResponseErrors.notFound;
+import static com.tjh.riskfactor.error.ResponseErrors.conflict;
 
 import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+/**
+ * 提供用户与组操作，暴露用户数据库和组数据库两个数据库的操作。
+ */
 @Service
 @RequiredArgsConstructor
 public class AccountService {
@@ -29,14 +32,14 @@ public class AccountService {
     private final PasswordEncoder encoder;
 
     /**
-     * Find and ensure existence of all requested elements in {@code request}.
-     * @param lookup lookup statement
-     * @param request all requested elements' ids (or username, etc.)
-     * @param getter transformer, uniquely transform from element to String
-     * @param fieldName field name used in error report
-     * @param <T> actual type of queried element
-     * @throws ResponseStatusException thrown if any requested element is not found
-     * @return collection of query results
+     * 查找所有位于 {@code request} 中的元素，要求所有元素全部存在
+     * @param lookup 单个元素的查找函数
+     * @param request 全部元素的id（不一定是主键）
+     * @param getter 将元素转换成字符串，保证不同元素的转换结果不重复
+     * @param fieldName 元素类型的名称，用于错误报告
+     * @param <T> 请求元素的实际类型
+     * @throws ResponseStatusException 当有不存在元素时抛出此异常
+     * @return 找到的元素集合
      */
     private static <T> Set<T> findAllOf(Function<Collection<String>, Set<T>> lookup,
                                         Collection<String> request, Function<T, String> getter,

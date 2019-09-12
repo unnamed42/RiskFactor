@@ -10,7 +10,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 
-import static com.tjh.riskfactor.service.Errors.notFound;
+import static com.tjh.riskfactor.error.ResponseErrors.notFound;
 
 @Service
 @RequiredArgsConstructor

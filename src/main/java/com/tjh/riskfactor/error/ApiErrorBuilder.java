@@ -26,8 +26,8 @@ public class ApiErrorBuilder {
     @Value("${debug}")
     private boolean debug;
 
-    Builder builder() {
-        return new Builder(debug);
+    Builder withStatus(HttpStatus status) {
+        return new Builder(debug).status(status);
     }
 
     public static class Builder {
@@ -51,9 +51,8 @@ public class ApiErrorBuilder {
             error.setUri(request.getRequestURI());
             if(debug) {
                 try {
-                    val body = request.getReader().lines()
-                            .collect(Collectors.joining(System.lineSeparator()));
-                    error.setBody(body);
+                    error.setBody(request.getReader().lines()
+                                    .collect(Collectors.joining(System.lineSeparator())));
                 } catch (IllegalStateException | IOException ignored) {}
             }
             return this;

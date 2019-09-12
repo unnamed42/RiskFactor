@@ -27,6 +27,7 @@ public class FormInitializer extends BaseInitializer {
     @Override
     protected void initialize() {
         makeBasicInfo();
+        makeCurrentMedicalHistory();
     }
 
     private Question question(String fieldName, Consumer<Question> modifiers) {
@@ -59,6 +60,10 @@ public class FormInitializer extends BaseInitializer {
     }
 
     private Section makeBasicInfo() {
+        val found = sections.findByTitle("一般资料");
+        if(found.isPresent())
+            return found.get();
+
         val centerId = question("centerId", q -> q.setType(QuestionType.IMMUTABLE)
                 .setDescription("中心编号"));
         val surveyId = question("surveyId", q -> q.setType(QuestionType.IMMUTABLE)
@@ -73,62 +78,62 @@ public class FormInitializer extends BaseInitializer {
         }, q -> q.setDescription("性别"));
 
         val ethnics = list("ethnic", QuestionType.SINGLE_SELECT, new String[][] {
-                { "hanzu", "汉族" },
-                { "manzu", "满族" },
-                { "mengguzu", "蒙古族" },
-                { "huizu", "回族" },
-                { "zangzu", "藏族" },
-                { "weiwuerzu", "维吾尔族" },
-                { "miaozu", "苗族" },
-                { "yizu", "彝族" },
-                { "zhuangzu", "壮族" },
-                { "buyizu", "布依族" },
-                { "dongzu", "侗族" },
-                { "yaozu", "瑶族" },
-                { "baizu", "白族" },
-                { "tujiazu", "土家族" },
-                { "hanizu", "哈尼族" },
-                { "hasakezu", "哈萨克族" },
-                { "daizu", "傣族" },
-                { "lizu", "黎族" },
-                { "lisuzu", "傈僳族" },
-                { "wazu", "佤族" },
-                { "shezu", "畲族" },
-                { "gaoshanzu", "高山族" },
-                { "lahuzu", "拉祜族" },
-                { "shuizu", "水族" },
-                { "dongxiangzu", "东乡族" },
-                { "naxizu", "纳西族" },
-                { "jingpozu", "景颇族" },
-                { "keerkezizu", "柯尔克孜族" },
-                { "tuzu", "土族" },
-                { "dawoerzu", "达斡尔族" },
-                { "mulaozu", "仫佬族" },
-                { "qiangzu", "羌族" },
-                { "bulangzu", "布朗族" },
-                { "salazu", "撒拉族" },
-                { "maonanzu", "毛南族" },
-                { "gelaozu", "仡佬族" },
-                { "xibozu", "锡伯族" },
-                { "achangzu", "阿昌族" },
-                { "pumizu", "普米族" },
-                { "chaoxianzu", "朝鲜族" },
-                { "tajikezu", "塔吉克族" },
-                { "nuzu", "怒族" },
-                { "wuzibiekezu", "乌孜别克族" },
-                { "eluosizu", "俄罗斯族" },
-                { "ewenkezu", "鄂温克族" },
-                { "deangzu", "德昂族" },
-                { "baoanzu", "保安族" },
-                { "yuguzu", "裕固族" },
-                { "jingzu", "京族" },
-                { "tataerzu", "塔塔尔族" },
-                { "dulongzu", "独龙族" },
-                { "elunchunzu", "鄂伦春族" },
-                { "hezhezu", "赫哲族" },
-                { "menbazu", "门巴族" },
-                { "luobazu", "珞巴族" },
-                { "jinuozu", "基诺族" }
+                { "han", "汉族" },
+                { "man", "满族" },
+                { "menggu", "蒙古族" },
+                { "hui", "回族" },
+                { "zang", "藏族" },
+                { "weiwuer", "维吾尔族" },
+                { "miao", "苗族" },
+                { "yi", "彝族" },
+                { "zhuang", "壮族" },
+                { "buyi", "布依族" },
+                { "dong", "侗族" },
+                { "yao", "瑶族" },
+                { "bai", "白族" },
+                { "tujia", "土家族" },
+                { "hani", "哈尼族" },
+                { "hasake", "哈萨克族" },
+                { "dai", "傣族" },
+                { "li", "黎族" },
+                { "lisu", "傈僳族" },
+                { "wa", "佤族" },
+                { "she", "畲族" },
+                { "gaoshan", "高山族" },
+                { "lahu", "拉祜族" },
+                { "shui", "水族" },
+                { "dongxiang", "东乡族" },
+                { "naxi", "纳西族" },
+                { "jingpo", "景颇族" },
+                { "keerkezi", "柯尔克孜族" },
+                { "tu", "土族" },
+                { "dawoer", "达斡尔族" },
+                { "mulao", "仫佬族" },
+                { "qiang", "羌族" },
+                { "bulang", "布朗族" },
+                { "sala", "撒拉族" },
+                { "maonan", "毛南族" },
+                { "gelao", "仡佬族" },
+                { "xibo", "锡伯族" },
+                { "achang", "阿昌族" },
+                { "pumi", "普米族" },
+                { "chaoxian", "朝鲜族" },
+                { "tajike", "塔吉克族" },
+                { "nu", "怒族" },
+                { "wuzibieke", "乌孜别克族" },
+                { "eluosi", "俄罗斯族" },
+                { "ewenke", "鄂温克族" },
+                { "deang", "德昂族" },
+                { "baoan", "保安族" },
+                { "yugu", "裕固族" },
+                { "jing", "京族" },
+                { "tataer", "塔塔尔族" },
+                { "dulong", "独龙族" },
+                { "elunchun", "鄂伦春族" },
+                { "hezhe", "赫哲族" },
+                { "menba", "门巴族" },
+                { "luoba", "珞巴族" },
+                { "jinuo", "基诺族" }
         }, q -> q.setDescription("民族"));
 
         val birthPlace = list("birthPlace", QuestionType.LIST, new String[][] {
@@ -178,18 +183,22 @@ public class FormInitializer extends BaseInitializer {
                 { "year", "年" }
         }, q -> q.setDescription("持续时间单位"));
 
-
+        return duration;
     }
 
     private Section makeCurrentMedicalHistory() {
+        val found = sections.findByTitle("现病史");
+        if(found.isPresent())
+            return found.get();
+
         val treatmentTime = question("treatmentTime", q -> q.setType(QuestionType.DATE)
                 .setDescription("就诊或入院日期"));
         val onsetTime = question("onsetTime", q -> q.setType(QuestionType.DATE)
                 .setDescription("发病时间"));
 
         val feverPersistTime = question("fever_persist_time", q -> q.setType(QuestionType.DATE).setDescription("持续时间"));
-        val fever = question("fever", q -> q.setType(QuestionType.ENABLER));
-        val treatmentSymptoms = question("treatmentSymptoms", q -> q.setType(QuestionType.MULTI_CHOICE));
+        val fever = question("fever", q -> q.setType(QuestionType.ENABLER).setDescription("发烧"));
+        val treatmentSymptoms = question("treatmentSymptoms", q -> q.setType(QuestionType.MULTI_CHOICE).setDescription("就诊症状"));
 
         return section("现病史", Arrays.asList(treatmentTime, onsetTime, treatmentSymptoms));
     }
