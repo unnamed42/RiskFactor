@@ -18,7 +18,6 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
-import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
@@ -27,6 +26,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.HttpStatusEntryPoint;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 
 import com.tjh.riskfactor.error.ErrorResponder;
 import com.tjh.riskfactor.security.JwtTokenFilter;
@@ -37,11 +37,8 @@ import java.util.Collections;
 
 @Configuration
 @EnableWebSecurity
-@EnableGlobalMethodSecurity(
-    prePostEnabled = true
-)
 @RequiredArgsConstructor
-public class SecurityConfig extends WebSecurityConfigurerAdapter {
+public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
     private final JwtUserDetailsService service;
     private final JwtTokenFilter jwtFilter;
@@ -50,16 +47,25 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Value("${security.jwt.encoding-strength}")
     private Integer strength;
 
+    /**
+     * 默认密码哈希。Spring的BCrypt哈希实现已经包含了密码加盐
+     */
     @Bean @Primary
     protected PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder(strength);
     }
 
+    /**
+     * 将其暴露为{@code Bean}
+     */
     @Bean @Override
     protected AuthenticationManager authenticationManager() throws Exception {
         return super.authenticationManager();
     }
 
+    /**
+     * 配置数据库用户验证功能，主要是为了保留{@link UsernameNotFoundException}
+     */
     @Bean
     protected AuthenticationProvider daoAuthenticationProvider() {
         val provider = new DaoAuthenticationProvider();
