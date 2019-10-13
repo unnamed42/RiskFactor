@@ -4,6 +4,8 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import javax.persistence.*;
 
 @Data @Entity
@@ -14,6 +16,7 @@ public class Answer {
 
     @Id @GeneratedValue
     @EqualsAndHashCode.Include
+    @JsonIgnore
     private Integer id;
 
     @ManyToOne(fetch = FetchType.LAZY)

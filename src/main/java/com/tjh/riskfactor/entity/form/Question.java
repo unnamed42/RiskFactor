@@ -4,6 +4,8 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import javax.persistence.*;
 import java.util.List;
 
@@ -15,6 +17,7 @@ public class Question {
 
     @Id @GeneratedValue
     @EqualsAndHashCode.Include
+    @JsonIgnore
     private Integer id;
 
     @Enumerated(EnumType.STRING)
@@ -26,6 +29,10 @@ public class Question {
 
     @Column(nullable = false)
     private String description;
+
+    @OneToOne(fetch = FetchType.EAGER)
+    @JoinColumn(referencedColumnName = "id")
+    private QuestionOption option;
 
     @OneToMany(fetch = FetchType.EAGER)
     @JoinTable(name = "question_list",
