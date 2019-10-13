@@ -10,7 +10,7 @@ const Success = lazy(() => import("./views/Success"));
 const AppRoutes: FC = () => (
   <Suspense fallback={<PageLoading/>}>
     <Switch>
-      <PrivateRoute path="/overview" component={Overview} />
+      <PrivateRoute path="/" component={Overview} />
       <PrivateRoute path="/forms" component={Forms} />
       <PrivateRoute path="/success" component={Success} />
     </Switch>
