@@ -29,4 +29,12 @@ public class Group {
     @ToString.Exclude
     private Set<User> members;
 
+    @OneToMany(fetch = FetchType.LAZY)
+    @JoinTable(name = "group_admins",
+        joinColumns = @JoinColumn(name = "admin", referencedColumnName = "id")
+    )
+    @JsonIgnore
+    @ToString.Exclude
+    private Set<User> admins;
+
 }

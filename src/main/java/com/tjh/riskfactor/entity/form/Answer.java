@@ -16,11 +16,7 @@ public class Answer {
     @EqualsAndHashCode.Include
     private Integer id;
 
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
-    private QuestionType type;
-
-    @OneToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "answer_to", nullable = false)
     private Question answerTo;
 

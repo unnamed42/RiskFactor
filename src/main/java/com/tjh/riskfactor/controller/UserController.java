@@ -13,31 +13,29 @@ import com.tjh.riskfactor.service.AccountService;
 @RestController
 @RequestMapping("/user")
 @RequiredArgsConstructor
-@PreAuthorize("hasAnyAuthority('root', 'admin')")
 public class UserController {
 
     private final AccountService service;
 
     @GetMapping("/{username}")
-    @PreAuthorize ("#username == principal.username")
     User getUser(@PathVariable String username) {
         return service.getUser(username);
     }
 
     @DeleteMapping("/{username}")
-    @PreAuthorize ("#username == authentication.principal.username")
+    @PreAuthorize("#username == principal.username or @e.isRoot(principal)")
     void deleteUser(@PathVariable String username) {
         service.deleteUser(username);
     }
 
     @PostMapping("/{username}")
-    @PreAuthorize ("#username == authentication.principal.username")
+    @PreAuthorize("@e.isRoot(principal)")
     void addUser(@PathVariable String username, @RequestBody NewUser json) {
         service.createUser(username, json);
     }
 
     @PostMapping("/{username}/password")
-    @PreAuthorize ("#username == authentication.principal.username")
+    @PreAuthorize("#username == principal.username or @e.isRoot(principal)")
     void changePassword(@PathVariable String username, @RequestBody NewPassword body) {
         service.changePassword(username, body.getPassword());
     }

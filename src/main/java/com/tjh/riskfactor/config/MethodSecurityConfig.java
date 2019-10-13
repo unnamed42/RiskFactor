@@ -1,15 +1,13 @@
 package com.tjh.riskfactor.config;
 
-import lombok.val;
 import lombok.RequiredArgsConstructor;
 
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.access.expression.method.DefaultMethodSecurityExpressionHandler;
-import org.springframework.security.access.expression.method.MethodSecurityExpressionHandler;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.method.configuration.GlobalMethodSecurityConfiguration;
 
-import com.tjh.riskfactor.security.ACLPermissionEvaluator;
+import com.tjh.riskfactor.security.PermissionEvaluator;
 
 @Configuration
 @EnableGlobalMethodSecurity(
@@ -18,13 +16,11 @@ import com.tjh.riskfactor.security.ACLPermissionEvaluator;
 @RequiredArgsConstructor
 public class MethodSecurityConfig extends GlobalMethodSecurityConfiguration {
 
-    private final ACLPermissionEvaluator evaluator;
+    private final PermissionEvaluator evaluator;
 
-    @Override
-    protected MethodSecurityExpressionHandler createExpressionHandler() {
-        val handler = new DefaultMethodSecurityExpressionHandler();
-        handler.setPermissionEvaluator(evaluator);
-        return handler;
+    @Bean(name = "e")
+    public PermissionEvaluator permissionEvaluator() {
+        return evaluator;
     }
 
 }

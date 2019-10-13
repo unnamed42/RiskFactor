@@ -11,8 +11,7 @@ import com.tjh.riskfactor.util.JsonBuilder;
 public class TestController {
 
     @GetMapping
-    @PreAuthorize("isAuthenticated()")
-    String test() {
+    String test(String name) {
         return new JsonBuilder().add("lhs", "rhs").add("abc", new int[1])
                 .build();
     }
