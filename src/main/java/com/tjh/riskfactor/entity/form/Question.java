@@ -24,7 +24,7 @@ public class Question {
     @Column(nullable = false)
     private QuestionType type;
 
-    @Column(unique = true)
+    @Column(unique = true, nullable = false)
     private String fieldName;
 
     @Column(nullable = false)

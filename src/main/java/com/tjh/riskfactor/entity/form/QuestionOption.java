@@ -25,8 +25,13 @@ public class QuestionOption {
     private boolean required = false;
 
     // 下拉菜单如果选项很多，那么需要有输入时筛选的功能
-    // 该项指明筛选是根据Question的哪个field（目前只有fieldName和description）来进行筛选
-    // 若为空，那么关闭筛选功能
-    private String filterField;
+    // 指定输入时筛选的前缀key
+    private String filterKey;
+
+    // 占位文字，一般是输入类控件需要
+    private String placeholderText;
+
+    // 表单验证不通过时的错误提示信息
+    private String errorMessage;
 
 }

@@ -12,7 +12,7 @@ import javax.persistence.*;
 import java.util.Set;
 
 @Data @Entity
-@Table(name = "groups_") // group, groups为MySQL8保留字，都不能使用
+@Table(name = "groups")
 @Accessors(chain = true)
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class Group {
