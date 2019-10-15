@@ -12,7 +12,7 @@ import javax.persistence.*;
 import java.util.Set;
 
 @Data @Entity
-@Table(name = "groups")
+@Table(name = "group")
 @Accessors(chain = true)
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class Group {
@@ -31,7 +31,8 @@ public class Group {
 
     @OneToMany(fetch = FetchType.LAZY)
     @JoinTable(name = "group_admins",
-        joinColumns = @JoinColumn(name = "admin", referencedColumnName = "id")
+        joinColumns = @JoinColumn(name = "admin", referencedColumnName = "id"),
+        inverseJoinColumns = @JoinColumn(name = "gid", referencedColumnName = "id")
     )
     @JsonIgnore
     @ToString.Exclude

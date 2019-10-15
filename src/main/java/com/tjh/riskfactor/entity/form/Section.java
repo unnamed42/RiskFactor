@@ -21,7 +21,8 @@ public class Section {
 
     @OneToMany(fetch = FetchType.EAGER)
     @JoinTable(name = "section_question_list",
-        joinColumns = @JoinColumn(name = "qid", referencedColumnName = "id")
+        joinColumns = @JoinColumn(name = "sid", referencedColumnName = "id"),
+        inverseJoinColumns = @JoinColumn(name = "qid", referencedColumnName = "id")
     )
     @OrderColumn(name = "sequence", nullable = false)
     private List<Question> questions;
