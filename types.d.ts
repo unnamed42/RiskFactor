@@ -1,25 +1,23 @@
-// general error response
-type ApiError = Readonly<{
-    timestamp: number,
-    status: number,
-    error: string,
-    message: string,
-    stacktrace?: string,
-    body?: string
-}>;
+import * as api from "@/types/api";
+declare global {
+  type ApiToken = Readonly<api.ApiToken>;
+  type ApiError = Readonly<api.ApiError>;
+  type ApiTokenInfo = Readonly<api.ApiTokenInfo>;
+}
 
-// post /auth
-type ApiToken = Readonly<{
-    username: string,
-    token: string
-}>;
+import * as q from "@/types/question";
+declare global {
+  type QuestionOption = Readonly<q.QuestionOption>;
+  type Question = Readonly<q.Question>;
+  type Section = Readonly<q.Section>;
+}
 
-// get /auth
-type ApiTokenInfo = Readonly<{
-    username: string,
-    issued_at: number,
-    expire_at: number,
-    // property name might change
-    // use after checking server-side code
-    groups: string[]
-}>;
+import { WrappedFormUtils } from "antd/lib/form/Form";
+
+declare global {
+  // 用于部件的属性上
+  interface QuestionProps<T = any> {
+    schema: Question;
+    form: WrappedFormUtils<T>;
+  }
+}

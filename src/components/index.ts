@@ -4,4 +4,5 @@ export { default as IntervalButton } from "./IntervalButton";
 export { default as PrivateRoute } from "./PrivateRoute";
 export { default as CheckedInput } from "./CheckedInput";
 export { default as CheckedContent } from "./CheckedContent";
-export { default as EthnicSelect } from "./EthnicSelect";
+
+export { default as Question } from "./Question";

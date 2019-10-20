@@ -5,6 +5,7 @@ module.exports = {
         "@babel/preset-typescript"
     ],
     plugins: [
+        "@babel/plugin-proposal-optional-chaining",
         "@babel/plugin-syntax-dynamic-import",
         "@babel/proposal-class-properties",
         "@babel/proposal-object-rest-spread",
