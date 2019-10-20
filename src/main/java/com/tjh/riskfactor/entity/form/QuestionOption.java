@@ -50,7 +50,9 @@ public class QuestionOption {
     private Boolean prefixPostfix;
 
     // 指定列表/多选类问题默认选项，默认是未选择
-    private Integer defaultSelected;
+    // 对于单项选择来说，只有一个条目
+    // 对于多项选择来说，有多个条目，由半角逗号分隔
+    private String defaultSelected;
 
     // 额外说明
     // 当问题类型为YESNO_CHOICE的时候，选项说明会使用这一项的内容（如果存在）
@@ -59,6 +61,7 @@ public class QuestionOption {
     //     如果还需要额外说明，则内容应类似“是/否/额外说明”
     // 当类型为IMMUTABLE时，其内容填充为该项内容
     //    若该项以“expr:”开头，那么内容为“expr:”后的表达式求值结果
+    //    比如为 expr:height*height/weight 时，获取数据库中fieldName为height和weight的变量，然后求值
     private String additionalDescription;
 
     // 下拉菜单如果选项很多，那么需要有输入时筛选的功能

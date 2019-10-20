@@ -19,10 +19,10 @@ public class Answer {
     @JsonIgnore
     private Integer id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "answer_to", nullable = false)
-    private Question answerTo;
-
-    // need conversion to actual data type
-    private String answer;
+//    @ManyToOne(fetch = FetchType.LAZY)
+//    @JoinColumn(name = "answer_to", nullable = false)
+//    private Question answerTo;
+//
+//    // need conversion to actual data type
+//    private String answer;
 }
