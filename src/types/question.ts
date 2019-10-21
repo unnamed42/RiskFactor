@@ -3,10 +3,10 @@ export interface QuestionOption {
   enabler?: boolean;
   prefixPostfix?: boolean;
   defaultSelected?: number;
-  additionalDescription?: string;
+  detail?: string;
   filterKey?: string;
-  placeholderText?: string;
-  errorMessage?: string;
+  placeholder?: string;
+  message?: string;
 }
 
 export interface Question {
@@ -14,8 +14,8 @@ export interface Question {
       "YESNO_CHOICE" | "LIST" | "LIST_APPENDABLE" |
       "MULTI_CHOICE" | "SINGLE_CHOICE" |
       "MULTI_SELECT" | "SINGLE_SELECT";
-  fieldName: string;
-  description?: string;
+  field: string;
+  label?: string;
   option?: QuestionOption;
   list?: Question[];
 }

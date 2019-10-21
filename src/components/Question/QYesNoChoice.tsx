@@ -10,11 +10,11 @@ export default forwardRef<any, P>(({ schema, ...remain }, ref) => {
   const [state, setState] = useState(0);
 
   if (schema.option === undefined)
-    throw new Error(`YESNO_CHOICE ${schema.fieldName} has no associated option`);
-  if (schema.option.additionalDescription === undefined)
-    throw new Error(`YESNO_CHOICE ${schema.fieldName} has no label configured`);
+    throw new Error(`YESNO_CHOICE ${schema.field} has no associated option`);
+  if (schema.option.detail === undefined)
+    throw new Error(`YESNO_CHOICE ${schema.field} has no label configured`);
 
-  const texts = schema.option.additionalDescription.split("/");
+  const texts = schema.option.detail.split("/");
 
   return (
     <Radio.Group onChange={e => setState(e.target.value)} value={state} {...remain}>
