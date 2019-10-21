@@ -10,6 +10,6 @@ import java.util.Optional;
 @Repository
 public interface QuestionRepository extends JpaRepository<Question, Integer> {
 
-    Optional<Question> findByFieldName(String fieldName);
+    Optional<Question> findByField(String fieldName);
 
 }

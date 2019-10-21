@@ -1,0 +1,593 @@
+- title: 一般资料
+  questions:
+    - label: 中心编号
+      field: 1_centerId
+      type: IMMUTABLE
+    - label: 研究编号
+      field: 1_surveyId
+      type: IMMUTABLE
+    - label: 出生日期
+      field: 1_birth
+      type: DATE
+      option:
+        message: 请输入出生日期
+    - label: 性别
+      field: 1_gender
+      type: SINGLE_SELECT
+      option:
+        message: 请选择性别
+        placeholder: 性别
+      list:
+        - label: 男
+        - label: 女
+    - label: 民族
+      field: 1_ethnic
+      type: SINGLE_SELECT
+      option:
+        message: 请选择民族
+        placeholder: 输入拼音可筛选
+        filterKey: key
+      list:
+        - label: 汉族
+          option:
+            filterKey: han
+        - label: 满族
+          option:
+            filterKey: man
+        - label: 蒙古族
+          option:
+            filterKey: menggu
+        - label: 回族
+          option:
+            filterKey: hui
+        - label: 藏族
+          option:
+            filterKey: zang
+        - label: 维吾尔族
+          option:
+            filterKey: weiwuer
+        - label: 苗族
+          option:
+            filterKey: miao
+        - label: 彝族
+          option:
+            filterKey: yi
+        - label: 壮族
+          option:
+            filterKey: zhuang
+        - label: 布依族
+          option:
+            filterKey: buyi
+        - label: 侗族
+          option:
+            filterKey: dong
+        - label: 瑶族
+          option:
+            filterKey: yao
+        - label: 白族
+          option:
+            filterKey: bai
+        - label: 土家族
+          option:
+            filterKey: tujia
+        - label: 哈尼族
+          option:
+            filterKey: hani
+        - label: 哈萨克族
+          option:
+            filterKey: hasake
+        - label: 傣族
+          option:
+            filterKey: dai
+        - label: 黎族
+          option:
+            filterKey: li
+        - label: 傈僳族
+          option:
+            filterKey: lisu
+        - label: 佤族
+          option:
+            filterKey: wa
+        - label: 畲族
+          option:
+            filterKey: she
+        - label: 高山族
+          option:
+            filterKey: gaoshan
+        - label: 拉祜族
+          option:
+            filterKey: lahu
+        - label: 水族
+          option:
+            filterKey: shui
+        - label: 东乡族
+          option:
+            filterKey: dongxiang
+        - label: 纳西族
+          option:
+            filterKey: naxi
+        - label: 景颇族
+          option:
+            filterKey: jingpo
+        - label: 柯尔克孜族
+          option:
+            filterKey: keerkezi
+        - label: 土族
+          option:
+            filterKey: tu
+        - label: 达斡尔族
+          option:
+            filterKey: dawoer
+        - label: 仫佬族
+          option:
+            filterKey: mulao
+        - label: 羌族
+          option:
+            filterKey: qiang
+        - label: 布朗族
+          option:
+            filterKey: bulang
+        - label: 撒拉族
+          option:
+            filterKey: sala
+        - label: 毛南族
+          option:
+            filterKey: maonan
+        - label: 仡佬族
+          option:
+            filterKey: gelao
+        - label: 锡伯族
+          option:
+            filterKey: xibo
+        - label: 阿昌族
+          option:
+            filterKey: achang
+        - label: 普米族
+          option:
+            filterKey: pumi
+        - label: 朝鲜族
+          option:
+            filterKey: chaoxian
+        - label: 塔吉克族
+          option:
+            filterKey: tajike
+        - label: 怒族
+          option:
+            filterKey: nu
+        - label: 乌孜别克族
+          option:
+            filterKey: wuzibieke
+        - label: 俄罗斯族
+          option:
+            filterKey: eluosi
+        - label: 鄂温克族
+          option:
+            filterKey: ewenke
+        - label: 德昂族
+          option:
+            filterKey: deang
+        - label: 保安族
+          option:
+            filterKey: baoan
+        - label: 裕固族
+          option:
+            filterKey: yugu
+        - label: 京族
+          option:
+            filterKey: jing
+        - label: 塔塔尔族
+          option:
+            filterKey: tataer
+        - label: 独龙族
+          option:
+            filterKey: dulong
+        - label: 鄂伦春族
+          option:
+            filterKey: elunchun
+        - label: 赫哲族
+          option:
+            filterKey: hezhe
+        - label: 门巴族
+          option:
+            filterKey: menba
+        - label: 珞巴族
+          option:
+            filterKey: luoba
+        - label: 基诺族
+          option:
+            filterKey: jinuo
+    - label: 籍贯
+      type: LIST
+      list:
+        - label: 省
+          field: 1_birth_province
+          type: TEXT
+          option:
+            message: 请输入籍贯省
+        - label: 市
+          field: 1_birth_city
+          type: TEXT
+          option:
+            message: 请输入籍贯市
+    - label: 职业
+      field: 1_job
+      type: SINGLE_SELECT
+      option:
+        message: 请选择职业
+      list:
+        - label: 退（离）休人员
+        - label: 国家公务员
+        - label: 专业技术人员
+        - label: 职员
+        - label: 企业管理人员
+        - label: 工人
+        - label: 农民
+        - label: 学生
+        - label: 现役军人
+        - label: 自由职业者
+        - label: 无业人员
+        - label: 其他
+    - label: 通讯地址
+      type: LIST
+      list:
+        - label: 省
+          field: 1_address_province
+          type: TEXT
+          option:
+            message: 请输入地址-省
+        - label: 市
+          field: 1_address_city
+          type: TEXT
+          option:
+            message: 请输入地址-市
+        - label: 县
+          field: 1_address_county
+          type: TEXT
+          option:
+            message: 请输入地址-县
+    - label: 身高（米）
+      field: 1_height
+      type: NUMBER
+      option:
+        message: 请输入身高
+        placeholder: 身高
+    - label: 体重（千克）
+      field: 1_weight
+      type: NUMBER
+      option:
+        message: 请输入体重
+        placeholder: 体重
+- title: 现病史
+  questions:
+    - label: 就诊或入院日期
+      field: 2_treatmentTime
+      type: DATE
+      option:
+        message: 请输入就诊或入院日期
+    - label: 发病时间
+      field: 2_onsetTime
+      type: DATE
+      option:
+        message: 请输入发病时间
+        detail: 精确到年，月份或日期未知用1月1日代替
+    - label: 就诊症状
+      field: 2_symtoms
+      type: MULTI_CHOICE
+      list:
+        - label: 腹痛
+          option:
+            enabler: true
+          list:
+            - label: 持续时间
+              field: 2_symptoms_1_duration
+              type: NUMBER
+              option:
+                message: 请输入持续时间
+              list:
+                - field: 2_symptoms_1_duration_unit
+                  type: SINGLE_SELECT
+                  option:
+                    prefixPostfix: false
+                    defaultSelected: 天
+                  list:
+                    - label: 天
+                    - label: 月
+                    - label: 年
+        - label: 腹胀
+          option:
+            enabler: true
+          list:
+            - label: 持续时间
+              field: 2_symptoms_2_duration
+              type: NUMBER
+              option:
+                message: 请输入持续时间
+              list:
+                - field: 2_symptoms_2_duration_unit
+                  type: SINGLE_SELECT
+                  option:
+                    prefixPostfix: false
+                    defaultSelected: 天
+                  list:
+                    - label: 天
+                    - label: 月
+                    - label: 年
+        - label: 黄疸
+          option:
+            enabler: true
+          list:
+            - label: 持续时间
+              field: 2_symptoms_3_duration
+              type: NUMBER
+              option:
+                message: 请输入持续时间
+              list:
+                - field: 2_symptoms_3_duration_unit
+                  type: SINGLE_SELECT
+                  option:
+                    prefixPostfix: false
+                    defaultSelected: 天
+                  list:
+                    - label: 天
+                    - label: 月
+                    - label: 年
+        - label: 恶心呕吐
+          option:
+            enabler: true
+          list:
+            - label: 持续时间
+              field: 2_symptoms_4_duration
+              type: NUMBER
+              option:
+                message: 请输入持续时间
+              list:
+                - field: 2_symptoms_4_duration_unit
+                  type: SINGLE_SELECT
+                  option:
+                    prefixPostfix: false
+                    defaultSelected: 天
+                  list:
+                    - label: 天
+                    - label: 月
+                    - label: 年
+        - label: 乏力纳差
+          option:
+            enabler: true
+          list:
+            - label: 持续时间
+              field: 2_symptoms_5_duration
+              type: NUMBER
+              option:
+                message: 请输入持续时间
+              list:
+                - field: 2_symptoms_5_duration_unit
+                  type: SINGLE_SELECT
+                  option:
+                    prefixPostfix: false
+                    defaultSelected: 天
+                  list:
+                    - label: 天
+                    - label: 月
+                    - label: 年
+        - label: 消瘦
+          option:
+            enabler: true
+          list:
+            - label: 持续时间
+              field: 2_symptoms_6_duration
+              type: NUMBER
+              option:
+                message: 请输入持续时间
+              list:
+                - field: 2_symptoms_6_duration_unit
+                  type: SINGLE_SELECT
+                  option:
+                    prefixPostfix: false
+                    defaultSelected: 天
+                  list:
+                    - label: 天
+                    - label: 月
+                    - label: 年
+        - label: 发热
+          option:
+            enabler: true
+          list:
+            - label: 持续时间
+              field: 2_symptoms_7_duration
+              type: NUMBER
+              option:
+                message: 请输入持续时间
+              list:
+                - field: 2_symptoms_7_duration_unit
+                  type: SINGLE_SELECT
+                  option:
+                    prefixPostfix: false
+                    defaultSelected: 天
+                  list:
+                    - label: 天
+                    - label: 月
+                    - label: 年
+        - label: 其他
+          option:
+            enabler: true
+          list:
+            - field: 2_symptoms_8_name
+              type: TEXT
+              option:
+                message: 请输入症状
+                placeholder: 症状名称
+            - label: 持续时间
+              field: 2_symptoms_8_duration
+              type: NUMBER
+              option:
+                message: 请输入持续时间
+              list:
+                - field: 2_symptoms_8_duration_unit
+                  type: SINGLE_SELECT
+                  option:
+                    prefixPostfix: false
+                    defaultSelected: 天
+                  list:
+                    - label: 天
+                    - label: 月
+                    - label: 年
+    - label: 入院体征
+      field: 2_treatmentSymptoms
+      type: MULTI_CHOICE
+      list:
+        - label: 腹部包块
+        - label: 黄疸
+        - label: Murphy征
+        - label: 肝大
+        - label: 上腹压痛
+        - label: 腹水
+        - label: 心率不齐
+        - label: 发热
+        - label: 其他
+          list:
+            - type: TEXT
+              field: 2_ts_other_name
+              option:
+                message: 请输入症状
+                placeholder: 症状名称
+- title: 既往病史
+  questions:
+    - label: 胆囊炎
+      field: 3_cholecystitis
+      type: YESNO_CHOICE
+      option:
+        detail: 有/无
+        enabler: true
+      list:
+        - field: 3_cholecystitis_severity
+          type: SINGLE_CHOICE
+          option:
+            message: 请选择急性/慢性
+          list:
+            - label: 急性
+            - label: 慢性
+    - label: 胆囊结石
+      field: 3_gallstone
+      type: YESNO_CHOICE
+      option:
+        detail: 有/无
+        enabler: true
+      list:
+        - field: 3_gallstone_severity
+          type: SINGLE_CHOICE
+          option:
+            message: 请选择急性/慢性
+          list:
+            - label: 急性
+            - label: 慢性
+            - label: 大小
+              field: 3_gallstone_size
+              type: NUMBER
+              option:
+                message: 请填写大小
+                detail: 大小请填写二维值，单位：毫米
+    - label: 胆囊息肉
+      field: 3_gallbladderPolyps
+      type: YESNO_CHOICE
+      option:
+        detail: 有/无
+        enabler: true
+      list:
+        - field: 3_gallbladderPolyps_severity
+          type: SINGLE_CHOICE
+          option:
+            message: 请选择急性/慢性
+          list:
+            - label: 急性
+            - label: 慢性
+            - label: 大小
+              field: 3_gallbladderPolyps_size
+              type: NUMBER
+              option:
+                message: 请填写大小
+                detail: 大小请填写二维值，单位：毫米
+    - label: 胆管结石
+      field: 3_bileDuctStone
+      type: YESNO_CHOICE
+      option:
+        detail: 有/无
+        enabler: true
+      list:
+        - field: 3_gallbladderPolyps_type
+          type: SINGLE_CHOICE
+          option:
+            message: 请选择类型
+          list:
+            - label: 肝内胆管结石
+            - label: 肝外胆管结石
+    - label: Mirrizi综合征
+      field: 3_mirrizi
+      type: YESNO_CHOICE
+      option:
+        detail: 有/无
+    - label: 胆道系统感染
+      field: 3_biliarySystemInfection
+      type: YESNO_CHOICE
+      option:
+        detail: 有/无
+    - label: 寄生虫病
+      field: 3_parasiticDisease
+      type: YESNO_CHOICE
+      option:
+        detail: 有/无
+        enabler: true
+      list:
+        - field: 3_parasiticDisease_type
+          type: MULTI_CHOICE
+          list:
+            - label: 胆道蛔虫
+            - label: 华支睾吸虫
+    - label: 胆胰管汇合异常
+      field: 3_pancreaticobiliaryConfluence
+      type: YESNO_CHOICE
+      option:
+        detail: 有/无
+    - label: 心脑血管疾病
+      field: 3_cardiovascularDisease
+      type: YESNO_CHOICE
+      option:
+        detail: 有/无
+        enabler: true
+      list:
+        - label: 高血压
+        - label: 糖尿病
+        - label: 其他
+          field: 3_cardiovascularDisease_name
+          type: TEXT
+          option:
+            message: 请填写病症名称
+    - label: 手术史
+      field: 3_surgicalHistory
+      type: LIST_APPENDABLE
+      list:
+        - type: LIST
+          list:
+            - label: 手术时间
+              field: 3_surgicalHistory_date
+              type: DATE
+              option:
+                message: 请选择手术时间
+                detail: 精确到年，如月份和日期未知，用1月或1日代替
+            - label: 手术名称
+              field: 3_surgicalHistory_name
+              type: TEXT
+              option:
+                message: 请填写手术名称
+    - label: 其他
+      field: 3_other
+      type: LIST_APPENDABLE
+      list:
+        - type: LIST
+          list:
+            - label: 病症名称
+              field: 3_other_name
+              type: TEXT
+              option:
+                message: 请填写病症名称
+            - field: 3_other_yesno
+              type: YESNO_CHOICE

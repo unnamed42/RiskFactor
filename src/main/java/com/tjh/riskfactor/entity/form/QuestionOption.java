@@ -19,7 +19,7 @@ import javax.persistence.*;
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
 public class QuestionOption {
 
-    @Id @GeneratedValue
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     @EqualsAndHashCode.Include
     @JsonIgnore
     private Integer id;
@@ -62,17 +62,17 @@ public class QuestionOption {
     // 当类型为IMMUTABLE时，其内容填充为该项内容
     //    若该项以“expr:”开头，那么内容为“expr:”后的表达式求值结果
     //    比如为 expr:height*height/weight 时，获取数据库中fieldName为height和weight的变量，然后求值
-    private String additionalDescription;
+    private String detail;
 
     // 下拉菜单如果选项很多，那么需要有输入时筛选的功能
-    // 指定输入时筛选的前缀key
+    // 指定输入时筛选的前缀key，仅用于CHOICE
     // 对于下拉选择类问题来说，只要这一项不为空则开启输入筛选功能
     private String filterKey;
 
     // 占位文字，一般是输入类控件需要
-    private String placeholderText;
+    private String placeholder;
 
     // 表单验证不通过时的错误提示信息
-    private String errorMessage;
+    private String message;
 
 }

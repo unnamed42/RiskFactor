@@ -17,7 +17,7 @@ import java.util.List;
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class Question {
 
-    @Id @GeneratedValue
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     @EqualsAndHashCode.Include
     @JsonIgnore
     private Integer id;
@@ -27,9 +27,9 @@ public class Question {
     private QuestionType type;
 
     @Column(unique = true)
-    private String fieldName;
+    private String field;
 
-    private String description;
+    private String label;
 
     @OneToOne(fetch = FetchType.EAGER)
     @JoinColumn(referencedColumnName = "id")

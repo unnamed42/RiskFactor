@@ -20,6 +20,8 @@ public class FormController {
     }
 
     @PostMapping("/section/{title}")
-    void createSection(@PathVariable String title, @RequestBody Section section) {}
+    void createSection(@PathVariable String title, @RequestBody Section section) {
+        service.saveSection(section, title);
+    }
 
 }
