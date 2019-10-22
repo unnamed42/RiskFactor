@@ -20,7 +20,7 @@ interface LoginFormEvenets { onLoginSuccess?: () => void; }
 
 type LoginFormProps = FormComponentProps<FormFields> & LoginFormEvenets;
 
-const LoginForm: FC<LoginFormProps> = props => {
+const LoginFormD: FC<LoginFormProps> = props => {
 
   const [tab, setTab] = useState("1");
   const dispatch = useDispatch();
@@ -111,4 +111,4 @@ const LoginForm: FC<LoginFormProps> = props => {
   );
 };
 
-export default Form.create<LoginFormProps>()(LoginForm);
+export const LoginForm = Form.create<LoginFormProps>()(LoginFormD);

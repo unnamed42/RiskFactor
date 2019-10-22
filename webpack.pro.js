@@ -14,10 +14,5 @@ module.exports = merge(common, {
       }]
     }),
     new BundleAnalyzerPlugin()
-  ],
-  module: {
-    loaders: [{
-      test: /\.[tj]sx?$/, loader: "webpack-unassert-loader"
-    }]
-  }
+  ]
 });

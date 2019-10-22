@@ -8,7 +8,7 @@ interface CheckedContentProps {
   children?: ReactNode;
 }
 
-export default forwardRef<any, CheckedContentProps>((props, ref) => {
+export const CheckedContent = forwardRef<any, CheckedContentProps>((props, ref) => {
 
   const [checked, setChecked] = useState(props.checked || false);
 

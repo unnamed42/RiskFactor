@@ -5,7 +5,7 @@ import { LoginForm } from "@/components";
 
 import "./index.less";
 
-const Login = withRouter(({ history, ...props }) => {
+export const Login = withRouter(({ history, ...props }) => {
 
   const redirect = () => {
     const { state } = props.location;

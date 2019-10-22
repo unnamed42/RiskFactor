@@ -2,7 +2,7 @@ import React, { FC } from "react";
 
 import { Card, Table } from "antd";
 
-const Overview: FC = props => {
+export const Overview: FC = props => {
   const columns = [
     {
       title: "名称",

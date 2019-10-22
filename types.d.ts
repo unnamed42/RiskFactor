@@ -19,6 +19,5 @@ declare global {
   interface QuestionProps<T = any> {
     schema: Question;
     form: WrappedFormUtils<T>;
-    isChild?: boolean;
   }
 }

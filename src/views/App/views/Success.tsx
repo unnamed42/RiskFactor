@@ -3,7 +3,7 @@ import { withRouter } from "react-router-dom";
 
 import { Result, Button } from "antd";
 
-const Success = withRouter(({ history, ...props}) => {
+export const Success = withRouter(({ history, ...props}) => {
 
   return (
     <Result {...props} status="success"

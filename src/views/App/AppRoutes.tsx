@@ -3,11 +3,11 @@ import { Route, Redirect } from "react-router-dom";
 
 import { PageLoading, PrivateRoute } from "@/components";
 
-const Overview = lazy(() => import("./views/Overview"));
 const Forms = lazy(() => import("./views/Forms"));
-const Success = lazy(() => import("./views/Success"));
+import { Overview } from "./views/Overview";
+import { Success } from "./views/Success";
 
-const AppRoutes: FC = () => (
+export const AppRoutes: FC = () => (
   <Suspense fallback={<PageLoading />}>
     <Route exact path="/" component={() => (<Redirect to="/overview" />)} />
     <PrivateRoute path="/overview" component={Overview} />
@@ -15,5 +15,3 @@ const AppRoutes: FC = () => (
     <PrivateRoute path="/success" component={Success} />
   </Suspense>
 );
-
-export default AppRoutes;

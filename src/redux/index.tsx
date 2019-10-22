@@ -8,7 +8,7 @@ const reducers = combineReducers({
   auth
 });
 
-const store = createStore(reducers,
+export const store = createStore(reducers,
   composeWithDevTools(
     applyMiddleware(
       thunkMiddleware
@@ -16,6 +16,4 @@ const store = createStore(reducers,
   )
 );
 
-type StoreType = ReturnType<typeof store.getState>;
-
-export { store, StoreType };
+export type StoreType = ReturnType<typeof store.getState>;

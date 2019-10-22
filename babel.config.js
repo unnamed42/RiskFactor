@@ -15,10 +15,7 @@ module.exports = {
             regenerator: false,
             // corejs: 3
         }],
-        ["import", {
-            libraryName: "antd",
-            libraryDirectory: "es",
-            style: true
-        }]
+        ["import", { libraryName: "antd", style: true }, "antd"],
+        ["import", { libraryName: "lodash", libraryDirectory: "", camel2DashComponentName: false }, "lodash"]
     ]
 };

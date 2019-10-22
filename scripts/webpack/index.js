@@ -7,6 +7,7 @@ const FriendlyErrorsWebpackPlugin = require("friendly-errors-webpack-plugin");
 const root = join(__dirname, "../..");
 
 const config = {
+  stats: { children: false },
   entry: [`${root}/src/index`],
   output: {
     path: `${root}/dist`,

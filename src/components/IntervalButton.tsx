@@ -11,7 +11,7 @@ interface IntervalButtonProps extends ButtonProps {
   onClick?: React.MouseEventHandler<HTMLElement>;
 }
 
-const IntervalButton: FC<IntervalButtonProps> = props => {
+export const IntervalButton: FC<IntervalButtonProps> = props => {
 
   const [suspended, setSuspended] = useStateAsync(false);
   const [countDown, setCountDown] = useStateAsync(0);
@@ -36,5 +36,3 @@ const IntervalButton: FC<IntervalButtonProps> = props => {
     </Button>
   );
 };
-
-export default IntervalButton;

@@ -7,11 +7,11 @@ import { Layout, Menu, Icon, Dropdown, Avatar } from "antd";
 
 import { StoreType } from "@/redux";
 import { logout } from "@/redux/auth";
-import AppRoutes from "./AppRoutes";
+import { AppRoutes } from "./AppRoutes";
 
 import "./index.less";
 
-const App = withRouter(({ location, ...props }) => {
+export const App = withRouter(({ location, ...props }) => {
   const [collapsed, setCollapsed] = useState(false);
   const dispatch = useDispatch();
 

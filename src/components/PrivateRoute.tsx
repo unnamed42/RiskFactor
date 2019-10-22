@@ -4,7 +4,7 @@ import { useSelector } from "react-redux";
 
 import { StoreType } from "@/redux";
 
-const PrivateRoute: FC<RouteProps> = ({ component, ...rest }) => {
+export const PrivateRoute: FC<RouteProps> = ({ component, ...rest }) => {
   const token = useSelector((state: StoreType) => state.auth.token);
   const Component = component!;
   return (
@@ -16,5 +16,3 @@ const PrivateRoute: FC<RouteProps> = ({ component, ...rest }) => {
     />
   );
 };
-
-export default PrivateRoute;

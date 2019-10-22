@@ -1,7 +1,7 @@
-export { default as LoginForm } from "./LoginForm";
-export { default as PageLoading } from "./PageLoading";
-export { default as IntervalButton } from "./IntervalButton";
-export { default as PrivateRoute } from "./PrivateRoute";
-export { default as CheckedContent } from "./CheckedContent";
+export { LoginForm } from "./LoginForm";
+export { PageLoading } from "./PageLoading";
+export { IntervalButton } from "./IntervalButton";
+export { PrivateRoute } from "./PrivateRoute";
+export { CheckedContent } from "./CheckedContent";
 
-export { default as Question } from "./Question";
+export { question } from "./Question";

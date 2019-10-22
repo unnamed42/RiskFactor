@@ -1,32 +1,25 @@
-import React, { ComponentType, ReactNode } from "react";
+import React, { ComponentType } from "react";
 
 import { WrappedFormUtils, GetFieldDecoratorOptions } from "antd/lib/form/Form";
 
-export function decorated<T = any>(schema: Question, form: WrappedFormUtils<T>, more?: GetFieldDecoratorOptions) {
-  const { getFieldDecorator } = form;
-  let options: GetFieldDecoratorOptions = {};
+type Identity = <T>(t: T) => T;
+
+export const decorated = <T extends any = any>(schema: Question,
+                                               form: WrappedFormUtils<T>,
+                                               more?: GetFieldDecoratorOptions) => {
+  const options = more || {};
   if (schema.option && schema.option.required) {
-    options.rules = [{
-      required: true,
-      message: schema.option.message
-    }];
-    if (more)
-      options = Object.assign(options, more);
+    const rule = { required: true, message: schema.option.message };
+    options.rules = [rule, ...(options.rules || [])];
   }
-  if (Object.keys(options).length !== 0)
-    return getFieldDecorator(schema.field, options);
-  else
-    return (node: ReactNode) => node;
-}
+  return form.getFieldDecorator(schema.field, options) as Identity;
+};
 
-export function generateChildren(schema: Question, Child: ComponentType<any>) {
-  return (schema.list || []).map(({ type, label, option, field }) => {
-    if (type !== "CHOICE")
-      throw new Error(`${field} is not of type CHOICE but ${type}`);
-
+export const generateChildren = (schema: Question, Child: ComponentType<any>) => {
+  return (schema.list || []).map(({ label, option, field }) => {
     const value = (option && option.filterKey) ? option.filterKey : label;
     return (<Child value={value} key={field}>
       {label}
     </Child>);
   });
-}
+};
