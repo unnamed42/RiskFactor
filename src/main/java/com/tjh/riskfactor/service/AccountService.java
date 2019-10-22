@@ -1,24 +1,48 @@
 package com.tjh.riskfactor.service;
 
+import lombok.Data;
 import lombok.val;
+import lombok.var;
 import lombok.RequiredArgsConstructor;
 
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.security.crypto.password.PasswordEncoder;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 
 import com.tjh.riskfactor.entity.User;
 import com.tjh.riskfactor.entity.Group;
 import com.tjh.riskfactor.repo.UserRepository;
 import com.tjh.riskfactor.repo.GroupRepository;
-import com.tjh.riskfactor.entity.json.NewUser;
 import static com.tjh.riskfactor.error.ResponseErrors.notFound;
 import static com.tjh.riskfactor.error.ResponseErrors.conflict;
+import static com.tjh.riskfactor.error.ResponseErrors.invalidArg;
 
+import java.io.IOException;
 import java.util.*;
-import java.util.stream.Collectors;
 import java.util.function.Function;
+import java.util.stream.Stream;
+
+import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.toSet;
+
+@Data class GroupYaml {
+    String name;
+    List<String> members;
+    List<String> admins;
+}
+@Data class UserYaml {
+    String username;
+    String password;
+    String email;
+}
+@Data class Yaml {
+    List<GroupYaml> groups;
+    List<UserYaml> users;
+}
 
 /**
  * 提供用户与组操作，暴露用户数据库和组数据库两个数据库的操作。
@@ -45,7 +69,7 @@ public class AccountService {
                                         Collection<String> request, Function<T, String> getter,
                                         String fieldName) {
         val found = lookup.apply(request);
-        val set = found.stream().map(getter).collect(Collectors.toSet());
+        val set = found.stream().map(getter).collect(toSet());
         val missing = request.stream().filter(r -> !set.contains(r)).toArray(String[]::new);
         if(missing.length != 0)
             throw notFound(fieldName, missing);
@@ -61,7 +85,7 @@ public class AccountService {
      * @param names 全部用户组名称
      * @return 用户组数据库实体的集合
      */
-    private Set<Group> allGroupsIn(Collection<String> names) {
+    private Set<Group> namesToGroups(Collection<String> names) {
         return findEvery(groups::findByNameIn, names,
                          Group::getName, "group");
     }
@@ -81,10 +105,10 @@ public class AccountService {
      * @return 组内用户的用户名
      */
     @Transactional(readOnly = true)
-    public Collection<String> listGroupMembers(String group) {
+    public Collection<String> listMembers(String group) {
         return groups.findByName(group).map(Group::getMembers)
                 .orElseThrow(() -> notFound("group", group))
-                .stream().map(User::getUsername).collect(Collectors.toList());
+                .stream().map(User::getUsername).collect(toList());
     }
 
     /**
@@ -96,7 +120,7 @@ public class AccountService {
         if(groups.existsByName(groupName))
             throw conflict("group", groupName);
         val users = Optional.ofNullable(userNames)
-                        .map(this::allUsersIn)
+                        .map(this::namesToUsers)
                         .orElseGet(Collections::emptySet);
         return groups.save(new Group().setName(groupName).setMembers(users));
     }
@@ -108,8 +132,8 @@ public class AccountService {
      * @throws ResponseStatusException 当用户组{@code groupName}或者任一{@code userNames}中用户不存在时，抛出404异常
      */
     @Transactional
-    public void addGroupMembers(String groupName, Collection<String> userNames) {
-        val users = this.allUsersIn(userNames);
+    public void addMembers(String groupName, Collection<String> userNames) {
+        val users = this.namesToUsers(userNames);
         val group = groups.findByName(groupName)
                 .orElseThrow(() -> notFound("group", groupName));
         group.getMembers().addAll(users);
@@ -125,7 +149,8 @@ public class AccountService {
     public void deleteGroup(String groupName) {
         val found = groups.findByName(groupName);
         // 不存在的用户组，啥也不干
-        if(!found.isPresent()) return;
+        if(!found.isPresent())
+            return;
         val group = found.get();
         // TODO: 需要确认这是否是正确的删除姿势
         for (val member : group.getMembers())
@@ -137,7 +162,7 @@ public class AccountService {
     /// Methods of users
     ///
 
-    private Set<User> allUsersIn(Collection<String> userNames) {
+    private Set<User> namesToUsers(Collection<String> userNames) {
         return findEvery(users::findByUsernameIn, userNames,
                          User::getUsername, "user");
     }
@@ -153,23 +178,57 @@ public class AccountService {
 
     /**
      * 新建用户。若不指定用户组，则是nobody组中的成员
-     * @param username 用户名
-     * @param request 收到的新建用户的JSON请求
+     * @param user 用户名
      */
-    public User createUser(String username, NewUser request) {
+    @Transactional
+    public User createUser(User user) {
+        val username = user.getUsername();
+        if(username == null)
+            throw invalidArg("username", "null");
         if(users.existsByUsername(username))
             throw conflict("user", username);
-        val groupNames = Optional.ofNullable(request.getGroups())
-                .orElse(Collections.singletonList("nobody"));
-        // create new user
-        return users.save(new User().setGroups(allGroupsIn(groupNames))
-             .setPassword(encoder.encode(request.getPassword()))
-             .setUsername(username).setEmail(request.getEmail()));
+
+        if(user.getPassword() == null)
+            throw invalidArg("password", "null");
+        user.setPassword(encoder.encode(user.getPassword()));
+
+        var groups = user.getGroups();
+        if(groups == null || groups.size() == 0) {
+            val nobody = this.groups.findByName("nobody").get();
+            groups = Collections.singleton(nobody);
+        } else
+            groups = namesToGroups(groups.stream().map(Group::getName).collect(toList()));
+        user.setGroups(groups);
+
+        return users.save(user);
     }
 
     public void changePassword(String username, String password) {
         val user = getUser(username).setPassword(encoder.encode(password));
         users.save(user);
+    }
+
+    public void initDatabase(String resource) throws IOException {
+        val mapper = new ObjectMapper(new YAMLFactory());
+        val users = new HashMap<String, User>();
+
+        Function<List<String>, Set<User>> cvt = list -> Optional.ofNullable(list).map(List::stream)
+                .map(stream -> stream.map(users::get).collect(toSet()))
+                .orElse(Collections.emptySet());
+
+        try(val is = ObjectMapper.class.getResourceAsStream(resource)) {
+            val yaml = mapper.readValue(is, Yaml.class);
+            for (val u : yaml.users) {
+                val user = new User().setUsername(u.username)
+                        .setPassword(encoder.encode(u.password)).setEmail(u.email);
+                users.put(u.username, user);
+            }
+            Stream<Group> groups = yaml.groups.stream().map(g -> new Group().setName(g.name)
+                    .setMembers(cvt.apply(g.members))
+                    .setAdmins(cvt.apply(g.admins)));
+            this.users.saveAll(users.values());
+            this.groups.saveAll(groups::iterator);
+        }
     }
 
 }

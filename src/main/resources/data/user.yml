@@ -1,0 +1,28 @@
+groups:
+  - name: root
+    members:
+      - admin
+    admins:
+      - admin
+  - name: users
+    members:
+      - user
+      - user2
+    admins:
+      - user
+  - name: nobody
+    members:
+      - banned
+users:
+  - username: admin
+    password: admin
+    email: admin@example.com
+  - username: user
+    password: user
+    email: user@example.com
+  - username: user2
+    password: user2
+    email: user2@example.com
+  - username: banned
+    password: banned
+    email: banned@example.com

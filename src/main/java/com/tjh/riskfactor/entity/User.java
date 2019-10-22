@@ -5,7 +5,8 @@ import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import lombok.experimental.Accessors;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import static com.fasterxml.jackson.annotation.JsonProperty.Access;
 
 import javax.persistence.*;
 import org.hibernate.annotations.NaturalId;
@@ -28,17 +29,13 @@ public class User {
     @Column(unique = true, nullable = false)
     private String username;
 
-    @JsonIgnore
     @Column(nullable = false)
+    @JsonProperty(access = Access.WRITE_ONLY)
     private String password;
 
     private String email;
 
-    @ManyToMany(fetch = FetchType.LAZY)
-    @JoinTable(name = "group_members",
-        joinColumns = { @JoinColumn(name = "uid", referencedColumnName = "id") },
-        inverseJoinColumns = { @JoinColumn(name = "gid", referencedColumnName = "id") }
-    )
+    @ManyToMany(mappedBy = "members", fetch = FetchType.LAZY)
     @ToString.Exclude
     private Set<Group> groups;
 

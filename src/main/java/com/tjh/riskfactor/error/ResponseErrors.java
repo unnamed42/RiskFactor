@@ -15,4 +15,9 @@ public class ResponseErrors {
         val message = String.format("%s [%s] already exists", field, name);
         return new ResponseStatusException(HttpStatus.CONFLICT, message);
     }
+
+    public static ResponseStatusException invalidArg(String field, String value) {
+        val message = String.format("argument [%s] has invalid value [%s]", field, value);
+        return new ResponseStatusException(HttpStatus.BAD_REQUEST, message);
+    }
 }

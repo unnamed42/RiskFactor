@@ -25,7 +25,7 @@ import java.io.IOException;
 @SpringBootTest
 public abstract class RestTestBase {
 
-    protected MockMvc mvc;
+    MockMvc mvc;
 
     @Autowired
     protected WebApplicationContext context;
@@ -36,11 +36,11 @@ public abstract class RestTestBase {
         mvc = MockMvcBuilders.webAppContextSetup(context).build();
     }
 
-    protected <T> String toJson(T object) throws IOException {
+    static <T> String toJson(T object) throws IOException {
         return new ObjectMapper().writeValueAsString(object);
     }
 
-    protected Map<String, Object> fromJson(String json) throws IOException {
+    static Map<String, Object> fromJson(String json) throws IOException {
         val typeRef = new TypeReference<HashMap<String, Object>>() {};
         return new ObjectMapper().readValue(json, typeRef);
     }

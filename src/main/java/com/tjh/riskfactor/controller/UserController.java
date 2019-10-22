@@ -2,13 +2,15 @@ package com.tjh.riskfactor.controller;
 
 import lombok.RequiredArgsConstructor;
 
+import lombok.val;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import com.tjh.riskfactor.entity.User;
-import com.tjh.riskfactor.entity.json.NewUser;
-import com.tjh.riskfactor.entity.json.NewPassword;
 import com.tjh.riskfactor.service.AccountService;
+import static com.tjh.riskfactor.error.ResponseErrors.invalidArg;
+
+import java.util.Map;
 
 @RestController
 @RequestMapping("/user")
@@ -30,14 +32,19 @@ public class UserController {
 
     @PostMapping("/{username}")
     @PreAuthorize("@e.isRoot(principal)")
-    void addUser(@PathVariable String username, @RequestBody NewUser json) {
-        service.createUser(username, json);
+    void addUser(@PathVariable String username, @RequestBody User user) {
+        if(user.getUsername() == null)
+            user.setUsername(username);
+        service.createUser(user);
     }
 
     @PostMapping("/{username}/password")
     @PreAuthorize("#username == principal.username or @e.isRoot(principal)")
-    void changePassword(@PathVariable String username, @RequestBody NewPassword body) {
-        service.changePassword(username, body.getPassword());
+    void changePassword(@PathVariable String username, @RequestBody Map<String, String> body) {
+        val password = body.get("password");
+        if(password == null)
+            throw invalidArg("password", "null");
+        service.changePassword(username, password);
     }
 
 }

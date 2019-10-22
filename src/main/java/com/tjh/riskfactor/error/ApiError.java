@@ -1,4 +1,4 @@
-package com.tjh.riskfactor.entity.json;
+package com.tjh.riskfactor.error;
 
 import lombok.Setter;
 import lombok.Getter;

@@ -10,7 +10,7 @@ import javax.persistence.*;
 @Accessors(chain = true)
 public class SaveGuard {
 
-    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Id
     private Integer id;
 
 }

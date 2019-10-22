@@ -24,15 +24,19 @@ public class Group {
     @Column(unique = true, nullable = false)
     private String name;
 
-    @ManyToMany(mappedBy = "groups", fetch = FetchType.LAZY)
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(name = "group_members",
+        joinColumns = @JoinColumn(name = "uid"),
+        inverseJoinColumns = @JoinColumn(name = "gid")
+    )
     @JsonIgnore
     @ToString.Exclude
     private Set<User> members;
 
     @OneToMany(fetch = FetchType.LAZY)
     @JoinTable(name = "group_admins",
-        joinColumns = @JoinColumn(name = "admin", referencedColumnName = "id"),
-        inverseJoinColumns = @JoinColumn(name = "gid", referencedColumnName = "id")
+        joinColumns = @JoinColumn(name = "admin"),
+        inverseJoinColumns = @JoinColumn(name = "gid")
     )
     @JsonIgnore
     @ToString.Exclude

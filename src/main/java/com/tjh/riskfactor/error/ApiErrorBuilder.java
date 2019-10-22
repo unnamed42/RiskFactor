@@ -12,7 +12,6 @@ import org.springframework.web.context.request.WebRequest;
 import javax.servlet.http.HttpServletRequest;
 
 import com.tjh.riskfactor.util.JsonBuilder;
-import com.tjh.riskfactor.entity.json.ApiError;
 
 import java.io.IOException;
 import java.io.PrintWriter;

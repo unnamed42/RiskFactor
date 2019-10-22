@@ -13,7 +13,6 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
-import com.tjh.riskfactor.entity.json.Login;
 import com.tjh.riskfactor.repo.UserRepository;
 
 import java.util.Map;
@@ -29,28 +28,32 @@ public class AuthControllerTest extends RestTestBase {
     @Value("${security.jwt.claimed-property}")
     private String claimedProperty;
 
+    private static String login(String username, String password) {
+        return String.format("{\"username\":\"%s\",\"password\":\"%s\"}", username, password);
+    }
+
     @Test
     public void authFailure() throws Exception {
         // non-exist user
-        val user = new Login("howcanthisnameexists", "whateverpassword");
+        val user = login("howcanthisnameexists", "whateverpassword");
         val request = MockMvcRequestBuilders.post("/auth")
-                .contentType(MediaType.APPLICATION_JSON_UTF8).content(toJson(user));
+                .contentType(MediaType.APPLICATION_JSON_UTF8).content(user);
         mvc.perform(request).andExpect(
             MockMvcResultMatchers.status().isNotFound());
 
         // wrong password
-        val user2 = new Login("admin", "admi");
+        val user2 = login("admin", "admi");
         val request2 = MockMvcRequestBuilders.post("/auth")
-                .contentType(MediaType.APPLICATION_JSON_UTF8).content(toJson(user2));
+                .contentType(MediaType.APPLICATION_JSON_UTF8).content(user2);
         mvc.perform(request2).andExpect(
             MockMvcResultMatchers.status().isUnauthorized()
         );
     }
 
     private Map<String, Object> authToken() throws Exception {
-        val user = new Login("admin", "admin");
+        val user = login("admin", "admin");
         val request = MockMvcRequestBuilders.post("/auth")
-                .contentType(MediaType.APPLICATION_JSON_UTF8).content(toJson(user));
+                .contentType(MediaType.APPLICATION_JSON_UTF8).content(user);
         val body = mvc.perform(request).andExpect(
                 MockMvcResultMatchers.status().isOk()
         ).andReturn().getResponse().getContentAsString();

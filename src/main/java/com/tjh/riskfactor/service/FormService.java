@@ -5,15 +5,21 @@ import lombok.RequiredArgsConstructor;
 
 import org.springframework.stereotype.Service;
 
-import com.tjh.riskfactor.entity.form.Section;
-import com.tjh.riskfactor.entity.form.Question;
-import com.tjh.riskfactor.entity.form.QuestionType;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
+
+import com.tjh.riskfactor.entity.form.*;
 import com.tjh.riskfactor.repo.QuestionRepository;
 import com.tjh.riskfactor.repo.QuestionOptionRepository;
 import com.tjh.riskfactor.repo.SectionRepository;
+import org.springframework.transaction.annotation.Transactional;
+
 import static com.tjh.riskfactor.error.ResponseErrors.notFound;
 
+import java.util.List;
 import java.util.Base64;
+import java.io.IOException;
 import java.security.SecureRandom;
 
 @Service
@@ -26,7 +32,7 @@ public class FormService {
 
     private static String uuid() {
         val random = new SecureRandom();
-        val buffer = new byte[16];
+        val buffer = new byte[9];
         random.nextBytes(buffer);
         return Base64.getEncoder().encodeToString(buffer);
     }
@@ -37,7 +43,8 @@ public class FormService {
     }
 
     // 存储Question中的其他相关实体，确保存储q之前它的所有属性都是数据库中存在的
-    private Question saveQuestionProps(Question q) {
+    @Transactional
+    Question saveQuestionProps(Question q) {
         if(q.getType() == null)
             q.setType(QuestionType.CHOICE);
         val option = q.getOption();
@@ -61,6 +68,7 @@ public class FormService {
         return questions.save(saveQuestionProps(q));
     }
 
+    @Transactional
     public Section saveSection(Section section) {
         val qs = section.getQuestions().stream().map(this::saveQuestionProps);
         section.setQuestions(questions.saveAll(qs::iterator));
@@ -69,6 +77,15 @@ public class FormService {
 
     public Section saveSection(Section section, String title) {
         return saveSection(section.setTitle(title));
+    }
+
+    public void initDatabase(String resource) throws IOException {
+        val type = new TypeReference<List<Section>>() {};
+        val mapper = new ObjectMapper(new YAMLFactory());
+        try(val is = TypeReference.class.getResourceAsStream(resource)) {
+            List<Section> sections = mapper.readValue(is, type);
+            sections.forEach(this::saveSection);
+        }
     }
 
 }

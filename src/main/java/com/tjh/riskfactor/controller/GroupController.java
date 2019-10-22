@@ -2,7 +2,6 @@ package com.tjh.riskfactor.controller;
 
 import com.tjh.riskfactor.service.AccountService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
@@ -23,7 +22,7 @@ public class GroupController {
 
     @GetMapping("/{group}")
     Collection<String> groupMembers(@PathVariable String group) {
-        return service.listGroupMembers(group);
+        return service.listMembers(group);
     }
 
     @PostMapping("/{group}")
@@ -33,7 +32,7 @@ public class GroupController {
 
     @PutMapping("/{group}")
     void appendMember(@PathVariable String group, @RequestBody Collection<String> users) {
-        service.addGroupMembers(group, users);
+        service.addMembers(group, users);
     }
 
     @DeleteMapping("/{group}")

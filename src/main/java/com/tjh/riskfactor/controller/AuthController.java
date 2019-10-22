@@ -13,10 +13,11 @@ import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.bind.annotation.*;
 
 import com.tjh.riskfactor.util.JsonBuilder;
-import com.tjh.riskfactor.entity.json.Login;
 import com.tjh.riskfactor.security.JwtTokenProvider;
+import static com.tjh.riskfactor.error.ResponseErrors.invalidArg;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/auth")
@@ -43,9 +44,13 @@ public class AuthController {
     }
 
     @PostMapping
-    String requestToken(@RequestBody Login json) {
-        String username = json.getUsername(), password = json.getPassword();
-//        users.ensureUserExists(username);
+    String requestToken(@RequestBody Map<String, String> body) {
+        String username = body.get("username"), password = body.get("password");
+        if(username == null)
+            throw invalidArg("username", "null");
+        if(password == null)
+            throw invalidArg("password", "null");
+
         val token = authenticate(username, password);
         return new JsonBuilder().add("username", username)
                     .add("token", token).build();
