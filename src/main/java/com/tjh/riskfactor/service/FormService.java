@@ -3,6 +3,7 @@ package com.tjh.riskfactor.service;
 import lombok.val;
 import lombok.RequiredArgsConstructor;
 
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -40,6 +41,10 @@ public class FormService {
     public Section fetchFormSection(String sectionTitle) {
         return sections.findByTitle(sectionTitle)
                 .orElseThrow(() -> notFound("form", sectionTitle));
+    }
+
+    public List<Section> fetchSections() {
+        return sections.findAll(new Sort(Sort.Direction.ASC, "id"));
     }
 
     // 存储Question中的其他相关实体，确保存储q之前它的所有属性都是数据库中存在的
