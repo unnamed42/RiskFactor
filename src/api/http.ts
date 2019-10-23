@@ -1,28 +1,27 @@
 import Axios, { AxiosRequestConfig } from "axios";
 
+import { baseUrl } from "@/config";
 import { auth } from "@/api/persist";
 
-const http = Axios.create({
-    baseURL: process.env.API_BASE,
-    headers: {
-        "Content-Type": "application/json"
-    }
+export const http = Axios.create({
+  baseURL: baseUrl,
+  headers: {
+    "Content-Type": "application/json"
+  }
 });
 
 http.interceptors.request.use(config => {
-    const { token, expiry } = auth;
-    if (token && expiry > new Date().getTime())
-        Object.assign(config.headers, {Authorization: `Bearer ${token}`});
-    return config;
-}, err => Promise.reject(err));
+  const { token, expiry } = auth;
+  if (token && expiry > new Date().getTime())
+    Object.assign(config.headers, { Authorization: `Bearer ${token}` });
+  return config;
+}, Promise.reject);
 
-async function request<T>(config: AxiosRequestConfig): Promise<T> {
-    const response = await http.request<ApiError | T>(config);
-    const reply = response.data;
-    if("error" in reply)
-        throw reply;
-    return reply;
-}
+export const request = async <T = any>(config: AxiosRequestConfig): Promise<T> => {
+  const { data } = await http.request<ApiError | T>(config);
+  if ("error" in data)
+    throw data;
+  return data;
+};
 
 export default http;
-export { request };

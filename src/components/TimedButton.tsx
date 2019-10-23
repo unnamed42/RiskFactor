@@ -1,22 +1,20 @@
-import React, { FC } from "react";
+import React, { FC, MouseEventHandler } from "react";
 
 import { Button } from "antd";
 import { ButtonProps } from "antd/lib/button";
 
 import { useStateAsync, sleep } from "@/utils";
 
-interface IntervalButtonProps extends ButtonProps {
+type P = ButtonProps & {
   interval: number;
   text: string;
-  onClick?: React.MouseEventHandler<HTMLElement>;
-}
+  onClick?: MouseEventHandler<HTMLElement>;
+};
 
-export const IntervalButton: FC<IntervalButtonProps> = props => {
+export const TimedButton: FC<P> = ({ interval, text, onClick, ...rest }) => {
 
   const [suspended, setSuspended] = useStateAsync(false);
   const [countDown, setCountDown] = useStateAsync(0);
-
-  const { interval, text, onClick, ...rest } = props;
 
   const clicked = async (e: React.MouseEvent<HTMLElement, MouseEvent>) => {
     if (onClick) onClick(e);

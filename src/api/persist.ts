@@ -1,4 +1,4 @@
-const auth = {
+export const auth = {
     get token() { return localStorage.getItem("auth.token") || ""; },
     set token(t: string) { localStorage.setItem("auth.token", t); },
 
@@ -20,8 +20,4 @@ const auth = {
         localStorage.removeItem("auth.token");
         localStorage.removeItem("auth.expiry");
     }
-};
-
-export {
-    auth
 };

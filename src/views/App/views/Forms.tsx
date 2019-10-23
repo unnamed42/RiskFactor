@@ -4,7 +4,7 @@ import { Form, Button } from "antd";
 import { FormComponentProps } from "antd/lib/form";
 
 import { question, PageLoading } from "@/components";
-import { fetch } from "@/api/forms";
+import { getSection } from "@/api/forms";
 
 const FormsD: FC<FormComponentProps> = ({ form }) => {
 
@@ -20,7 +20,7 @@ const FormsD: FC<FormComponentProps> = ({ form }) => {
 
   // 内部不能出现async函数，否则编译报错，不知道为何
   const loadFormLayout = (name: string) => {
-    fetch({ name }).then(setSource);
+    getSection({ name }).then(setSource);
   };
 
   useEffect(() => loadFormLayout("一般资料"), []);

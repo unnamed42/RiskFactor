@@ -1,16 +1,13 @@
 import React, { FC, Suspense, lazy } from "react";
-import { Router, Route, Switch } from "react-router-dom";
-import { createHashHistory } from "history";
+import { HashRouter as Router, Route, Switch } from "react-router-dom";
 
 import { PageLoading, PrivateRoute } from "@/components";
 
 const Login = lazy(() => import("@/views/Login"));
 const Home =  lazy(() => import("@/views/App"));
 
-const history = createHashHistory();
-
-const Routes: FC = () => (
-  <Router history={history}>
+export const Routes: FC = () => (
+  <Router>
     <Suspense fallback={<PageLoading/>}>
       <Switch>
         <Route exact path="/login" component={Login} />
@@ -19,5 +16,3 @@ const Routes: FC = () => (
     </Suspense>
   </Router>
 );
-
-export { Routes, history };

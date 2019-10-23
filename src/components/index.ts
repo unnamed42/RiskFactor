@@ -1,6 +1,6 @@
 export { LoginForm } from "./LoginForm";
 export { PageLoading } from "./PageLoading";
-export { IntervalButton } from "./IntervalButton";
+export { TimedButton } from "./TimedButton";
 export { PrivateRoute } from "./PrivateRoute";
 export { CheckedContent } from "./CheckedContent";
 

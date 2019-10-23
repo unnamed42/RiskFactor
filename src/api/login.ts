@@ -1,27 +1,18 @@
 import { request } from "@/api/http";
 
-type LoginPayload = Readonly<{
-    username: string,
-    password: string
+export type LoginPayload = Readonly<{
+  username: string,
+  password: string
 }>;
 
-async function login(payload: LoginPayload): Promise<ApiToken> {
-    return await request<ApiToken>({
-        url: "/auth", data: payload, method: "POST"
-    });
-}
+export const login = async (payload: LoginPayload) =>
+  await request<ApiToken>({ url: "/auth", data: payload, method: "POST" });
 
-async function tokenInfo(): Promise<ApiTokenInfo> {
-    return await request<ApiTokenInfo>({
-        url: "/auth", method: "GET"
-    });
-}
+export const tokenInfo = async () =>
+  await request<ApiTokenInfo>({ url: "/auth", method: "GET" });
 
-function logout(): void {
-    // nothing here
-    // localStorage handling is all kept in store
-}
-
-export {
-    login, logout, tokenInfo, LoginPayload
-};
+/**
+ * 退出登录不需要与后台API交互，直接在本地删除token即可
+ * 该logout是空操作，为与其他api保持一致返回Promise<void>
+ */
+export const logout = () => Promise.resolve();

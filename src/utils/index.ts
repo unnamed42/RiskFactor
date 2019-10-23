@@ -1,16 +1,10 @@
 import { useState } from "react";
 
 // wrapper around useState, report new value after setState
-const useStateAsync = <T> (init: T): [T, (x: T) => Promise<T> ] => {
-    const [value, setValue] = useState(init);
-    const setter = (x: T) => new Promise<T>(resolve => {
-        setValue(x); resolve(x);
-    });
-    return [value, setter];
+export const useStateAsync = <T>(init?: T | undefined): [T | undefined, (x: T) => Promise<T>] => {
+  const [value, setValue] = useState(init);
+  return [value, async (x: T) => { setValue(x); return x; }];
 };
 
-const sleep = (ms: number) => {
-    return new Promise(resolve => setTimeout(resolve, ms));
-};
-
-export { useStateAsync, sleep };
+export const sleep = (ms: number) =>
+  new Promise(resolve => setTimeout(resolve, ms));

@@ -4,23 +4,24 @@ import { useDispatch } from "react-redux";
 import { Form, Icon, Input, Button, Checkbox, Tabs } from "antd";
 import { FormComponentProps } from "antd/lib/form";
 
-import { IntervalButton } from "@/components";
+import { TimedButton } from "@/components";
 import { login as auth_login } from "@/redux/auth";
+import { LoginPayload } from "@/api/login";
 
 import "./index.less";
 
 // 匹配所有号码（手机卡 + 数据卡 + 上网卡） https://github.com/VincentSit/ChinaMobilePhoneNumberRegex
 const phoneRegex = /^(?:\+?86)?1(?:3\d{3}|5[^4\D]\d{2}|8\d{3}|7(?:[01356789]\d{2}|4(?:0\d|1[0-2]|9\d))|9[189]\d{2}|6[567]\d{2}|4(?:[14]0\d{3}|[68]\d{4}|[579]\d{2}))\d{6}$/;
 
-interface UsernameFields { username: string; password: string; }
-interface PhoneFields { phone: string; captcha: string; }
-type FormFields<T = UsernameFields | PhoneFields> = { remember: boolean; } & T;
+type TabFields<T> = T & { remember: boolean; };
+type UsernameTabFields = LoginPayload;
+type PhoneTabFields = { phone: string; captcha: string };
 
-interface LoginFormEvenets { onLoginSuccess?: () => void; }
+type P = FormComponentProps<TabFields<UsernameTabFields> | TabFields<PhoneTabFields>> & {
+  onLoginSuccess?: () => void;
+};
 
-type LoginFormProps = FormComponentProps<FormFields> & LoginFormEvenets;
-
-const LoginFormD: FC<LoginFormProps> = props => {
+const LoginFormD: FC<P> = props => {
 
   const [tab, setTab] = useState("1");
   const dispatch = useDispatch();
@@ -31,7 +32,7 @@ const LoginFormD: FC<LoginFormProps> = props => {
       // username login
       props.form.validateFields(["username", "password", "remember"], (err, values) => {
         if (err) return;
-        dispatch(auth_login(values as FormFields<UsernameFields>, props.onLoginSuccess));
+        dispatch(auth_login(values as TabFields<UsernameTabFields>, props.onLoginSuccess));
       });
     } else {
       props.form.validateFields(["phone", "captcha", "remember"], (err, values) => {
@@ -94,7 +95,7 @@ const LoginFormD: FC<LoginFormProps> = props => {
                     placeholder="验证码" style={{ width: "65%", marginRight: "3%" }}/>
                 )
               }
-              <IntervalButton interval={1} text="获取验证码" style={{ width: "32%", textAlign: "center" }}/>
+              <TimedButton interval={1} text="获取验证码" style={{ width: "32%", textAlign: "center" }}/>
             </span>
           </Form.Item>
         </Tabs.TabPane>
@@ -111,4 +112,4 @@ const LoginFormD: FC<LoginFormProps> = props => {
   );
 };
 
-export const LoginForm = Form.create<LoginFormProps>()(LoginFormD);
+export const LoginForm = Form.create<P>()(LoginFormD);

@@ -1,11 +1,9 @@
 import { request } from "./http";
 
-async function fetch(payload: { name: string }) {
-  return await request<Section>({
+export const getSection = async (payload: { name: string }) =>
+  await request<Section>({
     url: `/form/section/${encodeURIComponent(payload.name)}`, method: "GET"
   });
-}
 
-export {
-  fetch
-};
+export const getSections = async () =>
+  await request<Section[]>({ url: "/form", method: "GET" });
