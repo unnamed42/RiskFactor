@@ -44,7 +44,8 @@ public class FormService {
     }
 
     public List<Section> fetchSections() {
-        return sections.findAll(new Sort(Sort.Direction.ASC, "id"));
+        val sort = Sort.by(Sort.Direction.ASC, "id");
+        return sections.findAll(sort);
     }
 
     // 存储Question中的其他相关实体，确保存储q之前它的所有属性都是数据库中存在的
