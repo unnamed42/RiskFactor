@@ -6,12 +6,9 @@ import com.fasterxml.jackson.datatype.hibernate5.Hibernate5Module;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.transaction.annotation.Transactional;
 
-import com.tjh.riskfactor.repo.SaveGuardRepository;
-import com.tjh.riskfactor.service.FormService;
-import com.tjh.riskfactor.service.AccountService;
-
-import javax.transaction.Transactional;
+import com.tjh.riskfactor.service.InitService;
 
 @Configuration
 public class AppConfig {
@@ -28,18 +25,11 @@ public class AppConfig {
      * 初始化数据库数据
      */
     @Bean
-    CommandLineRunner runner(FormService forms, AccountService accounts, SaveGuardRepository saveGuards) {
+    CommandLineRunner runner(InitService service) {
         return new CommandLineRunner() {
             @Override @Transactional
             public void run(String... args) throws Exception {
-                if(!saveGuards.existsById(0)) {
-                    forms.initDatabase("/data/sections.yml");
-                    saveGuards.insert(0);
-                }
-                if(!saveGuards.existsById(1)) {
-                    accounts.initDatabase("/data/user.yml");
-                    saveGuards.insert(1);
-                }
+                service.init();
             }
         };
     }

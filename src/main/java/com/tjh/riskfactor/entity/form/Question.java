@@ -8,6 +8,8 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import static com.fasterxml.jackson.annotation.JsonInclude.Include;
 
+import org.hibernate.annotations.ColumnDefault;
+
 import javax.persistence.*;
 import java.util.List;
 
@@ -24,7 +26,8 @@ public class Question {
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private QuestionType type;
+    @ColumnDefault("'CHOICE'")
+    private QuestionType type = QuestionType.CHOICE;
 
     @Column(unique = true)
     private String field;

@@ -1,18 +1,18 @@
 - title: 一般资料
   questions:
     - label: 中心编号
-      field: 1_centerId
+      field: centerId
       type: IMMUTABLE
     - label: 研究编号
-      field: 1_surveyId
+      field: surveyId
       type: IMMUTABLE
     - label: 出生日期
-      field: 1_birth
+      field: birthday
       type: DATE
       option:
         message: 请输入出生日期
     - label: 性别
-      field: 1_gender
+      field: gender
       type: SINGLE_SELECT
       option:
         message: 请选择性别
@@ -21,7 +21,7 @@
         - label: 男
         - label: 女
     - label: 民族
-      field: 1_ethnic
+      field: ethnic
       type: SINGLE_SELECT
       option:
         message: 请选择民族
@@ -197,20 +197,21 @@
           option:
             filterKey: jinuo
     - label: 籍贯
+      field: birth
       type: LIST
       list:
         - label: 省
-          field: 1_birth_province
+          field: province
           type: TEXT
           option:
             message: 请输入籍贯省
         - label: 市
-          field: 1_birth_city
+          field: city
           type: TEXT
           option:
             message: 请输入籍贯市
     - label: 职业
-      field: 1_job
+      field: job
       type: SINGLE_SELECT
       option:
         message: 请选择职业
@@ -228,31 +229,32 @@
         - label: 无业人员
         - label: 其他
     - label: 通讯地址
+      field: address
       type: LIST
       list:
         - label: 省
-          field: 1_address_province
+          field: province
           type: TEXT
           option:
             message: 请输入地址-省
         - label: 市
-          field: 1_address_city
+          field: city
           type: TEXT
           option:
             message: 请输入地址-市
         - label: 县
-          field: 1_address_county
+          field: county
           type: TEXT
           option:
             message: 请输入地址-县
     - label: 身高（米）
-      field: 1_height
+      field: height
       type: NUMBER
       option:
         message: 请输入身高
         placeholder: 身高
     - label: 体重（千克）
-      field: 1_weight
+      field: weight
       type: NUMBER
       option:
         message: 请输入体重
@@ -260,31 +262,32 @@
 - title: 现病史
   questions:
     - label: 就诊或入院日期
-      field: 2_treatmentTime
+      field: treatmentTime
       type: DATE
       option:
         message: 请输入就诊或入院日期
     - label: 发病时间
-      field: 2_onsetTime
+      field: onsetTime
       type: DATE
       option:
         message: 请输入发病时间
         detail: 精确到年，月份或日期未知用1月1日代替
     - label: 就诊症状
-      field: 2_symtoms
+      field: symtoms
       type: MULTI_CHOICE
       list:
         - label: 腹痛
+          field: 1
           option:
             enabler: true
           list:
             - label: 持续时间
-              field: 2_symptoms_1_duration
+              field: duration
               type: NUMBER
               option:
                 message: 请输入持续时间
               list:
-                - field: 2_symptoms_1_duration_unit
+                - field: unit
                   type: SINGLE_SELECT
                   option:
                     prefixPostfix: false
@@ -294,16 +297,17 @@
                     - label: 月
                     - label: 年
         - label: 腹胀
+          field: 2
           option:
             enabler: true
           list:
             - label: 持续时间
-              field: 2_symptoms_2_duration
+              field: duration
               type: NUMBER
               option:
                 message: 请输入持续时间
               list:
-                - field: 2_symptoms_2_duration_unit
+                - field: unit
                   type: SINGLE_SELECT
                   option:
                     prefixPostfix: false
@@ -313,16 +317,17 @@
                     - label: 月
                     - label: 年
         - label: 黄疸
+          field: 3
           option:
             enabler: true
           list:
             - label: 持续时间
-              field: 2_symptoms_3_duration
+              field: duration
               type: NUMBER
               option:
                 message: 请输入持续时间
               list:
-                - field: 2_symptoms_3_duration_unit
+                - field: unit
                   type: SINGLE_SELECT
                   option:
                     prefixPostfix: false
@@ -332,16 +337,17 @@
                     - label: 月
                     - label: 年
         - label: 恶心呕吐
+          field: 4
           option:
             enabler: true
           list:
             - label: 持续时间
-              field: 2_symptoms_4_duration
+              field: duration
               type: NUMBER
               option:
                 message: 请输入持续时间
               list:
-                - field: 2_symptoms_4_duration_unit
+                - field: unit
                   type: SINGLE_SELECT
                   option:
                     prefixPostfix: false
@@ -351,16 +357,17 @@
                     - label: 月
                     - label: 年
         - label: 乏力纳差
+          field: 5
           option:
             enabler: true
           list:
             - label: 持续时间
-              field: 2_symptoms_5_duration
+              field: duration
               type: NUMBER
               option:
                 message: 请输入持续时间
               list:
-                - field: 2_symptoms_5_duration_unit
+                - field: unit
                   type: SINGLE_SELECT
                   option:
                     prefixPostfix: false
@@ -370,16 +377,17 @@
                     - label: 月
                     - label: 年
         - label: 消瘦
+          field: 6
           option:
             enabler: true
           list:
             - label: 持续时间
-              field: 2_symptoms_6_duration
+              field: duration
               type: NUMBER
               option:
                 message: 请输入持续时间
               list:
-                - field: 2_symptoms_6_duration_unit
+                - field: unit
                   type: SINGLE_SELECT
                   option:
                     prefixPostfix: false
@@ -389,16 +397,17 @@
                     - label: 月
                     - label: 年
         - label: 发热
+          field: 7
           option:
             enabler: true
           list:
             - label: 持续时间
-              field: 2_symptoms_7_duration
+              field: duration
               type: NUMBER
               option:
                 message: 请输入持续时间
               list:
-                - field: 2_symptoms_7_duration_unit
+                - field: unit
                   type: SINGLE_SELECT
                   option:
                     prefixPostfix: false
@@ -408,21 +417,22 @@
                     - label: 月
                     - label: 年
         - label: 其他
+          field: 8
           option:
             enabler: true
           list:
-            - field: 2_symptoms_8_name
+            - field: name
               type: TEXT
               option:
                 message: 请输入症状
                 placeholder: 症状名称
             - label: 持续时间
-              field: 2_symptoms_8_duration
+              field: duration
               type: NUMBER
               option:
                 message: 请输入持续时间
               list:
-                - field: 2_symptoms_8_duration_unit
+                - field: unit
                   type: SINGLE_SELECT
                   option:
                     prefixPostfix: false
@@ -432,7 +442,7 @@
                     - label: 月
                     - label: 年
     - label: 入院体征
-      field: 2_treatmentSymptoms
+      field: treatmentSymptoms
       type: MULTI_CHOICE
       list:
         - label: 腹部包块
@@ -444,22 +454,23 @@
         - label: 心率不齐
         - label: 发热
         - label: 其他
+          field: other
           list:
             - type: TEXT
-              field: 2_ts_other_name
+              field: name
               option:
                 message: 请输入症状
                 placeholder: 症状名称
 - title: 既往病史
   questions:
     - label: 胆囊炎
-      field: 3_cholecystitis
+      field: cholecystitis
       type: YESNO_CHOICE
       option:
         detail: 有/无
         enabler: true
       list:
-        - field: 3_cholecystitis_severity
+        - field: severity
           type: SINGLE_CHOICE
           option:
             message: 请选择急性/慢性
@@ -467,13 +478,13 @@
             - label: 急性
             - label: 慢性
     - label: 胆囊结石
-      field: 3_gallstone
+      field: gallstone
       type: YESNO_CHOICE
       option:
         detail: 有/无
         enabler: true
       list:
-        - field: 3_gallstone_severity
+        - field: severity
           type: SINGLE_CHOICE
           option:
             message: 请选择急性/慢性
@@ -481,19 +492,19 @@
             - label: 急性
             - label: 慢性
             - label: 大小
-              field: 3_gallstone_size
+              field: size
               type: NUMBER
               option:
                 message: 请填写大小
                 detail: 大小请填写二维值，单位：毫米
     - label: 胆囊息肉
-      field: 3_gallbladderPolyps
+      field: gallbladderPolyps
       type: YESNO_CHOICE
       option:
         detail: 有/无
         enabler: true
       list:
-        - field: 3_gallbladderPolyps_severity
+        - field: severity
           type: SINGLE_CHOICE
           option:
             message: 请选择急性/慢性
@@ -501,19 +512,19 @@
             - label: 急性
             - label: 慢性
             - label: 大小
-              field: 3_gallbladderPolyps_size
+              field: size
               type: NUMBER
               option:
                 message: 请填写大小
                 detail: 大小请填写二维值，单位：毫米
     - label: 胆管结石
-      field: 3_bileDuctStone
+      field: bileDuctStone
       type: YESNO_CHOICE
       option:
         detail: 有/无
         enabler: true
       list:
-        - field: 3_gallbladderPolyps_type
+        - field: type
           type: SINGLE_CHOICE
           option:
             message: 请选择类型
@@ -521,34 +532,34 @@
             - label: 肝内胆管结石
             - label: 肝外胆管结石
     - label: Mirrizi综合征
-      field: 3_mirrizi
+      field: mirrizi
       type: YESNO_CHOICE
       option:
         detail: 有/无
     - label: 胆道系统感染
-      field: 3_biliarySystemInfection
+      field: biliarySystemInfection
       type: YESNO_CHOICE
       option:
         detail: 有/无
     - label: 寄生虫病
-      field: 3_parasiticDisease
+      field: parasiticDisease
       type: YESNO_CHOICE
       option:
         detail: 有/无
         enabler: true
       list:
-        - field: 3_parasiticDisease_type
+        - field: type
           type: MULTI_CHOICE
           list:
             - label: 胆道蛔虫
             - label: 华支睾吸虫
     - label: 胆胰管汇合异常
-      field: 3_pancreaticobiliaryConfluence
+      field: pancreaticobiliaryConfluence
       type: YESNO_CHOICE
       option:
         detail: 有/无
     - label: 心脑血管疾病
-      field: 3_cardiovascularDisease
+      field: cardiovascularDisease
       type: YESNO_CHOICE
       option:
         detail: 有/无
@@ -557,37 +568,33 @@
         - label: 高血压
         - label: 糖尿病
         - label: 其他
-          field: 3_cardiovascularDisease_name
+          field: name
           type: TEXT
           option:
             message: 请填写病症名称
     - label: 手术史
-      field: 3_surgicalHistory
+      field: surgicalHistory
       type: LIST_APPENDABLE
       list:
-        - type: LIST
-          list:
-            - label: 手术时间
-              field: 3_surgicalHistory_date
-              type: DATE
-              option:
-                message: 请选择手术时间
-                detail: 精确到年，如月份和日期未知，用1月或1日代替
-            - label: 手术名称
-              field: 3_surgicalHistory_name
-              type: TEXT
-              option:
-                message: 请填写手术名称
+        - label: 手术时间
+          field: date
+          type: DATE
+          option:
+            message: 请选择手术时间
+            detail: 精确到年，如月份和日期未知，用1月或1日代替
+        - label: 手术名称
+          field: name
+          type: TEXT
+          option:
+            message: 请填写手术名称
     - label: 其他
-      field: 3_other
+      field: other
       type: LIST_APPENDABLE
       list:
-        - type: LIST
-          list:
-            - label: 病症名称
-              field: 3_other_name
-              type: TEXT
-              option:
-                message: 请填写病症名称
-            - field: 3_other_yesno
-              type: YESNO_CHOICE
+        - label: 病症名称
+          field: name
+          type: TEXT
+          option:
+            message: 请填写病症名称
+        - field: yesno
+          type: YESNO_CHOICE

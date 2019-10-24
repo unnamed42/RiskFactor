@@ -18,12 +18,12 @@ public class FormController {
 
     @GetMapping
     List<Section> getSections() {
-        return service.fetchSections();
+        return service.sections();
     }
 
     @GetMapping("/section/{title}")
     Section getSection(@PathVariable String title) {
-        return service.fetchFormSection(title);
+        return service.section(title);
     }
 
     @PostMapping("/section/{title}")

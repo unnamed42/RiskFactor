@@ -12,4 +12,6 @@ public interface QuestionRepository extends JpaRepository<Question, Integer> {
 
     Optional<Question> findByField(String fieldName);
 
+    boolean existsByField(String field);
+
 }
