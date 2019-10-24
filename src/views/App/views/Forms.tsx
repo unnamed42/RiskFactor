@@ -3,8 +3,9 @@ import React, { FC, FormEvent, useState, useEffect } from "react";
 import { Form, Button } from "antd";
 import { FormComponentProps } from "antd/lib/form";
 
-import { question, PageLoading } from "@/components";
 import { getSection } from "@/api/forms";
+import { PageLoading, Question } from "@/components";
+import { decorator } from "@/components/Question";
 
 const FormsD: FC<FormComponentProps> = ({ form }) => {
 
@@ -33,13 +34,19 @@ const FormsD: FC<FormComponentProps> = ({ form }) => {
       <Form.Item label="标题">
         {source.title || "title"}
       </Form.Item>
+
       {
         source.questions.map((q, idx) =>
           <Form.Item label={q.label} key={idx}>
-            {question(q, form)}
+            {
+              form.getFieldDecorator(q.field, decorator(q))(
+                <Question schema={q}/>
+              )
+            }
           </Form.Item>
         )
       }
+
       <Form.Item>
         <Button type="primary" htmlType="submit">提交</Button>
       </Form.Item>

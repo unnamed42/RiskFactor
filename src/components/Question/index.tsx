@@ -1,31 +1,30 @@
-import React, { ReactElement } from "react";
+import React, { forwardRef } from "react";
 
-import { WrappedFormUtils } from "antd/lib/form/Form";
+import { QInput } from "./QInput";
+import { QSelect } from "./QSelect";
+import { QDate } from "./QDate";
 
-import { qdate } from "./qdate";
-import { qinput } from "./qinput";
-import { qcheckbox } from "./qcheckbox";
-import { qselect } from "./qselect";
-import { qyesno } from "./qyesno";
-
-export type QuestionGenerator =
-  <T>(schema: Question, form: WrappedFormUtils<T>) => ReactElement;
-
-const generator = (type: Question["type"]): QuestionGenerator => {
+const renderer = (type: Question["type"]) => {
   switch (type) {
-    case "DATE": return qdate;
-    case "NUMBER": case "TEXT": return qinput;
-    case "SINGLE_CHOICE": case "MULTI_CHOICE": return qcheckbox;
-    case "SINGLE_SELECT": case "MULTI_SELECT": return qselect;
-    case "YESNO_CHOICE": return qyesno;
-    default: return (_, __) => <div />;
+    case "NUMBER": case "TEXT": return QInput;
+    case "SINGLE_SELECT": case "MULTI_SELECT": return QSelect;
+    case "DATE": return QDate;
+    default: return forwardRef(() => <div />);
   }
 };
 
-/**
- * 严格说这不是Components，但是采用functional components的形式来写成组件的话，
- * 用组件语法在Form中动态创建新表项会有很多乱七八糟的边角条件和bug需要考虑
- */
-export const question: QuestionGenerator = (schema, form) => {
-  return generator(schema.type)(schema, form);
+export const Question = forwardRef<any, QuestionProps>(({ schema }, ref) => {
+  const Child = renderer(schema.type);
+  return <Child ref={ref} schema={schema} />;
+});
+
+export const decorator = ({ option }: Question) => {
+  if (!option) return {};
+  return {
+    rules: [{
+      required: option.required,
+      message: option.message,
+      placeholder: option.placeholder
+    }]
+  };
 };

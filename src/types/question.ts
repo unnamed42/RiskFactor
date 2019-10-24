@@ -15,7 +15,7 @@ export interface Question {
       "MULTI_CHOICE" | "SINGLE_CHOICE" |
       "MULTI_SELECT" | "SINGLE_SELECT";
   field: string;
-  label: string;
+  label?: string;
   option?: QuestionOption;
   list?: Question[];
 }

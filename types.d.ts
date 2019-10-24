@@ -16,8 +16,7 @@ import { WrappedFormUtils } from "antd/lib/form/Form";
 
 declare global {
   // 用于部件的属性上
-  interface QuestionProps<T = any> {
+  interface QuestionProps {
     schema: Question;
-    form: WrappedFormUtils<T>;
   }
 }

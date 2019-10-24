@@ -1,7 +1,6 @@
-export { LoginForm } from "./LoginForm";
-export { PageLoading } from "./PageLoading";
-export { TimedButton } from "./TimedButton";
-export { PrivateRoute } from "./PrivateRoute";
-export { CheckedContent } from "./CheckedContent";
+export * from "./LoginForm";
+export * from "./PageLoading";
+export * from "./TimedButton";
+export * from "./PrivateRoute";
 
-export { question } from "./Question";
+export * from "./Question";
