@@ -10,8 +10,8 @@ const config = {
   entry: [`${root}/src/index`],
   output: {
     path: `${root}/dist`,
-    filename: "[name].js",
-    chunkFilename: "[name].js",
+    filename: "[name].[contenthash:5].js",
+    chunkFilename: "[name].[contenthash:5].js",
     publicPath: "/"
   },
   resolve: {
@@ -39,6 +39,8 @@ const config = {
     }]
   },
   optimization: {
+    runtimeChunk: "single",
+    moduleIds: "hashed",
     splitChunks: {
       cacheGroups: {
         default: false,
