@@ -18,7 +18,7 @@ export const Question = forwardRef<any, QuestionProps>(({ schema }, ref) => {
   return <Child ref={ref} schema={schema} />;
 });
 
-export const decorator = ({ option }: Question) => {
+export const decoratorOptions = ({ option }: Question) => {
   if (!option) return {};
   return {
     rules: [{

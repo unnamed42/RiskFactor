@@ -4,12 +4,12 @@ import { Form, Button } from "antd";
 import { FormComponentProps } from "antd/lib/form";
 
 import { getSection } from "@/api/forms";
-import { PageLoading, Question } from "@/components";
-import { decorator } from "@/components/Question";
+import { PageLoading } from "@/components";
+import { Question, decoratorOptions } from "./Question";
 
 const FormsD: FC<FormComponentProps> = ({ form }) => {
 
-  const [source, setSource] = useState(null as Section | null);
+  const [source, setSource] = useState<Section>();
 
   const submit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -31,15 +31,19 @@ const FormsD: FC<FormComponentProps> = ({ form }) => {
 
   return (
     <Form onSubmit={submit}>
-      <Form.Item label="标题">
-        {source.title || "title"}
-      </Form.Item>
+      {
+        source.title && <Form.Item label="标题">
+          { source.title }
+        ></Form.Item>
+      }
 
       {
+        // getFieldDecorator需要紧贴Form.Item，而且该decorator不能是由
+        // 其他函数转发参数给getFieldDecorator创建成的，否则样式失效
         source.questions.map((q, idx) =>
           <Form.Item label={q.label} key={idx}>
             {
-              form.getFieldDecorator(q.field, decorator(q))(
+              form.getFieldDecorator(q.field, decoratorOptions(q))(
                 <Question schema={q}/>
               )
             }

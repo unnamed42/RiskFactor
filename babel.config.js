@@ -13,9 +13,10 @@ module.exports = {
         // enables this to use more modern features
         ["@babel/plugin-transform-runtime", {
             regenerator: false,
+            useESModules: true
             // corejs: 3
         }],
-        ["import", { libraryName: "antd", style: true }, "antd"],
-        ["import", { libraryName: "lodash", libraryDirectory: "", camel2DashComponentName: false }, "lodash"]
+        "lodash",
+        ["import", { libraryName: "antd", libraryDirectory: "es", style: true }, "antd"]
     ]
 };

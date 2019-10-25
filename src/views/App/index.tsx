@@ -73,5 +73,3 @@ export const App = withRouter(({ location, ...props }) => {
 });
 
 export default App;
-// import forms from "./views/Forms";
-// export default forms;

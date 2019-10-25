@@ -1,7 +1,7 @@
 import React from "react";
 import { withRouter } from "react-router";
 
-import { LoginForm } from "@/components";
+import { LoginForm } from "./LoginForm";
 
 import "./index.less";
 

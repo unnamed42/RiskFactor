@@ -1,11 +1,11 @@
-import React, { FC, lazy, Suspense } from "react";
+import React, { FC, Suspense, lazy } from "react";
 import { Route, Redirect } from "react-router-dom";
 
 import { PageLoading, PrivateRoute } from "@/components";
 
-const Forms = lazy(() => import("./views/Forms"));
-import { Overview } from "./views/Overview";
-import { Success } from "./views/Success";
+const Overview = lazy(() => import(/*webpackChunkName: 'overview' */ "./views/Overview"));
+const Forms = lazy(() => import(/*webpackChunkName: 'forms' */ "./views/Forms"));
+const Success = lazy(() => import(/*webpackChunkName: 'success' */ "./views/Success"));
 
 export const AppRoutes: FC = () => (
   <Suspense fallback={<PageLoading />}>

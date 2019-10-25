@@ -1,18 +1,17 @@
-const { join } = require("path");
 const merge = require("webpack-merge");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
 const { CleanWebpackPlugin } = require("clean-webpack-plugin");
 const FriendlyErrorsWebpackPlugin = require("friendly-errors-webpack-plugin");
 
-const root = join(__dirname, "../..");
+const root = require("./root");
 
 const config = {
   stats: { children: false },
   entry: [`${root}/src/index`],
   output: {
     path: `${root}/dist`,
-    filename: "[name].[hash:5].js",
-    chunkFilename: "[name].[hash:5].js",
+    filename: "[name].js",
+    chunkFilename: "[name].js",
     publicPath: "/"
   },
   resolve: {
@@ -42,11 +41,20 @@ const config = {
   optimization: {
     splitChunks: {
       cacheGroups: {
+        default: false,
         vendor: {
-          test: /node_modules/,
-          chunks: "initial",
           name: "vendor",
-          enforce: true
+          chunks: "initial",
+          test: /node_modules/,
+          priority: 20
+        },
+        common: {
+          name: "common",
+          minChunks: 2,
+          chunks: "async",
+          priority: 10,
+          reuseExistingChunk: true,
+          // enforce: true
         }
       }
     }
