@@ -34,7 +34,7 @@ const FormsD: FC<FormComponentProps> = ({ form }) => {
       {
         source.title && <Form.Item label="标题">
           { source.title }
-        ></Form.Item>
+        </Form.Item>
       }
 
       {

@@ -4,7 +4,6 @@ const common = require("./scripts/webpack");
 const { BundleAnalyzerPlugin } = require("webpack-bundle-analyzer");
 
 module.exports = merge(common, {
-  mode: "production",
   plugins: [
     // new WebpackCdnPlugin({
     //   modules: [{

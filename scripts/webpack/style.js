@@ -6,7 +6,7 @@ module.exports = {
     new MiniCssExtractPlugin({
       filename: "[name].[hash:5].css",
       chunkFilename: "[name].[hash:5].css",
-      // ignoreOrder: false,
+      ignoreOrder: true,
     })
   ],
   module: {

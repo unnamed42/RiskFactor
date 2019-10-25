@@ -6,12 +6,13 @@ const FriendlyErrorsWebpackPlugin = require("friendly-errors-webpack-plugin");
 const root = require("./root");
 
 const config = {
+  mode: process.env.NODE_ENV,
   stats: { children: false },
   entry: [`${root}/src/index`],
   output: {
     path: `${root}/dist`,
-    filename: "[name].[contenthash:5].js",
-    chunkFilename: "[name].[contenthash:5].js",
+    filename: "[name].[hash:5].js",
+    chunkFilename: "[name].[hash:5].js",
     publicPath: "/"
   },
   resolve: {
@@ -27,17 +28,6 @@ const config = {
     }),
     new FriendlyErrorsWebpackPlugin()
   ],
-  module: {
-    rules: [{
-      test: /\.[tj]sx?$/,
-      exclude: /node_modules/,
-      use: ["babel-loader"]
-    }, {
-      enforce: "pre",
-      test: /\.js$/,
-      loader: "source-map-loader"
-    }]
-  },
   optimization: {
     runtimeChunk: "single",
     moduleIds: "hashed",
@@ -64,8 +54,10 @@ const config = {
 };
 
 const enabled = [
-  "antd",
+  "assets",
+  "script",
   "style",
+  "antd",
   "moment",
   "env"
 ];
