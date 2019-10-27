@@ -9,7 +9,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import com.tjh.riskfactor.entity.Group;
@@ -18,6 +17,7 @@ import com.tjh.riskfactor.entity.form.Section;
 import com.tjh.riskfactor.repo.GroupRepository;
 import com.tjh.riskfactor.repo.SaveGuardRepository;
 import com.tjh.riskfactor.repo.UserRepository;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
 import java.util.*;
@@ -27,16 +27,18 @@ import static java.util.stream.Collectors.toSet;
 
 @Service
 @RequiredArgsConstructor
-public class InitService {
+public class DataService {
 
     private final FormService forms;
+    private final AccountService accounts;
+
     private final UserRepository users;
     private final GroupRepository groups;
     private final SaveGuardRepository guards;
     private final PasswordEncoder encoder;
 
-    private interface ThrowingRunnable {
-        void run() throws Exception;
+    private interface TRunnable<T extends Throwable> {
+        void run() throws T;
     }
 
     private void initForms() throws IOException {
@@ -72,15 +74,30 @@ public class InitService {
         }
     }
 
+    private <T extends Throwable> void guarded(TRunnable<T> runnable, int guard) throws T {
+        if(guards.existsById(guard))
+            return;
+        runnable.run();
+        guards.insert(guard);
+    }
+
+    @Transactional
+    public void reloadForms() throws IOException {
+        forms.drop();
+        guards.deleteById(0);
+        guarded(this::initForms, 0);
+    }
+
+    @Transactional
+    public void reloadUsers() throws IOException {
+        accounts.drop();
+        guards.deleteById(1);
+        guarded(this::initAccounts, 1);
+    }
+
     public void init() throws Exception {
-        val runnable = new ThrowingRunnable[] {
-            this::initForms, this::initAccounts
-        };
-        for(int i=0; i<runnable.length; ++i) {
-            if(guards.existsById(i)) continue;
-            runnable[i].run();
-            guards.insert(i);
-        }
+        guarded(this::initForms, 0);
+        guarded(this::initAccounts, 1);
     }
 
 }

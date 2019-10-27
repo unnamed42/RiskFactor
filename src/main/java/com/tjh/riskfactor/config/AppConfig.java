@@ -8,7 +8,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.tjh.riskfactor.service.InitService;
+import com.tjh.riskfactor.service.DataService;
 
 @Configuration
 public class AppConfig {
@@ -25,7 +25,7 @@ public class AppConfig {
      * 初始化数据库数据
      */
     @Bean
-    CommandLineRunner runner(InitService service) {
+    CommandLineRunner runner(DataService service) {
         return new CommandLineRunner() {
             @Override @Transactional
             public void run(String... args) throws Exception {

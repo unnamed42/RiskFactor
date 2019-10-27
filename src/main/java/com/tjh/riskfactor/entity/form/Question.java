@@ -34,11 +34,11 @@ public class Question {
 
     private String label;
 
-    @OneToOne(fetch = FetchType.EAGER)
+    @OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.REMOVE)
     @JoinColumn(referencedColumnName = "id")
     private QuestionOption option;
 
-    @ManyToMany(fetch = FetchType.EAGER)
+    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.REMOVE)
     @JoinTable(name = "question_list",
         joinColumns = @JoinColumn(name = "head", referencedColumnName = "id"),
         inverseJoinColumns = @JoinColumn(name = "qid", referencedColumnName = "id")

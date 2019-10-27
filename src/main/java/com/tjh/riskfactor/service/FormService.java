@@ -5,12 +5,12 @@ import lombok.RequiredArgsConstructor;
 
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.tjh.riskfactor.entity.form.*;
 import com.tjh.riskfactor.repo.QuestionRepository;
 import com.tjh.riskfactor.repo.QuestionOptionRepository;
 import com.tjh.riskfactor.repo.SectionRepository;
-import org.springframework.transaction.annotation.Transactional;
 
 import static com.tjh.riskfactor.error.ResponseErrors.notFound;
 
@@ -21,7 +21,7 @@ import java.security.SecureRandom;
 
 @Service
 @RequiredArgsConstructor
-public class FormService {
+public class FormService implements IDBService {
 
     private final QuestionRepository questions;
     private final QuestionOptionRepository questionOptions;
@@ -35,6 +35,11 @@ public class FormService {
         if(questions.existsByField(id))
             return uuid();
         return id;
+    }
+
+    @Transactional
+    public void drop() {
+        sections.deleteAll();
     }
 
     public Section section(String sectionTitle) {

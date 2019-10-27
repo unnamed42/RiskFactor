@@ -24,7 +24,7 @@ public class Group {
     @Column(unique = true, nullable = false)
     private String name;
 
-    @ManyToMany(fetch = FetchType.LAZY)
+    @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.DETACH)
     @JoinTable(name = "group_members",
         joinColumns = @JoinColumn(name = "uid"),
         inverseJoinColumns = @JoinColumn(name = "gid")
@@ -33,7 +33,7 @@ public class Group {
     @ToString.Exclude
     private Set<User> members;
 
-    @OneToMany(fetch = FetchType.LAZY)
+    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.DETACH)
     @JoinTable(name = "group_admins",
         joinColumns = @JoinColumn(name = "admin"),
         inverseJoinColumns = @JoinColumn(name = "gid")

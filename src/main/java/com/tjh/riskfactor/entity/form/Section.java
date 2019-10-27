@@ -19,7 +19,7 @@ public class Section {
     @Column(unique = true, nullable = false)
     private String title;
 
-    @OneToMany(fetch = FetchType.EAGER)
+    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.REMOVE)
     @JoinTable(name = "section_question_list",
         joinColumns = @JoinColumn(name = "sid", referencedColumnName = "id"),
         inverseJoinColumns = @JoinColumn(name = "qid", referencedColumnName = "id")

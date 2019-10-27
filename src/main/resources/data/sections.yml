@@ -484,15 +484,16 @@
         detail: 有/无
         enabler: true
       list:
-        - field: severity
-          type: SINGLE_CHOICE
-          option:
-            message: 请选择急性/慢性
+        - type: LIST
           list:
-            - label: 急性
-            - label: 慢性
-            - label: 大小
-              field: size
+            - field: severity
+              type: YESNO_CHOICE
+              option:
+                message: 请选择急性/慢性
+                placeholder: 急性/慢性
+                detail: 急性/慢性
+            - field: size
+              label: 大小
               type: NUMBER
               option:
                 message: 请填写大小
@@ -504,15 +505,16 @@
         detail: 有/无
         enabler: true
       list:
-        - field: severity
-          type: SINGLE_CHOICE
-          option:
-            message: 请选择急性/慢性
+        - type: LIST
           list:
-            - label: 急性
-            - label: 慢性
-            - label: 大小
-              field: size
+            - field: severity
+              type: YESNO_CHOICE
+              option:
+                message: 请选择急性/慢性
+                placeholder: 急性/慢性
+                detail: 急性/慢性
+            - field: size
+              label: 大小
               type: NUMBER
               option:
                 message: 请填写大小
@@ -525,12 +527,10 @@
         enabler: true
       list:
         - field: type
-          type: SINGLE_CHOICE
+          type: YESNO_CHOICE
           option:
             message: 请选择类型
-          list:
-            - label: 肝内胆管结石
-            - label: 肝外胆管结石
+            detail: 肝内胆管结石/肝外胆管结石
     - label: Mirrizi综合征
       field: mirrizi
       type: YESNO_CHOICE
@@ -565,13 +565,16 @@
         detail: 有/无
         enabler: true
       list:
-        - label: 高血压
-        - label: 糖尿病
-        - label: 其他
-          field: name
-          type: TEXT
-          option:
-            message: 请填写病症名称
+        - field: types
+          type: MULTI_CHOICE
+          list:
+            - label: 高血压
+            - label: 糖尿病
+            - label: 其他
+              field: name
+              type: TEXT
+              option:
+                message: 请填写病症名称
     - label: 手术史
       field: surgicalHistory
       type: LIST_APPENDABLE

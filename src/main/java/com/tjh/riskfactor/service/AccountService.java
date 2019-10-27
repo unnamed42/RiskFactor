@@ -28,11 +28,17 @@ import static java.util.stream.Collectors.toSet;
  */
 @Service
 @RequiredArgsConstructor
-public class AccountService {
+public class AccountService implements IDBService {
 
     private final UserRepository users;
     private final GroupRepository groups;
     private final PasswordEncoder encoder;
+
+    @Transactional
+    public void drop() {
+        groups.deleteAll();
+        users.deleteAll();
+    }
 
     /**
      * 根据可唯一区分实体的键（ID，用户名等等），查找实体，所有{@code request}中代表的实体都要存在
