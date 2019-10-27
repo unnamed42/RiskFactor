@@ -5,7 +5,8 @@ import { FormComponentProps } from "antd/lib/form";
 
 import { getSection } from "@/api/forms";
 import { PageLoading } from "@/components";
-import { Question, decoratorOptions } from "./Question";
+
+import { FormContext, Question } from "./Question";
 
 const FormsD: FC<FormComponentProps> = ({ form }) => {
 
@@ -24,7 +25,7 @@ const FormsD: FC<FormComponentProps> = ({ form }) => {
     getSection({ name }).then(setSource);
   };
 
-  useEffect(() => loadFormLayout("一般资料"), []);
+  useEffect(() => loadFormLayout("既往病史"), []);
 
   if (!source)
     return <PageLoading />;
@@ -37,19 +38,13 @@ const FormsD: FC<FormComponentProps> = ({ form }) => {
         </Form.Item>
       }
 
-      {
-        // getFieldDecorator需要紧贴Form.Item，而且该decorator不能是由
-        // 其他函数转发参数给getFieldDecorator创建成的，否则样式失效
-        source.questions.map((q, idx) =>
-          <Form.Item label={q.label} key={idx}>
-            {
-              form.getFieldDecorator(q.field, decoratorOptions(q))(
-                <Question schema={q}/>
-              )
-            }
-          </Form.Item>
-        )
-      }
+      <FormContext.Provider value={form}>
+        {
+          source.questions.map(q =>
+            <Question schema={q} key={q.field} />
+          )
+        }
+      </FormContext.Provider>
 
       <Form.Item>
         <Button type="primary" htmlType="submit">提交</Button>
@@ -60,4 +55,5 @@ const FormsD: FC<FormComponentProps> = ({ form }) => {
 };
 
 export const Forms = Form.create()(FormsD);
+
 export default Forms;

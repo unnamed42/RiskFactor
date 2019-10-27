@@ -2,7 +2,7 @@ export interface QuestionOption {
   required?: boolean;
   enabler?: boolean;
   prefixPostfix?: boolean;
-  defaultSelected?: number;
+  defaultSelected?: string;
   detail?: string;
   filterKey?: string;
   placeholder?: string;
@@ -23,4 +23,16 @@ export interface Question {
 export interface Section {
   title: string;
   questions: Question[];
+}
+
+export interface QChangeEvent<T = any> {
+  field: string;
+  value: T;
+}
+
+export interface QuestionProps<T = any> {
+  schema: Question;
+  value?: T;
+  child?: boolean;
+  onChange?: (e: QChangeEvent<T>) => void;
 }

@@ -10,13 +10,12 @@ declare global {
   type QuestionOption = Readonly<q.QuestionOption>;
   type Question = Readonly<q.Question>;
   type Section = Readonly<q.Section>;
+
+  type QProps<T = any> = q.QuestionProps<T>;
+  type QChangeEvent<T = any> = Readonly<q.QChangeEvent<T>>;
 }
 
-import { WrappedFormUtils } from "antd/lib/form/Form";
-
+// utility types
 declare global {
-  // 用于部件的属性上
-  interface QuestionProps {
-    schema: Question;
-  }
+  type Override<T, U> = Pick<T, Exclude<keyof T, keyof U>> & U;
 }

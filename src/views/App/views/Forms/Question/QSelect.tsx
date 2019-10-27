@@ -1,31 +1,35 @@
 import React, { ReactElement, forwardRef } from "react";
 
 import { Select } from "antd";
-import { OptionProps, SelectProps } from "antd/lib/select";
+import { OptionProps } from "antd/lib/select";
 
-const inputFilter = (input: string, option: ReactElement<OptionProps>) => {
-  const text = option.props.value!.toString();
-  return text.startsWith(input);
-};
+export const QSelect = forwardRef<Select, QProps>((props, ref) => {
+  const { schema: { option, list, type, field } } = props;
 
-type P = SelectProps & QuestionProps;
+  if (!option)
+    throw new Error(`QSelect ${field} has no option`);
+  if (!list)
+    throw new Error(`QSelect ${field} has no list`);
 
-export const QSelect = forwardRef<Select, P>(({ schema, ...props }, ref) => {
-  if (!schema.option)
-    throw new Error(`QSelect ${schema.field} has no option`);
-  if (!schema.list)
-    throw new Error(`QSelect ${schema.field} has no list`);
+  const inputFilter = (input: string, option: ReactElement<OptionProps>) =>
+    option.props.value!.toString().startsWith(input);
+
+  const onChange = (value: any) =>
+    props.onChange && props.onChange({ field, value });
 
   return <Select ref={ref}
-    showSearch={!!(schema.option.filterKey)}
-    placeholder={schema.option.placeholder}
-    filterOption={schema.option.filterKey ? inputFilter : undefined}
-    mode={schema.type === "MULTI_SELECT" ? "multiple" : undefined}
+    showSearch={!!(option.filterKey)}
+    placeholder={option.placeholder}
+    filterOption={option.filterKey ? inputFilter : undefined}
+    mode={type === "MULTI_SELECT" ? "multiple" : undefined}
+    value={props.value} onChange={onChange}
   >
     {
-      schema.list.map(({ label, option, field }) => {
+      list.map(({ label, option, field }) => {
         const value = (option && option.filterKey) || label;
-        return <Select.Option key={field} value={value}>{label}</Select.Option>;
+        return <Select.Option key={field} value={value}>
+          {label}
+        </Select.Option>;
       })
     }
   </Select>;

@@ -1,26 +1,29 @@
-import React, { forwardRef, useState } from "react";
+import React, { forwardRef, useState, ChangeEvent } from "react";
 
 import { Input } from "antd";
-import { InputProps } from "antd/lib/input";
-
-type P = QuestionProps & InputProps;
 
 const reNumber = /^-?(0|[1-9]\d*)(\.\d*)?$/;
 
-export const QInput = forwardRef<Input, P>(({ schema: { type, option }, ...props }, ref) => {
+export const QInput = forwardRef<Input, QProps>((props, ref) => {
 
-  const [value, setValue] = useState(props.value);
+  const { field, type, option } = props.schema;
+  const [input, setInput] = useState(props.value);
 
-  const inputFilter = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const newVal = e.target.value;
-    if (!newVal || reNumber.test(newVal)) {
-      setValue(newVal);
-      props.onChange!(e);
-    }
+  const onChange = (e: ChangeEvent<HTMLInputElement>) => {
+    const { value } = e.target;
+    setInput(value);
+    if (props.onChange)
+      props.onChange({ field, value });
   };
 
-  return <Input {...props} ref={ref} value={value} type="text"
-    onChange={type === "NUMBER" ? inputFilter : undefined}
-    placeholder={ option && option.placeholder }
+  const inputFilter = (e: ChangeEvent<HTMLInputElement>) => {
+    const newVal = e.target.value;
+    if (!newVal || reNumber.test(newVal))
+      onChange(e);
+  };
+
+  return <Input ref={ref} value={input} type="text"
+    onChange={type === "NUMBER" ? inputFilter : onChange}
+    placeholder={option && option.placeholder}
   />;
 });
