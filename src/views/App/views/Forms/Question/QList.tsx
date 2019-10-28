@@ -13,7 +13,7 @@ export const QList = forwardRef<any, QProps>((props, ref) => {
   return <div ref={ref}>
     {
       list!.map(q =>
-        <Question child key={q.field} schema={q} onChange={childChanged} />)
+        <Question key={q.field} schema={q} onChange={childChanged} />)
     }
   </div>;
 });

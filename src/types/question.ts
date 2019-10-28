@@ -25,6 +25,10 @@ export interface Section {
   questions: Question[];
 }
 
+export interface Sections {
+  sections: Section[];
+}
+
 export interface QChangeEvent<T = any> {
   field: string;
   value: T;
@@ -33,6 +37,5 @@ export interface QChangeEvent<T = any> {
 export interface QuestionProps<T = any> {
   schema: Question;
   value?: T;
-  child?: boolean;
   onChange?: (e: QChangeEvent<T>) => void;
 }

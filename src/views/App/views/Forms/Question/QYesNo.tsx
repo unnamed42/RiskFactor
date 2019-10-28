@@ -52,7 +52,7 @@ export const QYesNo = forwardRef<any, QProps<V>>((props, ref) => {
     if (choice !== yes || !enabler)
       return null;
     return list!.map(q =>
-      <Question child key={q.field} schema={q} onChange={childChanged} />
+      <Question key={q.field} schema={q} onChange={childChanged} />
     );
   };
 

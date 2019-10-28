@@ -1,59 +1,60 @@
-import React, { FC, FormEvent, useState, useEffect } from "react";
+import React, { FC, useState, useEffect } from "react";
 
-import { Form, Button } from "antd";
-import { FormComponentProps } from "antd/lib/form";
+import { Steps, Button } from "antd";
 
-import { getSection } from "@/api/forms";
-import { PageLoading } from "@/components";
+import { QForm } from "./QForm";
+import { getSections } from "@/api/forms";
 
-import { FormContext, Question } from "./Question";
+interface S {
+  curr: number;
+  data: Section[];
+}
 
-const FormsD: FC<FormComponentProps> = ({ form }) => {
+export const Forms: FC = () => {
 
-  const [source, setSource] = useState<Section>();
+  const [state, setState] = useState<S>();
 
-  const submit = (e: FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    form.validateFields((err, values) => {
-      if (err) return;
-      console.log("success");
-    });
-  };
+  const loadForms = () =>
+    getSections().then(({ sections }) => setState({ curr: 0, data: sections }));
 
-  // 内部不能出现async函数，否则编译报错，不知道为何
-  const loadFormLayout = (name: string) => {
-    getSection({ name }).then(setSource);
-  };
+  useEffect(() => { loadForms(); }, []);
 
-  useEffect(() => loadFormLayout("既往病史"), []);
+  const prev = () => setState({ ...state!, curr: state!.curr - 1 });
+  const next = () => setState({ ...state!, curr: state!.curr + 1 });
 
-  if (!source)
-    return <PageLoading />;
-
-  return (
-    <Form onSubmit={submit}>
+  return <div>
+    <Steps current={state && state.curr} style={{marginBottom: "20px"}}>
       {
-        source.title && <Form.Item label="标题">
-          { source.title }
-        </Form.Item>
+        state && state.data.map(({ title }) =>
+          <Steps.Step key={title} title={title}/>
+        )
       }
-
-      <FormContext.Provider value={form}>
-        {
-          source.questions.map(q =>
-            <Question schema={q} key={q.field} />
-          )
-        }
-      </FormContext.Provider>
-
-      <Form.Item>
-        <Button type="primary" htmlType="submit">提交</Button>
-      </Form.Item>
-    </Form>
-  );
-
+    </Steps>
+    <QForm source={state && state.data[state.curr]} />
+    <div className="step-navigation">
+      {
+        state && state.curr < state.data.length - 1 && (
+          <Button type="primary" onClick={next}>
+            下一步
+          </Button>
+        )
+      }
+      {
+        state && state.curr === state.data.length - 1 && (
+          <Button type="primary" onClick={() => console.log("done")}>
+            完成
+          </Button>
+        )
+      }
+      {
+        state && state.curr > 0 && (
+          <Button style={{ marginLeft: 8 }} onClick={prev}>
+            上一步
+          </Button>
+        )
+      }
+    </div>
+  </div>;
 };
-
-export const Forms = Form.create()(FormsD);
 
 export default Forms;

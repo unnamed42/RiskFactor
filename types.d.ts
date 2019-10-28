@@ -10,6 +10,7 @@ declare global {
   type QuestionOption = Readonly<q.QuestionOption>;
   type Question = Readonly<q.Question>;
   type Section = Readonly<q.Section>;
+  type Sections = Readonly<q.Sections>;
 
   type QProps<T = any> = q.QuestionProps<T>;
   type QChangeEvent<T = any> = Readonly<q.QChangeEvent<T>>;

@@ -6,4 +6,4 @@ export const getSection = async (payload: { name: string }) =>
   });
 
 export const getSections = async () =>
-  await request<Section[]>({ url: "/form", method: "GET" });
+  await request<Sections>({ url: "/form", method: "GET" });

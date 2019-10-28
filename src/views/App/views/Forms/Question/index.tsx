@@ -1,6 +1,7 @@
-import React, { forwardRef, createContext, useContext } from "react";
+import React, { forwardRef, createContext, useContext, PropsWithChildren } from "react";
 
 import Form, { WrappedFormUtils } from "antd/lib/form/Form";
+import { FormItemProps } from "antd/lib/form";
 
 import { QInput } from "./QInput";
 import { QSelect } from "./QSelect";
@@ -9,6 +10,7 @@ import { QList } from "./QList";
 import { QYesNo } from "./QYesNo";
 import { QChoice } from "./QChoice";
 import { QCheckbox } from "./QCheckbox";
+import { QDynamic } from "./QDynamic";
 
 import { validationRules } from "./util";
 
@@ -20,6 +22,7 @@ const renderer = (type: Question["type"]) => {
     case "SINGLE_SELECT": case "MULTI_SELECT": return QSelect;
     case "DATE": return QDate;
     case "LIST": return QList;
+    case "LIST_APPENDABLE": return QDynamic;
     case "YESNO_CHOICE": return QYesNo;
     case "SINGLE_CHOICE": return QChoice;
     case "MULTI_CHOICE": return QCheckbox;
@@ -29,15 +32,27 @@ const renderer = (type: Question["type"]) => {
 
 export const FormContext = createContext(null as WrappedFormUtils | null);
 
-export const Question = forwardRef<any, QProps>(({ schema, child }, ref) => {
-  const Renderer = renderer(schema.type);
+type P = PropsWithChildren<QProps & FormItemProps>;
+
+export const Question = forwardRef<any, P>((props, ref) => {
+
+  const { schema } = props;
+  const { type, label, field } = schema;
+
+  const Renderer = renderer(type);
   const { getFieldDecorator } = useContext(FormContext)!;
 
-  return <Form.Item label={schema.label}>
+  const layout: FormItemProps = {
+    labelCol: { xs: { span: 24 }, sm: { span: 4 } },
+    wrapperCol: { xs: { span: 24 }, sm: { span: 20 } }
+  };
+
+  return <Form.Item label={label} {...layout} {...(props as FormItemProps)}>
     {
-      getFieldDecorator(schema.field, validationRules(schema))(
+      getFieldDecorator(field, validationRules(schema))(
         <Renderer schema={schema} ref={ref} />
       )
     }
+    {props.children}
   </Form.Item>;
 });
