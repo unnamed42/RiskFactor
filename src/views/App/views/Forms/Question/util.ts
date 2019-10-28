@@ -21,3 +21,6 @@ export const validationRules = ({ option }: Question): GetFieldDecoratorOptions 
 
   return ret;
 };
+
+export const fieldName = (field: string, delim = "/") =>
+  field.substring(Math.max(field.lastIndexOf(delim), 0));

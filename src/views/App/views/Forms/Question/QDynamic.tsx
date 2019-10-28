@@ -1,15 +1,16 @@
-import React, { forwardRef, useState } from "react";
+import React, { Component } from "react";
 
-import { Icon, Button } from "antd";
-import Form, { FormItemProps } from "antd/lib/form";
+import { Form, Icon, Button } from "antd";
+import { FormItemProps } from "antd/lib/form";
 
-import { Question } from ".";
+import { Question, QProps } from ".";
 
-interface ItemProps extends Omit<QProps, "onChange"> {
-  idx: number;
-  onChange: (value: any, idx: number) => void;
-  onRemove: (idx: number) => void;
+interface S {
+  indexes: number[];
+  id: number;
 }
+
+type P = QProps<string>;
 
 const noLabel: FormItemProps = {
   wrapperCol: {
@@ -18,72 +19,66 @@ const noLabel: FormItemProps = {
   }
 };
 
-const QDynamicItem = forwardRef<any, ItemProps>((props, ref) => {
+export class QDynamic extends Component<P, S> {
 
-  const [value, setValue] = useState(props.value || {});
-  const { schema: { list }, idx } = props;
+  constructor(props: P) {
+    super(props);
+    const indexes = (props.value &&
+      props.value.split(",").map(s => parseInt(s, 10))) || [];
+    const id = indexes.length ? Math.max(...indexes) + 1 : 0;
+    this.state = { indexes, id };
+  }
 
-  const onChange = (e: QChangeEvent) => {
-    const newValue = { ...value, [e.field]: e.value };
-    setValue(newValue);
-    props.onChange(newValue, idx);
-  };
+  remove(idx: number) {
+    const { indexes } = this.state;
+    const { onChange } = this.props;
+    const newIdx = indexes.filter(i => i !== idx);
+    this.setState({ indexes: newIdx });
+    if (onChange)
+      onChange(newIdx.join(","));
+  }
 
-  return <div ref={ref}>
-    <Icon className="q-dynamic-delete"
-      type="minus-circle-o"
-      onClick={() => props.onRemove(idx)}
-    />
-    {
-      list!.map(q => {
-        const field = `${q.field}[${idx}]`;
-        const schema = { ...q, field };
-        return <Question key={field} schema={schema}
-          value={value[q.field]}
-          onChange={onChange} required={false}
-          {...(idx === 0 ? undefined : noLabel)}
-        />;
-      })
-    }
-  </div>;
-});
+  add() {
+    const { indexes, id } = this.state;
+    const { onChange } = this.props;
+    const newIdx = [...indexes, id + 1];
+    this.setState({
+      indexes: newIdx,
+      id: id + 1
+    });
+    if (onChange)
+      onChange(newIdx.join(","));
+  }
 
-export const QDynamic = forwardRef<any, QProps<any[]>>((props, ref) => {
-
-  const [values, setValues] = useState(props.value || []);
-
-  const { schema } = props;
-
-  const onChange = (values: any[]) => {
-    setValues(values);
-    if (props.onChange)
-      props.onChange({ field: schema.field, value: values });
-  };
-
-  const remove = (idx: number) => {
-    onChange(values.filter((_, i) => i !== idx));
-  };
-
-  const childChanged = (e: QChangeEvent, idx: number) => {
-    values[idx] = e.value;
-    onChange(values.slice(0));
-  };
-
-  const add = () => {
-    onChange([...values, {}]);
-  };
-
-  return <div ref={ref}>
-    {
-      values.map((value, idx) =>
-        <QDynamicItem schema={schema} idx={idx} value={value} key={idx}
-          onChange={childChanged} onRemove={remove} />
-      )
-    }
-    <Form.Item {...noLabel}>
-      <Button type="dashed" onClick={add} style={{width: "60%"}}>
-        <Icon type="plus" />添加
-      </Button>
-    </Form.Item>
-  </div>;
-});
+  render() {
+    const { indexes } = this.state;
+    const { schema: { list } } = this.props;
+    return <div>
+      {
+        indexes.map(idx =>
+          <div key={`div-${idx}`}>
+            <Icon key={`icon-${idx}`}
+              className="q-dynamic-delete"
+              type="minus-circle-o"
+              onClick={() => this.remove(idx)}
+            />
+            {
+              list!.map((q, i) => {
+                const field = `${q.field}@${idx}`;
+                return <Question key={`${idx}-${i}`}
+                  schema={{ ...q, field }}
+                  formItemProps={{ required: false, ...(idx === 0 ? undefined : noLabel) }}
+                />;
+              })
+            }
+          </div>
+        )
+      }
+      <Form.Item {...noLabel}>
+        <Button type="dashed" onClick={() => this.add()} style={{ width: "60%" }}>
+          <Icon type="plus" />添加
+        </Button>
+      </Form.Item>
+    </div>;
+  }
+}

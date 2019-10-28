@@ -10,6 +10,8 @@ import * as api from "@/api/forms";
 interface S {
   curr: number;
   data: Section[];
+
+  [page: number]: any;
 }
 
 interface ParamType {
@@ -25,16 +27,21 @@ export const Forms = withRouter<P, FC<P>>(({ match }) => {
 
   const { title } = match.params;
 
+  const navigate = (diff: number) =>
+    ({ ...state!, curr: state!.curr + diff });
+
   const page = (diff: number) => {
     const { current } = form;
     if (current == null)
       return;
-    current.submit().then(({ errors }) => {
-      if (!errors && state)
-        setState({
-          ...state, curr: state.curr + diff
-        });
-    });
+    current.submit().then(values => {
+      if (!state)
+        return;
+      setState({
+        ...navigate(diff),
+        [state!.curr]: values
+      });
+    }, _ => { });
   };
 
   useEffect(() => {
@@ -54,7 +61,9 @@ export const Forms = withRouter<P, FC<P>>(({ match }) => {
         )
       }
     </Steps>
-    <QForm source={state.data[state.curr]} wrappedComponentRef={form}/>
+    <QForm source={state.data[state.curr]}
+      answer={state[state.curr]}
+      wrappedComponentRef={form} />
     <div className="step-navigation">
       {
         state.curr < state.data.length - 1 && (
@@ -72,7 +81,7 @@ export const Forms = withRouter<P, FC<P>>(({ match }) => {
       }
       {
         state.curr > 0 && (
-          <Button style={{ marginLeft: 8 }} onClick={() => page(-1)}>
+          <Button style={{ marginLeft: 8 }} onClick={() => setState(navigate(-1))}>
             上一步
           </Button>
         )

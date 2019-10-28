@@ -2,18 +2,20 @@ import React, { forwardRef, useState, ChangeEvent } from "react";
 
 import { Input } from "antd";
 
+import { QProps } from ".";
+
 const reNumber = /^-?(0|[1-9]\d*)(\.\d*)?$/;
 
 export const QInput = forwardRef<Input, QProps>((props, ref) => {
 
-  const { field, type, option } = props.schema;
+  const { type, option } = props.schema;
   const [input, setInput] = useState(props.value);
 
   const onChange = (e: ChangeEvent<HTMLInputElement>) => {
     const { value } = e.target;
     setInput(value);
     if (props.onChange)
-      props.onChange({ field, value });
+      props.onChange(value);
   };
 
   const inputFilter = (e: ChangeEvent<HTMLInputElement>) => {

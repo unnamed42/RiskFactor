@@ -9,9 +9,10 @@ import { FormContext, Question } from "./Question";
 
 interface P extends FormComponentProps {
   source?: Section;
+  answer?: any;
 }
 
-const repackAnswer = (values: any) => {
+export const repackAnswer = (values: any) => {
   const ret: any = {};
   Object.keys(values).forEach(key => {
     const prop = values[key];
@@ -24,19 +25,16 @@ const repackAnswer = (values: any) => {
   return ret;
 };
 
-interface FormFields {
-  errors: any;
-  values: any;
-}
-
 // to use refs elegantly, has to be class component
 export class QFormD extends Component<P> {
 
-  submit(): Promise<FormFields> {
-    return new Promise((resolve, _) => {
-      this.props.form.validateFieldsAndScroll((errors, values) =>
-        resolve({ errors, values })
-      );
+  submit(): Promise<any> {
+    return new Promise((resolve, reject) => {
+      const { validateFieldsAndScroll, getFieldsValue } = this.props.form;
+      validateFieldsAndScroll((errors, _) => {
+        if (errors) reject(errors);
+        else resolve(getFieldsValue());
+      });
     });
   }
 
@@ -54,6 +52,14 @@ export class QFormD extends Component<P> {
       </FormContext.Provider>
     </Form>;
   }
+
 }
 
-export const QForm = Form.create<P>()(QFormD);
+export const QForm = Form.create<P>({
+  mapPropsToFields({ answer }) {
+    console.log(answer);
+    return Object.keys(answer || {}).reduce((prev, k) =>
+      ({ ...prev, [k]: Form.createFormField({ value: answer[k] }) })
+    , {});
+  }
+})(QFormD);

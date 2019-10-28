@@ -2,6 +2,8 @@ import React, { ReactElement, forwardRef, useState } from "react";
 
 import { Select } from "antd";
 
+import { QProps } from ".";
+
 export const QSelect = forwardRef<Select, QProps<any | any[]>>((props, ref) => {
   const { schema: { option, list, type, field } } = props;
 
@@ -18,7 +20,7 @@ export const QSelect = forwardRef<Select, QProps<any | any[]>>((props, ref) => {
   const onChange = (value: any) => {
     setSelected(value);
     if (props.onChange)
-      props.onChange({ field, value });
+      props.onChange(value);
   };
 
   return <Select ref={ref}

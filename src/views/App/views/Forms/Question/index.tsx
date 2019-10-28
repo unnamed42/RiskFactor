@@ -1,6 +1,7 @@
-import React, { forwardRef, createContext, useContext, PropsWithChildren } from "react";
+import React, { forwardRef, createContext, useContext } from "react";
 
-import Form, { WrappedFormUtils } from "antd/lib/form/Form";
+import { Form } from "antd";
+import { WrappedFormUtils, GetFieldDecoratorOptions } from "antd/lib/form/Form";
 import { FormItemProps } from "antd/lib/form";
 
 import { QInput } from "./QInput";
@@ -32,14 +33,22 @@ const renderer = (type: Question["type"]) => {
 
 export const FormContext = createContext(null as WrappedFormUtils | null);
 
-type P = PropsWithChildren<QProps & FormItemProps>;
+export interface QProps<T = any> {
+  schema: Question;
+  value?: T;
+  onChange?: (value: T) => void;
+}
 
-export const Question = forwardRef<any, P>((props, ref) => {
+interface P extends QProps {
+  formItemProps?: FormItemProps;
+  decorator?: GetFieldDecoratorOptions;
+}
 
-  const { schema } = props;
+export const Question = forwardRef<any, P>(({ formItemProps, children, decorator, ...props }, ref) => {
+
+  const { schema, onChange } = props;
   const { type, label, field } = schema;
 
-  const Renderer = renderer(type);
   const { getFieldDecorator } = useContext(FormContext)!;
 
   const layout: FormItemProps = {
@@ -48,16 +57,16 @@ export const Question = forwardRef<any, P>((props, ref) => {
   };
 
   const rules = validationRules(schema);
-  // antd getFieldDecorator supports nested field syntax
-  // preserve slash one for Component key
-  const nestedField = field.replace(/\//g, ".");
 
-  return <Form.Item label={label} {...layout} {...(props as FormItemProps)}>
+  const Renderer = renderer(type);
+  const child = <Renderer schema={schema} ref={ref} onChange={onChange} />;
+
+  return <Form.Item label={label} {...layout} {...formItemProps}>
     {
-      Object.keys(rules).length !== 0 ?
-        getFieldDecorator(nestedField, rules)(<Renderer schema={schema} ref={ref} />) :
-        <Renderer schema={schema} ref={ref} />
+      field.includes("/") && type !== "LIST" ?
+        getFieldDecorator(field, { ...rules, ...decorator })(child) :
+        child
     }
-    {props.children}
+    {children}
   </Form.Item>;
 });

@@ -3,14 +3,15 @@ import React, { forwardRef, useState } from "react";
 import { DatePicker } from "antd";
 import moment, { Moment } from "moment";
 
+import { QProps } from ".";
+
 const format = "YYYY-MM-DD";
 
 export const QDate = forwardRef<any, QProps<string>>((props, ref) => {
 
   const [value, setValue] = useState((props.value && moment(props.value, format)) || undefined);
 
-  const { schema } = props;
-  const { option, field } = schema;
+  const { schema: { option } } = props;
 
   const onChange = (date: Moment | null) => {
     if (date === null)
@@ -18,7 +19,7 @@ export const QDate = forwardRef<any, QProps<string>>((props, ref) => {
     setValue(date);
     const value = date.format(format);
     if (props.onChange)
-      props.onChange({ field, value });
+      props.onChange(value);
   };
 
   return <DatePicker ref={ref} value={value} onChange={onChange}

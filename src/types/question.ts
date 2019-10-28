@@ -30,14 +30,3 @@ export interface Sections {
   ctime: string;
   sections: Section[];
 }
-
-export interface QChangeEvent<T = any> {
-  field: string;
-  value: T;
-}
-
-export interface QuestionProps<T = any> {
-  schema: Question;
-  value?: T;
-  onChange?: (e: QChangeEvent<T>) => void;
-}

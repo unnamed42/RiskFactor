@@ -13,7 +13,7 @@ const storageProps = () => ({
 ///
 /// types
 ///
-export enum AuthAction {
+enum AuthAction {
   AUTH_INFO = "auth/info",
   LOGOUT = "auth/logout",
   // types for async loading

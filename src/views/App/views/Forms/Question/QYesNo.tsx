@@ -3,18 +3,11 @@ import React, { forwardRef, useState } from "react";
 import { Radio } from "antd";
 import { RadioChangeEvent } from "antd/lib/radio";
 
-import { Question } from ".";
+import { Question, QProps } from ".";
 
-interface V {
-  answer?: string;
-  enabled?: any;
-}
+export const QYesNo = forwardRef<any, QProps<string>>((props, ref) => {
 
-export const QYesNo = forwardRef<any, QProps<V>>((props, ref) => {
-
-  const value: V = props.value || {};
-
-  const [choice, setChoice] = useState(value.answer);
+  const [choice, setChoice] = useState(props.value);
 
   const { schema: { option, field, list } } = props;
   if (!option)
@@ -26,33 +19,19 @@ export const QYesNo = forwardRef<any, QProps<V>>((props, ref) => {
   const [yes, no] = detail.split("/");
 
   const parentChanged = (e: RadioChangeEvent) => {
-    const val = e.target.value;
-    if (val === choice) return;
-    setChoice(val);
+    const { value } = e.target;
+    if (value === choice)
+      return;
+    setChoice(value);
     if (props.onChange)
-      props.onChange({
-        field, value: {
-          answer: val
-        }
-      });
+      props.onChange(value);
   };
-
-  const childChanged = (e: QChangeEvent) => props.onChange && props.onChange({
-    field,
-    value: {
-      answer: choice,
-      enabled: {
-        ...value.enabled,
-        [e.field]: e.value
-      }
-    }
-  });
 
   const renderChild = () => {
     if (choice !== yes || !enabler)
       return null;
     return list!.map(q =>
-      <Question key={q.field} schema={q} onChange={childChanged} />
+      <Question key={q.field} schema={q} />
     );
   };
 

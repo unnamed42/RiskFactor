@@ -3,11 +3,12 @@ import React, { forwardRef, useState } from "react";
 import { Checkbox } from "antd";
 import { CheckboxValueType } from "antd/lib/checkbox/Group";
 
-import { Question } from ".";
+import { QProps } from ".";
+import { QList } from "./QList";
 
 export const QCheckbox = forwardRef<any, QProps<string[]>>((props, ref) => {
 
-  const { schema: { option, field, list } } = props;
+  const { schema: { option, list } } = props;
 
   const defaultValue = ((option && option.defaultSelected) || "").split(",");
 
@@ -17,7 +18,7 @@ export const QCheckbox = forwardRef<any, QProps<string[]>>((props, ref) => {
     const value = values as string[];
     setSelected(value);
     if (props.onChange)
-      props.onChange({ field, value });
+      props.onChange(value);
   };
 
   return <Checkbox.Group ref={ref} value={selected} onChange={onChange}>
@@ -29,9 +30,9 @@ export const QCheckbox = forwardRef<any, QProps<string[]>>((props, ref) => {
           <Checkbox key={idx} value={label}>
             {label}
             {
-              list && selected.includes(label) && list.map(q =>
-                <Question schema={q} key={q.field} />
-              )
+              list && selected.includes(label) && <QList schema={{
+                field: "", type: "LIST", list
+              }}/>
             }
           </Checkbox>
           <br />
