@@ -3,7 +3,6 @@ package com.tjh.riskfactor.service;
 import lombok.val;
 import lombok.RequiredArgsConstructor;
 
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -11,11 +10,12 @@ import com.tjh.riskfactor.entity.form.*;
 import com.tjh.riskfactor.repo.QuestionRepository;
 import com.tjh.riskfactor.repo.QuestionOptionRepository;
 import com.tjh.riskfactor.repo.SectionRepository;
+import com.tjh.riskfactor.repo.SectionsRepository;
 
 import static com.tjh.riskfactor.error.ResponseErrors.notFound;
 
-import java.util.List;
 import java.util.Base64;
+import java.util.List;
 import java.util.stream.Stream;
 import java.security.SecureRandom;
 
@@ -26,6 +26,7 @@ public class FormService implements IDBService {
     private final QuestionRepository questions;
     private final QuestionOptionRepository questionOptions;
     private final SectionRepository sections;
+    private final SectionsRepository sectionList;
 
     private String uuid() {
         val random = new SecureRandom();
@@ -39,7 +40,7 @@ public class FormService implements IDBService {
 
     @Transactional
     public void drop() {
-        sections.deleteAll();
+        sectionList.deleteAll();
     }
 
     public Section section(String sectionTitle) {
@@ -47,9 +48,13 @@ public class FormService implements IDBService {
                 .orElseThrow(() -> notFound("form", sectionTitle));
     }
 
-    public List<Section> sections() {
-        val sort = Sort.by(Sort.Direction.ASC, "id");
-        return sections.findAll(sort);
+    public List<Sections> sections() {
+        return sectionList.findAll();
+    }
+
+    public Sections sectionsByName(String name) {
+        return sectionList.findByName(name)
+            .orElseThrow(() -> notFound("sections", name));
     }
 
     // 存储Question中的其他相关实体，确保存储q之前它的所有属性都是数据库中存在的

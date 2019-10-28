@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
 import com.tjh.riskfactor.entity.form.Section;
+import com.tjh.riskfactor.entity.form.Sections;
 import com.tjh.riskfactor.service.FormService;
 
 import java.util.List;
@@ -16,9 +17,14 @@ public class FormController {
 
     private final FormService service;
 
-    @GetMapping
-    List<Section> getSections() {
+    @GetMapping("/sections")
+    List<Sections> getSections() {
         return service.sections();
+    }
+
+    @GetMapping("/sections/{name}")
+    Sections getSectionsByName(@PathVariable String name) {
+        return service.sectionsByName(name);
     }
 
     @GetMapping("/section/{title}")

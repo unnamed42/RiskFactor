@@ -9,20 +9,24 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import com.tjh.riskfactor.entity.Group;
 import com.tjh.riskfactor.entity.User;
 import com.tjh.riskfactor.entity.form.Section;
+import com.tjh.riskfactor.entity.form.Sections;
 import com.tjh.riskfactor.repo.GroupRepository;
 import com.tjh.riskfactor.repo.SaveGuardRepository;
 import com.tjh.riskfactor.repo.UserRepository;
-import org.springframework.transaction.annotation.Transactional;
+import com.tjh.riskfactor.repo.SectionsRepository;
 
 import java.io.IOException;
 import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Stream;
+
+import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toSet;
 
 @Service
@@ -34,6 +38,7 @@ public class DataService {
 
     private final UserRepository users;
     private final GroupRepository groups;
+    private final SectionsRepository sections;
     private final SaveGuardRepository guards;
     private final PasswordEncoder encoder;
 
@@ -41,12 +46,17 @@ public class DataService {
         void run() throws T;
     }
 
+    @Transactional
     private void initForms() throws IOException {
         val mapper = new ObjectMapper(new YAMLFactory());
-        val type = new TypeReference<List<Section>>() {};
+        val type = new TypeReference<List<Sections>>() {};
         try(val is = TypeReference.class.getResourceAsStream("/data/sections.yml")) {
-            List<Section> sections = mapper.readValue(is, type);
-            sections.forEach(forms::saveSection);
+            List<Sections> sectionLists = mapper.readValue(is, type);
+            for(val sections : sectionLists) {
+                val list = sections.getSections().stream().map(forms::saveSection)
+                    .collect(toList());
+                this.sections.save(sections.setSections(list));
+            }
         }
     }
 
