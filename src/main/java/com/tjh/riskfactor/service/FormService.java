@@ -11,7 +11,6 @@ import com.tjh.riskfactor.repo.QuestionRepository;
 import com.tjh.riskfactor.repo.QuestionOptionRepository;
 import com.tjh.riskfactor.repo.SectionRepository;
 import com.tjh.riskfactor.repo.SectionsRepository;
-
 import static com.tjh.riskfactor.error.ResponseErrors.notFound;
 
 import java.util.Base64;
@@ -43,9 +42,55 @@ public class FormService implements IDBService {
         sectionList.deleteAll();
     }
 
+    // 沿问题路径生成唯一key
+    private static String key(String parent, Question q) {
+        if(parent == null) return null;
+        val field = q.getField();
+        if(field == null) {
+            // 类型为LIST的问题，本身在路径中无意义，作为包装存在，可以不参与生成
+            // 对于这类Question，路径处理中跳过，即生成key为 [父问题field]/[LIST子问题field]
+            if(q.getType() == QuestionType.LIST)
+                return parent;
+            // 其余为null
+            return null;
+        }
+        return String.format("%s/%s", parent, field);
+    }
+
+    private String assignKey(String parent, Question q) {
+        String key = key(parent, q);
+        // 没有field的Question，即不重要的Question，随机生成field（用于前端的唯一key）
+        if(key == null || q.getType() == QuestionType.LIST)
+            q.setField(uuid());
+        else
+            q.setField(key);
+        return key;
+    }
+
+    // 存储Question中的其他相关实体，确保存储q之前它的所有属性都是数据库中存在的
+    @Transactional
+    Question assignFields(Question q, String parent) {
+        // 默认type为CHOICE
+        val type = q.getType();
+        if(type == null)
+            q.setType(QuestionType.CHOICE);
+        // 带有message但是没有设置required的Question，其required设置为true
+        val option = q.getOption();
+        if(option != null)
+            q.setOption(questionOptions.save(option));
+        val key = assignKey(parent, q);
+        // 递归设置子问题的缺失属性
+        val list = q.getList();
+        if(list != null && list.size() != 0) {
+            Stream<Question> subq = list.stream().map(q0 -> this.assignFields(q0, key));
+            q.setList(questions.saveAll(subq::iterator));
+        }
+        return q;
+    }
+
     public Section section(String sectionTitle) {
         return sections.findByTitle(sectionTitle)
-                .orElseThrow(() -> notFound("form", sectionTitle));
+               .orElseThrow(() -> notFound("form", sectionTitle));
     }
 
     public List<Sections> sections() {
@@ -54,32 +99,7 @@ public class FormService implements IDBService {
 
     public Sections sectionsByName(String name) {
         return sectionList.findByName(name)
-            .orElseThrow(() -> notFound("sections", name));
-    }
-
-    // 存储Question中的其他相关实体，确保存储q之前它的所有属性都是数据库中存在的
-    @Transactional
-    Question assignFields(Question q, String parent) {
-        // 带有message但是没有设置required的Question，其required设置为true
-        val option = q.getOption();
-        if(option != null) {
-            if(option.getMessage() != null && !option.getMessage().isEmpty())
-                option.setRequired(true);
-            q.setOption(questionOptions.save(option));
-        }
-        val field = q.getField();
-        // 没有field的Question，即不重要的Question，随机生成field（用于前端的唯一key）
-        // 此外情况，沿问题间的包含关系递归设置为 [父问题field]/[子问题field] 以确保唯一性
-        val curr = field == null || parent == null ? null :
-                        String.format("%s/%s", parent, field);
-        q.setField(curr == null ? uuid() : curr);
-        // 递归设置子问题的缺失属性
-        val list = q.getList();
-        if(list != null && list.size() != 0) {
-            Stream<Question> subq = list.stream().map(q0 -> this.assignFields(q0, curr));
-            q.setList(questions.saveAll(subq::iterator));
-        }
-        return q;
+               .orElseThrow(() -> notFound("sections", name));
     }
 
     public Question saveQuestion(Question q) {

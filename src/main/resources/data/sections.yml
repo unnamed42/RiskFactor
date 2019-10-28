@@ -14,12 +14,12 @@
         field: birthday
         type: DATE
         option:
-          message: 请输入出生日期
+          required: true
       - label: 性别
         field: gender
         type: SINGLE_SELECT
         option:
-          message: 请选择性别
+          required: true
           placeholder: 性别
         list:
           - label: 男
@@ -28,7 +28,7 @@
         field: ethnic
         type: SINGLE_SELECT
         option:
-          message: 请选择民族
+          required: true
           placeholder: 输入拼音可筛选
           filterKey: key
         list:
@@ -208,17 +208,17 @@
             field: province
             type: TEXT
             option:
-              message: 请输入籍贯省
+              required: true
           - label: 市
             field: city
             type: TEXT
             option:
-              message: 请输入籍贯市
+              required: true
       - label: 职业
         field: job
         type: SINGLE_SELECT
         option:
-          message: 请选择职业
+          required: true
         list:
           - label: 退（离）休人员
           - label: 国家公务员
@@ -240,28 +240,28 @@
             field: province
             type: TEXT
             option:
-              message: 请输入地址-省
+              required: true
           - label: 市
             field: city
             type: TEXT
             option:
-              message: 请输入地址-市
+              required: true
           - label: 县
             field: county
             type: TEXT
             option:
-              message: 请输入地址-县
+              required: true
       - label: 身高（米）
         field: height
         type: NUMBER
         option:
-          message: 请输入身高
+          required: true
           placeholder: 身高
       - label: 体重（千克）
         field: weight
         type: NUMBER
         option:
-          message: 请输入体重
+          required: true
           placeholder: 体重
   - title: 现病史
     questions:
@@ -269,12 +269,12 @@
         field: treatmentTime
         type: DATE
         option:
-          message: 请输入就诊或入院日期
+          required: true
       - label: 发病时间
         field: onsetTime
         type: DATE
         option:
-          message: 请输入发病时间
+          required: true
           detail: 精确到年，月份或日期未知用1月1日代替
       - label: 就诊症状
         field: symtoms
@@ -289,7 +289,7 @@
                 field: duration
                 type: NUMBER
                 option:
-                  message: 请输入持续时间
+                  required: true
                 list:
                   - field: unit
                     type: SINGLE_SELECT
@@ -309,7 +309,7 @@
                 field: duration
                 type: NUMBER
                 option:
-                  message: 请输入持续时间
+                  required: true
                 list:
                   - field: unit
                     type: SINGLE_SELECT
@@ -329,7 +329,7 @@
                 field: duration
                 type: NUMBER
                 option:
-                  message: 请输入持续时间
+                  required: true
                 list:
                   - field: unit
                     type: SINGLE_SELECT
@@ -349,7 +349,7 @@
                 field: duration
                 type: NUMBER
                 option:
-                  message: 请输入持续时间
+                  required: true
                 list:
                   - field: unit
                     type: SINGLE_SELECT
@@ -369,7 +369,7 @@
                 field: duration
                 type: NUMBER
                 option:
-                  message: 请输入持续时间
+                  required: true
                 list:
                   - field: unit
                     type: SINGLE_SELECT
@@ -389,7 +389,7 @@
                 field: duration
                 type: NUMBER
                 option:
-                  message: 请输入持续时间
+                  required: true
                 list:
                   - field: unit
                     type: SINGLE_SELECT
@@ -409,7 +409,7 @@
                 field: duration
                 type: NUMBER
                 option:
-                  message: 请输入持续时间
+                  required: true
                 list:
                   - field: unit
                     type: SINGLE_SELECT
@@ -428,13 +428,13 @@
               - field: name
                 type: TEXT
                 option:
-                  message: 请输入症状
+                  required: true
                   placeholder: 症状名称
               - label: 持续时间
                 field: duration
                 type: NUMBER
                 option:
-                  message: 请输入持续时间
+                  required: true
                 list:
                   - field: unit
                     type: SINGLE_SELECT
@@ -463,7 +463,7 @@
               - type: TEXT
                 field: name
                 option:
-                  message: 请输入症状
+                  required: true
                   placeholder: 症状名称
   - title: 既往病史
     questions:
@@ -477,7 +477,7 @@
           - field: severity
             type: SINGLE_CHOICE
             option:
-              message: 请选择急性/慢性
+              required: true
             list:
               - label: 急性
               - label: 慢性
@@ -493,14 +493,14 @@
               - field: severity
                 type: YESNO_CHOICE
                 option:
-                  message: 请选择急性/慢性
+                  required: true
                   placeholder: 急性/慢性
                   detail: 急性/慢性
               - field: size
                 label: 大小
                 type: NUMBER
                 option:
-                  message: 请填写大小
+                  required: true
                   detail: 大小请填写二维值，单位：毫米
       - label: 胆囊息肉
         field: gallbladderPolyps
@@ -514,14 +514,14 @@
               - field: severity
                 type: YESNO_CHOICE
                 option:
-                  message: 请选择急性/慢性
+                  required: true
                   placeholder: 急性/慢性
                   detail: 急性/慢性
               - field: size
                 label: 大小
                 type: NUMBER
                 option:
-                  message: 请填写大小
+                  required: true
                   detail: 大小请填写二维值，单位：毫米
       - label: 胆管结石
         field: bileDuctStone
@@ -533,7 +533,7 @@
           - field: type
             type: YESNO_CHOICE
             option:
-              message: 请选择类型
+              required: true
               detail: 肝内胆管结石/肝外胆管结石
       - label: Mirrizi综合征
         field: mirrizi
@@ -555,7 +555,7 @@
           - field: type
             type: MULTI_CHOICE
             option:
-              message: 请选择类型
+              required: true
             list:
               - label: 胆道蛔虫
               - label: 华支睾吸虫
@@ -574,7 +574,7 @@
           - field: types
             type: MULTI_CHOICE
             option:
-              message: 请选择类型
+              required: true
             list:
               - label: 高血压
               - label: 糖尿病
@@ -582,7 +582,7 @@
                 field: name
                 type: TEXT
                 option:
-                  message: 请填写病症名称
+                  required: true
       - label: 手术史
         field: surgicalHistory
         type: LIST_APPENDABLE
@@ -591,13 +591,13 @@
             field: date
             type: DATE
             option:
-              message: 请选择手术时间
+              required: true
               detail: 精确到年，如月份和日期未知，用1月或1日代替
           - label: 手术名称
             field: name
             type: TEXT
             option:
-              message: 请填写手术名称
+              required: true
       - label: 其他
         field: other
         type: LIST_APPENDABLE
@@ -606,7 +606,7 @@
             field: name
             type: TEXT
             option:
-              message: 请填写病症名称
+              required: true
   - title: 个人史
     questions:
       - label: 吸烟
@@ -620,12 +620,12 @@
             type: NUMBER
             field: count
             option:
-              message: 请输入每日吸烟数量
+              required: true
           - label: 年
             type: NUMBER
             field: year
             option:
-              message: 请输入吸烟持续年数
+              required: true
       - label: 饮酒
         field: drinking
         type: YESNO_CHOICE
@@ -637,12 +637,12 @@
             type: NUMBER
             field: count
             option:
-              message: 请输入每日饮酒数量
+              required: true
           - label: 年
             type: NUMBER
             field: year
             option:
-              message: 请输入饮酒持续年数
+              required: true
       - label: 饮水
         type: MULTI_CHOICE
         field: water

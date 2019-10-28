@@ -72,7 +72,4 @@ public class QuestionOption {
     // 占位文字，一般是输入类控件需要
     private String placeholder;
 
-    // 表单验证不通过时的错误提示信息
-    private String message;
-
 }
