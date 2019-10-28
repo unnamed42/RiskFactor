@@ -12,8 +12,11 @@ import { QYesNo } from "./QYesNo";
 import { QChoice } from "./QChoice";
 import { QCheckbox } from "./QCheckbox";
 import { QDynamic } from "./QDynamic";
+import { QImmutable } from "./QImmutable";
 
 import { validationRules } from "./util";
+
+import { assign } from "lodash";
 
 import "./index.less";
 
@@ -27,6 +30,7 @@ const renderer = (type: Question["type"]) => {
     case "YESNO_CHOICE": return QYesNo;
     case "SINGLE_CHOICE": return QChoice;
     case "MULTI_CHOICE": return QCheckbox;
+    case "IMMUTABLE": return QImmutable;
     default: return forwardRef(() => <div />);
   }
 };
@@ -61,7 +65,7 @@ export const Question = forwardRef<any, P>(({ formItemProps, children, decorator
   const Renderer = renderer(type);
   const child = <Renderer schema={schema} ref={ref} onChange={onChange} />;
 
-  return <Form.Item label={label} {...layout} {...formItemProps}>
+  return <Form.Item label={label} {...assign(layout, formItemProps)}>
     {
       field.includes("/") && type !== "LIST" ?
         getFieldDecorator(field, { ...rules, ...decorator })(child) :
