@@ -14,7 +14,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 
 import com.tjh.riskfactor.entity.Group;
 import com.tjh.riskfactor.entity.User;
-import com.tjh.riskfactor.entity.form.Section;
 import com.tjh.riskfactor.entity.form.Sections;
 import com.tjh.riskfactor.repo.GroupRepository;
 import com.tjh.riskfactor.repo.SaveGuardRepository;
@@ -47,7 +46,7 @@ public class DataService {
     }
 
     @Transactional
-    private void initForms() throws IOException {
+    void initForms() throws IOException {
         val mapper = new ObjectMapper(new YAMLFactory());
         val type = new TypeReference<List<Sections>>() {};
         try(val is = TypeReference.class.getResourceAsStream("/data/sections.yml")) {

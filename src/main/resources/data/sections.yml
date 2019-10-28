@@ -1,3 +1,29 @@
+# 编写规则：
+# type === MULTI_CHOICE
+#     此类问题下允许某些选项为非CHOICE，但只允许TEXT类型
+#     当某个选项为TEXT时，最终问题回复中被选项包含填写内容
+#     该问题的回复为数组
+# type === YESNO_CHOICE
+#     当选为否时，回复内容为false
+#     当选为是时，回复内容为true
+#     当选为是，且enabler打开时，回复内容为所有子问题内容的集合（该表现类似于LIST）
+#     当选为否，且enalber打开时，回复内容为null
+# type === LIST
+#     该问题的回复内容为 { (子问题field: 子问题内容)... }
+# type === TEXT || NUMBER
+#     内容为string
+# type === LIST_APPENDABLE
+#     该类问题的list为问题模板，应当视作一个LIST类型，子问题集为list的问题
+#       为了简化设计，将这个LIST问题省去
+#     回复内容为数组长度，0 or undefined
+# type === DATE
+#     内容为string, 格式yyyy-MM-dd
+# type === MULTI_SELECT
+#     内容为半角逗号分隔的字符串，每个区块是所选项目的label
+# type === SINGLE_SELECT
+#     内容为字符串，即所选项目的label
+# type === IMMUTABLE
+#     无回复，其内容为option.placeholder
 - name: 基本信息
   creator: admin
   ctime: 2019-10-28

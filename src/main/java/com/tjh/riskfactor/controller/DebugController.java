@@ -17,7 +17,7 @@ import java.io.IOException;
 @RestController
 @RequestMapping("/debug")
 @RequiredArgsConstructor
-@PreAuthorize("@e.isRoot(principal)")
+@PreAuthorize("@e.isRoot()")
 public class DebugController {
 
     private final DataService data;

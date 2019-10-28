@@ -25,13 +25,13 @@ public class UserController {
     }
 
     @DeleteMapping("/{username}")
-    @PreAuthorize("#username == principal.username or @e.isRoot(principal)")
+    @PreAuthorize("@e.canManage(#username)")
     void deleteUser(@PathVariable String username) {
         service.deleteUser(username);
     }
 
     @PostMapping("/{username}")
-    @PreAuthorize("@e.isRoot(principal)")
+    @PreAuthorize("@e.canManage(#username)")
     void addUser(@PathVariable String username, @RequestBody User user) {
         if(user.getUsername() == null)
             user.setUsername(username);
@@ -39,7 +39,7 @@ public class UserController {
     }
 
     @PostMapping("/{username}/password")
-    @PreAuthorize("#username == principal.username or @e.isRoot(principal)")
+    @PreAuthorize("@e.canManage(#username)")
     void changePassword(@PathVariable String username, @RequestBody Map<String, String> body) {
         val password = body.get("password");
         if(password == null)
