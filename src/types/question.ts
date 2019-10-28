@@ -26,6 +26,9 @@ export interface Section {
 }
 
 export interface Sections {
+  name: string;
+  creator: string;
+  ctime: string;
   sections: Section[];
 }
 

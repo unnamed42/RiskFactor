@@ -11,7 +11,7 @@ export const AppRoutes: FC = () => (
   <Suspense fallback={<PageLoading />}>
     <Route exact path="/" component={() => (<Redirect to="/overview" />)} />
     <PrivateRoute path="/overview" component={Overview} />
-    <PrivateRoute path="/forms" component={Forms} />
+    <PrivateRoute path="/forms/:title" component={Forms} />
     <PrivateRoute path="/success" component={Success} />
   </Suspense>
 );

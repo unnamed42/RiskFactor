@@ -1,53 +1,67 @@
 import React, { FC, useState, useEffect } from "react";
+import { withRouter, RouteComponentProps } from "react-router";
 
 import { Steps, Button } from "antd";
 
 import { QForm } from "./QForm";
-import { getSections } from "@/api/forms";
+import { PageLoading } from "@/components";
+import * as api from "@/api/forms";
 
 interface S {
   curr: number;
   data: Section[];
 }
 
-export const Forms: FC = () => {
+interface ParamType {
+  title: string;
+}
+
+type P = RouteComponentProps<ParamType>;
+
+export const Forms = withRouter<P, FC<P>>(({ match }) => {
 
   const [state, setState] = useState<S>();
 
-  const loadForms = () =>
-    getSections().then(({ sections }) => setState({ curr: 0, data: sections }));
-
-  useEffect(() => { loadForms(); }, []);
+  const { title } = match.params;
 
   const prev = () => setState({ ...state!, curr: state!.curr - 1 });
   const next = () => setState({ ...state!, curr: state!.curr + 1 });
 
+  useEffect(() => {
+    api.sectionsByName({ name: title }).then(({ sections }) =>
+      setState({ curr: 0, data: sections })
+    );
+  }, []);
+
+  if (!title || !state || !state.data)
+    return <PageLoading />;
+
   return <div>
-    <Steps current={state && state.curr} style={{marginBottom: "20px"}}>
+    <Steps current={state.curr} style={{marginBottom: "20px"}}>
       {
-        state && state.data.map(({ title }) =>
+        state.data.map(({ title }) =>
           <Steps.Step key={title} title={title}/>
         )
       }
     </Steps>
-    <QForm source={state && state.data[state.curr]} />
+    <QForm source={state.data[state.curr]} />
     <div className="step-navigation">
       {
-        state && state.curr < state.data.length - 1 && (
+        state.curr < state.data.length - 1 && (
           <Button type="primary" onClick={next}>
             下一步
           </Button>
         )
       }
       {
-        state && state.curr === state.data.length - 1 && (
+        state.curr === state.data.length - 1 && (
           <Button type="primary" onClick={() => console.log("done")}>
             完成
           </Button>
         )
       }
       {
-        state && state.curr > 0 && (
+        state.curr > 0 && (
           <Button style={{ marginLeft: 8 }} onClick={prev}>
             上一步
           </Button>
@@ -55,6 +69,6 @@ export const Forms: FC = () => {
       }
     </div>
   </div>;
-};
+});
 
 export default Forms;
