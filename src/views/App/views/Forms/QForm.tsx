@@ -11,13 +11,26 @@ type P = FormComponentProps & {
   source?: Section;
 };
 
+const repackAnswer = (values: any) => {
+  const ret: any = {};
+  Object.keys(values).forEach(key => {
+    const prop = values[key];
+    if ("field" in prop) {
+      const value = prop.value;
+      ret[key] = Array.isArray(value) ? value.map(repackAnswer) : value;
+    } else
+      ret[key] = repackAnswer(prop);
+  });
+  return ret;
+};
+
 const QFormD: FC<P> = ({ source, form }) => {
 
   const submit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     form.validateFields((err, values) => {
       if (err) return;
-      console.log("success");
+      console.log(repackAnswer(values));
     });
   };
 

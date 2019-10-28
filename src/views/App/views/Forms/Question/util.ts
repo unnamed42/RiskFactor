@@ -10,7 +10,7 @@ export const validationRules = ({ option }: Question): GetFieldDecoratorOptions 
     ret.rules = (ret.rules || []);
     ret.rules.push({
       required: true,
-      message: option.message
+      message: "该项必填"
     });
   }
 

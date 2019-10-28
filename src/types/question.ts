@@ -6,7 +6,6 @@ export interface QuestionOption {
   detail?: string;
   filterKey?: string;
   placeholder?: string;
-  message?: string;
 }
 
 export interface Question {

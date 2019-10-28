@@ -47,11 +47,16 @@ export const Question = forwardRef<any, P>((props, ref) => {
     wrapperCol: { xs: { span: 24 }, sm: { span: 20 } }
   };
 
+  const rules = validationRules(schema);
+  // antd getFieldDecorator supports nested field syntax
+  // preserve slash one for Component key
+  const nestedField = field.replace(/\//g, ".");
+
   return <Form.Item label={label} {...layout} {...(props as FormItemProps)}>
     {
-      getFieldDecorator(field, validationRules(schema))(
+      Object.keys(rules).length !== 0 ?
+        getFieldDecorator(nestedField, rules)(<Renderer schema={schema} ref={ref} />) :
         <Renderer schema={schema} ref={ref} />
-      )
     }
     {props.children}
   </Form.Item>;

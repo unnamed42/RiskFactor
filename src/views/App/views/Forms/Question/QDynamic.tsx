@@ -35,14 +35,15 @@ const QDynamicItem = forwardRef<any, ItemProps>((props, ref) => {
       onClick={() => props.onRemove(idx)}
     />
     {
-      list!.map(q =>
-        <Question key={`${q.field}[${idx}]`}
-          schema={q}
+      list!.map(q => {
+        const field = `${q.field}[${idx}]`;
+        const schema = { ...q, field };
+        return <Question key={field} schema={schema}
           value={value[q.field]}
           onChange={onChange} required={false}
           {...(idx === 0 ? undefined : noLabel)}
-        />
-      )
+        />;
+      })
     }
   </div>;
 });
@@ -81,7 +82,7 @@ export const QDynamic = forwardRef<any, QProps<any[]>>((props, ref) => {
     }
     <Form.Item {...noLabel}>
       <Button type="dashed" onClick={add} style={{width: "60%"}}>
-        <Icon type="plus">添加</Icon>
+        <Icon type="plus" />添加
       </Button>
     </Form.Item>
   </div>;
