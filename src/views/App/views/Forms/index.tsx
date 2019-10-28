@@ -1,9 +1,9 @@
-import React, { FC, useState, useEffect } from "react";
+import React, { FC, useState, useEffect, useRef } from "react";
 import { withRouter, RouteComponentProps } from "react-router";
 
-import { Steps, Button, Checkbox, Input } from "antd";
+import { Steps, Button } from "antd";
 
-import { QForm } from "./QForm";
+import { QForm, QFormD } from "./QForm";
 import { PageLoading } from "@/components";
 import * as api from "@/api/forms";
 
@@ -21,11 +21,21 @@ type P = RouteComponentProps<ParamType>;
 export const Forms = withRouter<P, FC<P>>(({ match }) => {
 
   const [state, setState] = useState<S>();
+  const form = useRef<QFormD>(null);
 
   const { title } = match.params;
 
-  const prev = () => setState({ ...state!, curr: state!.curr - 1 });
-  const next = () => setState({ ...state!, curr: state!.curr + 1 });
+  const page = (diff: number) => {
+    const { current } = form;
+    if (current == null)
+      return;
+    current.submit().then(({ errors }) => {
+      if (!errors && state)
+        setState({
+          ...state, curr: state.curr + diff
+        });
+    });
+  };
 
   useEffect(() => {
     api.sectionsByName({ name: title }).then(({ sections }) =>
@@ -44,11 +54,11 @@ export const Forms = withRouter<P, FC<P>>(({ match }) => {
         )
       }
     </Steps>
-    <QForm source={state.data[state.curr]} />
+    <QForm source={state.data[state.curr]} wrappedComponentRef={form}/>
     <div className="step-navigation">
       {
         state.curr < state.data.length - 1 && (
-          <Button type="primary" onClick={next}>
+          <Button type="primary" onClick={() => page(1)}>
             下一步
           </Button>
         )
@@ -62,7 +72,7 @@ export const Forms = withRouter<P, FC<P>>(({ match }) => {
       }
       {
         state.curr > 0 && (
-          <Button style={{ marginLeft: 8 }} onClick={prev}>
+          <Button style={{ marginLeft: 8 }} onClick={() => page(-1)}>
             上一步
           </Button>
         )
