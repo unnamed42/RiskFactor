@@ -1,32 +1,24 @@
 package com.tjh.riskfactor.service;
 
 import lombok.val;
-import lombok.Data;
 import lombok.RequiredArgsConstructor;
 
 import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.core.TreeNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.security.crypto.password.PasswordEncoder;
 
 import com.tjh.riskfactor.entity.Group;
 import com.tjh.riskfactor.entity.User;
-import com.tjh.riskfactor.entity.form.Sections;
-import com.tjh.riskfactor.repo.GroupRepository;
+import com.tjh.riskfactor.entity.form.Task;
 import com.tjh.riskfactor.repo.SaveGuardRepository;
-import com.tjh.riskfactor.repo.UserRepository;
-import com.tjh.riskfactor.repo.SectionsRepository;
 
-import java.io.IOException;
 import java.util.*;
-import java.util.function.Function;
-import java.util.stream.Stream;
-
-import static java.util.stream.Collectors.toList;
-import static java.util.stream.Collectors.toSet;
+import java.io.IOException;
 
 @Service
 @RequiredArgsConstructor
@@ -35,51 +27,44 @@ public class DataService {
     private final FormService forms;
     private final AccountService accounts;
 
-    private final UserRepository users;
-    private final GroupRepository groups;
-    private final SectionsRepository sections;
     private final SaveGuardRepository guards;
-    private final PasswordEncoder encoder;
+
+    private static final ObjectMapper mapper = new ObjectMapper(new YAMLFactory());
 
     private interface TRunnable<T extends Throwable> {
         void run() throws T;
     }
 
+    private static <T> T readTreeAsValue(TreeNode node, TypeReference<T> type) throws IOException {
+        return mapper.readValue(
+            mapper.treeAsTokens(node),
+            mapper.getTypeFactory().constructType(type)
+        );
+    }
+
     @Transactional
     void initForms() throws IOException {
-        val mapper = new ObjectMapper(new YAMLFactory());
-        val type = new TypeReference<List<Sections>>() {};
+        val type = new TypeReference<Task>() {};
         try(val is = TypeReference.class.getResourceAsStream("/data/sections.yml")) {
-            List<Sections> sectionLists = mapper.readValue(is, type);
-            for(val sections : sectionLists) {
-                val list = sections.getSections().stream().map(forms::saveSection)
-                    .collect(toList());
-                this.sections.save(sections.setSections(list));
-            }
+            val task = mapper.readValue(is, type);
+            if(task.getMtime() == null)
+                task.setMtime(new Date());
+            this.forms.saveTask(task);
         }
     }
 
     @Transactional
     void initAccounts() throws IOException {
-        val mapper = new ObjectMapper(new YAMLFactory());
-        val users = new HashMap<String, User>();
-
-        Function<List<String>, Set<User>> cvt = list -> Optional.ofNullable(list).map(List::stream)
-            .map(stream -> stream.map(users::get).collect(toSet()))
-            .orElse(Collections.emptySet());
+        val userListType = new TypeReference<List<User>>() {};
+        val groupListType = new TypeReference<List<Group>>() {};
 
         try(val is = ObjectMapper.class.getResourceAsStream("/data/user.yml")) {
-            val yaml = mapper.readValue(is, Yaml.class);
-            for (val u : yaml.users) {
-                val user = new User().setUsername(u.username)
-                           .setPassword(encoder.encode(u.password)).setEmail(u.email);
-                users.put(u.username, user);
-            }
-            Stream<Group> groups = yaml.groups.stream().map(g -> new Group().setName(g.name)
-                .setMembers(cvt.apply(g.members))
-                .setAdmins(cvt.apply(g.admins)));
-            this.users.saveAll(users.values());
-            this.groups.saveAll(groups::iterator);
+            val node = mapper.readTree(is); assert node.isObject();
+            val root = (ObjectNode)node;
+
+            val userList = readTreeAsValue(root.get("users"), userListType);
+            val groupList = readTreeAsValue(root.get("groups"), groupListType);
+            accounts.saveAll(userList, groupList);
         }
     }
 
@@ -105,23 +90,8 @@ public class DataService {
     }
 
     public void init() throws Exception {
-        guarded(this::initForms, 0);
-        guarded(this::initAccounts, 1);
+        guarded(this::initAccounts, 0);
+        guarded(this::initForms, 1);
     }
 
-}
-
-@Data class GroupYaml {
-    String name;
-    List<String> members;
-    List<String> admins;
-}
-@Data class UserYaml {
-    String username;
-    String password;
-    String email;
-}
-@Data class Yaml {
-    List<GroupYaml> groups;
-    List<UserYaml> users;
 }

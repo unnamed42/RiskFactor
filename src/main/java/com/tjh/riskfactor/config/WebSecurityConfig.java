@@ -3,6 +3,7 @@ package com.tjh.riskfactor.config;
 import lombok.val;
 import lombok.RequiredArgsConstructor;
 
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -40,6 +41,7 @@ import java.util.Collections;
 @RequiredArgsConstructor
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
+    @Qualifier("userDetailsService")
     private final JwtUserDetailsService service;
     private final JwtTokenFilter jwtFilter;
     private final ErrorResponder e;

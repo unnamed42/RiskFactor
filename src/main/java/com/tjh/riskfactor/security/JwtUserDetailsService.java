@@ -4,44 +4,37 @@ import lombok.val;
 import lombok.RequiredArgsConstructor;
 
 import org.springframework.stereotype.Service;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.tjh.riskfactor.entity.Group;
 import com.tjh.riskfactor.repo.UserRepository;
 
-import java.util.Collection;
-import java.util.stream.Collectors;
-
-@Service
+@Service("userDetailsService")
 @RequiredArgsConstructor
 public class JwtUserDetailsService implements UserDetailsService {
 
     private final UserRepository users;
 
-    private Collection<? extends GrantedAuthority> toAuthorities(Collection<Group> groupNames) {
-        return groupNames.stream().map(Group::getName)
-                .map(SimpleGrantedAuthority::new).collect(Collectors.toList());
-    }
-
     @Override
     @Transactional(readOnly = true)
-    public UserDetails loadUserByUsername(String username) {
-        val user = users.findByUsername(username).orElseThrow(() -> {
-            val message = String.format("user [%s] not found", username);
+    public UserDetails loadUserByUsername(String id) {
+        val user = users.findById(Integer.valueOf(id)).orElseThrow(() -> {
+            val message = String.format("user with id [%s] not found", id);
             return new UsernameNotFoundException(message);
         });
-        val authorities = toAuthorities(user.getGroups());
-        return User.withUsername(user.getUsername())
-                .password(user.getPassword())
-                .accountExpired(false)
-                .accountLocked(user.disabled())
-                .authorities(authorities).build();
+
+        val builder = User.withUsername(id).password(user.getPassword())
+            .accountExpired(false);
+
+        users.findGroupById(Integer.valueOf(id)).ifPresent(group -> {
+            builder.accountLocked(group.getName().equals("nobody"))
+                .authorities(group.getName());
+        });
+
+        return builder.build();
     }
 
 }

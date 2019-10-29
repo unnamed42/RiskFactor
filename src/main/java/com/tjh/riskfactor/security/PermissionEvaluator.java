@@ -6,8 +6,8 @@ import org.springframework.stereotype.Component;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+
+import java.security.Principal;
 
 @Component
 public class PermissionEvaluator {
@@ -16,22 +16,16 @@ public class PermissionEvaluator {
         return SecurityContextHolder.getContext().getAuthentication();
     }
 
-    private static UserDetails principal() {
-        val auth = authentication();
-        if(!(auth instanceof UsernamePasswordAuthenticationToken))
-            throw new RuntimeException("authentication actual type is not correct");
-        return (UserDetails)(auth.getPrincipal());
-    }
-
     public boolean isRoot() {
-        return principal().getAuthorities().stream().map(GrantedAuthority::getAuthority)
+        return authentication().getAuthorities().stream().map(GrantedAuthority::getAuthority)
                 .anyMatch(authority -> authority.equals("root"));
     }
 
     public boolean canManage(String username) {
-        val user = principal();
-        if(user.getUsername().equals(username))
+        val user = (Principal)authentication().getPrincipal();
+        if(user.getName().equals(username))
             return true;
         return isRoot();
     }
+
 }

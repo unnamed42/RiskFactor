@@ -1,5 +1,6 @@
 package com.tjh.riskfactor.entity;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
@@ -9,6 +10,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import javax.persistence.*;
 
+import java.util.List;
 import java.util.Set;
 
 @Data @Entity
@@ -33,6 +35,10 @@ public class Group {
     @ToString.Exclude
     private Set<User> members;
 
+    @Transient
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+    private List<String> memberNames;
+
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.DETACH)
     @JoinTable(name = "group_admins",
         joinColumns = @JoinColumn(name = "admin"),
@@ -41,5 +47,9 @@ public class Group {
     @JsonIgnore
     @ToString.Exclude
     private Set<User> admins;
+
+    @Transient
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+    private List<String> adminNames;
 
 }

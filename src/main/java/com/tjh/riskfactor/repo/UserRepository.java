@@ -1,6 +1,8 @@
 package com.tjh.riskfactor.repo;
 
+import com.tjh.riskfactor.entity.Group;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import com.tjh.riskfactor.entity.User;
@@ -12,12 +14,9 @@ import java.util.Set;
 @Repository
 public interface UserRepository extends JpaRepository<User, Integer> {
 
-    Optional<User> findByUsername(String username);
-
-    Set<User> findByUsernameIn(Collection<String> names);
-
-    boolean existsByUsername(String username);
-
-    void deleteByUsername(String username);
+    @Query(nativeQuery = true,
+        value = "select g from `group_members` m, `group` g where m.uid = :id and m.gid = g.id"
+    )
+    Optional<Group> findGroupById(Integer id);
 
 }

@@ -10,13 +10,15 @@ import com.tjh.riskfactor.entity.form.*;
 import com.tjh.riskfactor.repo.QuestionRepository;
 import com.tjh.riskfactor.repo.QuestionOptionRepository;
 import com.tjh.riskfactor.repo.SectionRepository;
-import com.tjh.riskfactor.repo.SectionsRepository;
+import com.tjh.riskfactor.repo.TaskRepository;
+
 import static com.tjh.riskfactor.error.ResponseErrors.notFound;
 
 import java.util.Base64;
 import java.util.List;
 import java.util.stream.Stream;
 import java.security.SecureRandom;
+import static java.util.stream.Collectors.toList;
 
 @Service
 @RequiredArgsConstructor
@@ -25,7 +27,9 @@ public class FormService implements IDBService {
     private final QuestionRepository questions;
     private final QuestionOptionRepository questionOptions;
     private final SectionRepository sections;
-    private final SectionsRepository sectionList;
+    private final TaskRepository tasks;
+
+    private final AccountService accounts;
 
     private String uuid() {
         val random = new SecureRandom();
@@ -39,7 +43,7 @@ public class FormService implements IDBService {
 
     @Transactional
     public void drop() {
-        sectionList.deleteAll();
+        tasks.deleteAll();
     }
 
     // 沿问题路径生成唯一key
@@ -93,26 +97,25 @@ public class FormService implements IDBService {
                .orElseThrow(() -> notFound("form", sectionTitle));
     }
 
-    public List<Sections> sections() {
-        return sectionList.findAll();
-    }
-
-    public Sections sectionsByName(String name) {
-        return sectionList.findByName(name)
-               .orElseThrow(() -> notFound("sections", name));
-    }
-
     public Question saveQuestion(Question q) {
         return questions.save(assignFields(q, null));
     }
 
     @Transactional
     public Section saveSection(Section section) {
+        if(section.getId() != null)
+            return section;
+        if(section.getSections() != null) {
+            val ss = section.getSections().stream()
+                 .map(this::saveSection).collect(toList());
+            return sections.save(section.setSections(ss));
+        }
         val qs = section.getQuestions();
         // 将Section的id当作初始parent
         // 在Section未存入数据库之前，断开Questions存入数据库，来获取一个id
         if(section.getId() == null) {
             section.setQuestions(null);
+            section.setSections(null);
             section = sections.save(section);
         }
         val parent = section.getId().toString();
@@ -121,8 +124,16 @@ public class FormService implements IDBService {
         return sections.save(section);
     }
 
-    public Section saveSection(Section section, String title) {
-        return saveSection(section.setTitle(title));
+    @Transactional
+    public Task saveTask(Task task) {
+        task.setGroup(accounts.findGroupByName(task.getCenter()));
+        task.setSections(task.getSections().stream()
+                         .map(this::saveSection).collect(toList()));
+        return tasks.save(task);
+    }
+
+    public List<Task> availableTasks(String username) {
+        return tasks.findAll();
     }
 
 }
