@@ -4,13 +4,12 @@ import { useSelector } from "react-redux";
 
 import { StoreType } from "@/redux";
 
-export const PrivateRoute: FC<RouteProps> = ({ component, ...rest }) => {
+export const PrivateRoute: FC<RouteProps> = ({ component: Component, render, ...rest }) => {
   const token = useSelector((state: StoreType) => state.auth.token);
-  const Component = component!;
   return (
     <Route {...rest}
       render={ props => token !== "" ?
-        (<Component {...props}/>):
+        (Component && <Component {...props}/>) || (render && render(props)):
         (<Redirect exact to={{ pathname: "/login", state: { from: props.location } }}/>)
       }
     />

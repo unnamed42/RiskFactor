@@ -6,22 +6,21 @@ import { CheckboxValueType } from "antd/lib/checkbox/Group";
 import { QProps } from ".";
 import { QList } from "./QList";
 
-export const QCheckbox = forwardRef<any, QProps<string[]>>((props, ref) => {
+export const QCheckbox = forwardRef<any, QProps<string[]>>(({ schema, onChange, value }, ref) => {
 
-  const { schema: { option, list } } = props;
+  const { selected, list } = schema;
+  const defaultValue = value || (selected || "").split(",");
 
-  const defaultValue = ((option && option.defaultSelected) || "").split(",");
+  const [chosen, setChosen] = useState(defaultValue);
 
-  const [selected, setSelected] = useState(props.value || defaultValue);
-
-  const onChange = (values: CheckboxValueType[]) => {
-    const value = values as string[];
-    setSelected(value);
-    if (props.onChange)
-      props.onChange(value);
+  const changed = (values: CheckboxValueType[]) => {
+    const strValues = values as string[];
+    setChosen(strValues);
+    if (onChange)
+      onChange(strValues);
   };
 
-  return <Checkbox.Group ref={ref} value={selected} onChange={onChange}>
+  return <Checkbox.Group ref={ref} value={chosen} onChange={changed}>
     {
       list!.map(({ label, list }, idx) => {
         if (!label)
@@ -30,7 +29,7 @@ export const QCheckbox = forwardRef<any, QProps<string[]>>((props, ref) => {
           <Checkbox key={idx} value={label}>
             {label}
             {
-              list && selected.includes(label) && <QList schema={{
+              list && chosen.includes(label) && <QList schema={{
                 field: "", type: "LIST", list
               }}/>
             }

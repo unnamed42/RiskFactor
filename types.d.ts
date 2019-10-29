@@ -7,10 +7,10 @@ declare global {
 
 import * as q from "@/types/question";
 declare global {
-  type QuestionOption = Readonly<q.QuestionOption>;
   type Question = Readonly<q.Question>;
   type Section = Readonly<q.Section>;
-  type Sections = Readonly<q.Sections>;
+  type Task = Readonly<q.Task>;
+  type AnswerBrief = Readonly<q.AnswerBrief>;
 }
 
 // utility types

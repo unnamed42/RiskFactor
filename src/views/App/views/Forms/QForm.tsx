@@ -45,7 +45,7 @@ export class QFormD extends Component<P> {
     return <Form layout="horizontal">
       <FormContext.Provider value={form}>
         {
-          source.questions.map(q =>
+          source.questions && source.questions.map(q =>
             <Question schema={q} key={q.field} />
           )
         }

@@ -9,7 +9,7 @@ export const login = async (payload: LoginPayload) =>
   await request<ApiToken>({ url: "/auth", data: payload, method: "POST" });
 
 export const tokenInfo = async () =>
-  await request<ApiTokenInfo>({ url: "/auth", method: "GET" });
+  await request<ApiTokenInfo>({ url: "/auth" });
 
 /**
  * 退出登录不需要与后台API交互，直接在本地删除token即可

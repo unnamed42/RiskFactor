@@ -5,7 +5,7 @@ import { Steps, Button } from "antd";
 
 import { QForm, QFormD } from "./QForm";
 import { PageLoading } from "@/components";
-import * as api from "@/api/forms";
+import * as api from "@/api/task";
 
 interface S {
   curr: number;
@@ -15,7 +15,7 @@ interface S {
 }
 
 interface ParamType {
-  title: string;
+  id: string;
 }
 
 type P = RouteComponentProps<ParamType>;
@@ -25,7 +25,7 @@ export const Forms = withRouter<P, FC<P>>(({ match }) => {
   const [state, setState] = useState<S>();
   const form = useRef<QFormD>(null);
 
-  const { title } = match.params;
+  const { id } = match.params;
 
   const navigate = (diff: number) =>
     ({ ...state!, curr: state!.curr + diff });

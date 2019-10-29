@@ -4,35 +4,33 @@ import { Select } from "antd";
 
 import { QProps } from ".";
 
-export const QSelect = forwardRef<Select, QProps<any | any[]>>((props, ref) => {
-  const { schema: { option, list, type, field } } = props;
+export const QSelect = forwardRef<Select, QProps<any | any[]>>(({ schema, onChange, value }, ref) => {
+  const { type, list, field, filterKey, placeholder } = schema;
 
-  if (!option)
-    throw new Error(`QSelect ${field} has no option`);
   if (!list)
     throw new Error(`QSelect ${field} has no list`);
 
-  const [selected, setSelected] = useState(props.value);
+  const [selected, setSelected] = useState(value);
 
   const inputFilter = (input: string, option: ReactElement) =>
     option.props["data-key"]!.toString().startsWith(input);
 
-  const onChange = (value: any) => {
+  const changed = (value: any) => {
     setSelected(value);
-    if (props.onChange)
-      props.onChange(value);
+    if (onChange)
+      onChange(value);
   };
 
   return <Select ref={ref}
-    showSearch={!!(option.filterKey)}
-    placeholder={option.placeholder}
-    filterOption={option.filterKey ? inputFilter : undefined}
+    showSearch={!!filterKey}
+    placeholder={placeholder}
+    filterOption={filterKey ? inputFilter : undefined}
     mode={type === "MULTI_SELECT" ? "multiple" : undefined}
-    value={selected} onChange={onChange}
+    value={selected} onChange={changed}
   >
     {
-      list.map(({ label, option, field }) => {
-        return <Select.Option key={field} value={label} data-key={option && option.filterKey}>
+      list.map(({ label, filterKey, field }) => {
+        return <Select.Option key={field} value={label} data-key={filterKey}>
           {label}
         </Select.Option>;
       })

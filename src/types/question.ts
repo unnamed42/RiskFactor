@@ -1,32 +1,40 @@
-export interface QuestionOption {
-  required?: boolean;
-  enabler?: boolean;
-  prefixPostfix?: boolean;
-  defaultSelected?: string;
-  detail?: string;
-  filterKey?: string;
-  placeholder?: string;
-}
+export type QType = "TEXT" | "NUMBER" | "DATE" | "CHOICE" | "IMMUTABLE" |
+  "YESNO_CHOICE" | "LIST" | "LIST_APPENDABLE" |
+  "MULTI_CHOICE" | "SINGLE_CHOICE" |
+  "MULTI_SELECT" | "SINGLE_SELECT";
 
 export interface Question {
-  type: "TEXT" | "NUMBER" | "DATE" | "CHOICE" | "IMMUTABLE" |
-      "YESNO_CHOICE" | "LIST" | "LIST_APPENDABLE" |
-      "MULTI_CHOICE" | "SINGLE_CHOICE" |
-      "MULTI_SELECT" | "SINGLE_SELECT";
+  type: QType;
   field: string;
   label?: string;
-  option?: QuestionOption;
   list?: Question[];
+
+  required?: boolean;
+  isEnabler?: boolean;
+  yesno?: string;
+  addonPosition?: "prefix" | "postfix";
+  selected?: string;
+  description?: string;
+  placeholder?: string;
+  filterKey?: string;
 }
 
 export interface Section {
   title: string;
-  questions: Question[];
+  sections?: Section[];
+  questions?: Question[];
 }
 
-export interface Sections {
+export interface Task {
+  id: number;
+  center: string;
   name: string;
-  creator: string;
-  ctime: string;
+  mtime: string;
   sections: Section[];
+}
+
+export interface AnswerBrief {
+  id: number;
+  creator: string;
+  mtime: string;
 }

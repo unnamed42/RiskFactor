@@ -1,12 +1,9 @@
 import { GetFieldDecoratorOptions } from "antd/lib/form/Form";
 
-export const validationRules = ({ option }: Question): GetFieldDecoratorOptions => {
+export const validationRules = (schema: Question): GetFieldDecoratorOptions => {
   const ret: GetFieldDecoratorOptions = {};
 
-  if (!option)
-    return ret;
-
-  if (option.required) {
+  if (schema.required) {
     ret.rules = (ret.rules || []);
     ret.rules.push({
       required: true,
@@ -14,8 +11,8 @@ export const validationRules = ({ option }: Question): GetFieldDecoratorOptions 
     });
   }
 
-  if (option.defaultSelected) {
-    const selection = option.defaultSelected.split(",");
+  if (schema.selected) {
+    const selection = schema.selected.split(",");
     ret.initialValue = selection;
   }
 

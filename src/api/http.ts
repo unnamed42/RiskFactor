@@ -18,6 +18,8 @@ http.interceptors.request.use(config => {
 }, Promise.reject);
 
 export const request = async <T = any>(config: AxiosRequestConfig): Promise<T> => {
+  if (!config.method)
+    config.method = "GET";
   const { data } = await http.request<ApiError | T>(config);
   if ("error" in data)
     throw data;

@@ -7,22 +7,19 @@ import { QProps } from ".";
 
 const format = "YYYY-MM-DD";
 
-export const QDate = forwardRef<any, QProps<string>>((props, ref) => {
+export const QDate = forwardRef<any, QProps<string>>(({ schema, onChange, value }, ref) => {
 
-  const [value, setValue] = useState((props.value && moment(props.value, format)) || undefined);
+  const [date, setDate] = useState((value && moment(value, format)) || undefined);
 
-  const { schema: { option } } = props;
-
-  const onChange = (date: Moment | null) => {
+  const changed = (date: Moment | null) => {
     if (date === null)
       return;
-    setValue(date);
-    const value = date.format(format);
-    if (props.onChange)
-      props.onChange(value);
+    setDate(date);
+    if (onChange)
+      onChange(date.format(format));
   };
 
-  return <DatePicker ref={ref} value={value} onChange={onChange}
-    placeholder={option && option.placeholder}
+  return <DatePicker ref={ref} value={date} onChange={changed}
+    placeholder={schema.placeholder}
   />;
 });

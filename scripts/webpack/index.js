@@ -26,7 +26,7 @@ const config = {
     new HtmlWebpackPlugin({
       template: `${root}/src/index.html`
     }),
-    new FriendlyErrorsWebpackPlugin()
+    new FriendlyErrorsWebpackPlugin(),
   ],
   optimization: {
     runtimeChunk: "single",

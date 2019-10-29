@@ -3,25 +3,25 @@ import { Link } from "react-router-dom";
 
 import { Card, Table } from "antd";
 
-import * as api from "@/api/forms";
+import * as api from "@/api/task";
 
 export const Overview: FC = props => {
 
-  const [data, setData] = useState<Sections[]>();
+  const [data, setData] = useState<Task[]>();
 
   useEffect(() => {
-    api.sections().then(setData);
+    api.tasks().then(setData);
   }, []);
 
-  const redirect = (name: string) =>
-    <Link to={`/forms/${name}`}>{name}</Link>;
+  const redirect = (name: string, task: Task) =>
+    <Link to={`/task/${task.id}`}>{name}</Link>;
 
   return (
     <Card title="已有表单" bordered={false}>
-      <Table<Sections> dataSource={data} rowKey={ record => record.name }>
-        <Table.Column<Sections> key="name" dataIndex="name" title="名称" render={redirect} />
-        <Table.Column<Sections> key="creator" dataIndex="creator" title="创建者"/>
-        <Table.Column<Sections> key="ctime" dataIndex="ctime" title="创建时间"/>
+      <Table<Task> dataSource={data} rowKey={ record => record.id.toString() }>
+        <Table.Column<Task> key="name" dataIndex="name" title="名称" render={redirect} />
+        <Table.Column<Task> key="center" dataIndex="center" title="中心名称"/>
+        <Table.Column<Task> key="mtime" dataIndex="mtime" title="修改时间"/>
       </Table>
     </Card>
   );
