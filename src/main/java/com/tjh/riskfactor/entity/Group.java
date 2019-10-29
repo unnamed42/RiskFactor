@@ -26,10 +26,10 @@ public class Group {
     @Column(unique = true, nullable = false)
     private String name;
 
-    @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.DETACH)
+    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.DETACH)
     @JoinTable(name = "group_members",
-        joinColumns = @JoinColumn(name = "uid"),
-        inverseJoinColumns = @JoinColumn(name = "gid")
+        joinColumns = @JoinColumn(name = "gid"),
+        inverseJoinColumns = @JoinColumn(name = "uid")
     )
     @JsonIgnore
     @ToString.Exclude

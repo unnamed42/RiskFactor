@@ -10,6 +10,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.tjh.riskfactor.entity.Group;
 import com.tjh.riskfactor.repo.UserRepository;
 import com.tjh.riskfactor.repo.GroupRepository;
 
@@ -31,9 +32,8 @@ public class JwtUserDetailsService implements UserDetailsService {
         val builder = User.withUsername(username).password(user.getPassword())
             .accountExpired(false);
 
-        groups.findUserGroup(username).ifPresent(group -> {
-            builder.accountLocked(group.getName().equals("nobody"))
-                .authorities(group.getName());
+        groups.findNameByMemberName(username).ifPresent(name -> {
+            builder.accountLocked(name.equals("nobody")).authorities(name);
         });
 
         return builder.build();

@@ -21,7 +21,7 @@ import static java.util.stream.Collectors.toList;
 
 @Service
 @RequiredArgsConstructor
-public class FormService implements IDBService {
+public class TaskService implements IDBService {
 
     private final QuestionRepository questions;
     private final SectionRepository sections;
@@ -42,6 +42,18 @@ public class FormService implements IDBService {
     @Transactional
     public void drop() {
         tasks.deleteAll();
+    }
+
+    public List<Task> availableTasks(String username) {
+        return tasks.findAll();
+    }
+
+    public List<String> taskSectionTitles(Integer id) {
+        return tasks.findSectionNamesById(id);
+    }
+
+    public List<Section> taskSections(Integer id) {
+        return tasks.findSectionsById(id);
     }
 
     // 沿问题路径生成唯一key
@@ -125,10 +137,6 @@ public class FormService implements IDBService {
         task.setSections(task.getSections().stream()
                          .map(this::saveSection).collect(toList()));
         return tasks.save(task);
-    }
-
-    public List<Task> availableTasks(String username) {
-        return tasks.findAll();
     }
 
 }

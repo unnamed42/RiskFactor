@@ -17,7 +17,6 @@ import javax.servlet.http.HttpServletRequest;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/auth")
 @RequiredArgsConstructor
 public class AuthController {
 
@@ -43,7 +42,7 @@ public class AuthController {
         }
     }
 
-    @PostMapping
+    @PostMapping("/auth")
     String requestToken(@RequestBody Map<String, String> body) {
         String username = body.get("username"), password = body.get("password");
         if(username == null)
@@ -56,7 +55,7 @@ public class AuthController {
                     .add("token", token).build();
     }
 
-    @GetMapping
+    @GetMapping("/auth")
     String tokenInfo(HttpServletRequest request) {
         // the token is validated before here, no need for invalidity report
         return provider.resolveToken(request).map(provider::tokenToJson).get();

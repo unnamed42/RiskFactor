@@ -20,11 +20,11 @@ import java.util.List;
 public class Task {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @JsonIgnore
     private Integer id;
 
     @ManyToOne
     @JoinColumn(name = "gid", referencedColumnName = "id", nullable = false)
+    @JsonIgnore
     private Group group;
 
     // 用来给JSON用的，传入内容为用户组名
@@ -45,6 +45,12 @@ public class Task {
         inverseJoinColumns = @JoinColumn(name = "sid")
     )
     @OrderColumn(name = "seq", nullable = false)
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private List<Section> sections;
+
+    @JsonProperty(value = "center", access = JsonProperty.Access.READ_ONLY)
+    public String getGroupName() {
+        return group.getName();
+    }
 
 }

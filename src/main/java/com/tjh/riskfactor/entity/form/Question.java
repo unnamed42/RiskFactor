@@ -108,7 +108,6 @@ public class Question {
                 e.printStackTrace();
             }
         });
-        System.out.println(this.label);
     }
 
 }

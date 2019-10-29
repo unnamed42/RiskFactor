@@ -39,22 +39,23 @@ public class AccountService implements IDBService {
         users.deleteAll();
     }
 
-    //
-    // 查找类
-    //
-
-    public User findUser(Integer id) {
-        return users.findById(id)
-               .orElseThrow(() -> notFound("user id", id.toString()));
+    /**
+     * 查找用户所管理的用户组
+     * @param username 用户名
+     * @return 该用户管理的用户组，为空则代表用户并不是组管理员
+     */
+    public Optional<Integer> findManagingGroupId(String username) {
+        return users.findIdByUsername(username)
+                .flatMap(groups::findIdByMemberId);
     }
 
-    public User findUser(String id) {
-        return findUser(Integer.valueOf(id));
-    }
-
-    public Group findGroup(Integer id) {
-        return groups.findById(id)
-               .orElseThrow(() -> notFound("group id", id.toString()));
+    /**
+     * 列出用户组的所有用户名
+     * @param gid 用户组id
+     * @return 组中用户的用户名
+     */
+    public List<String> findMemberNamesByGid(Integer gid) {
+        return groups.findMemberNamesById(gid);
     }
 
     public Group findGroupByName(String name) {
@@ -72,15 +73,7 @@ public class AccountService implements IDBService {
         return user.setPassword(encoder.encode(user.getPassword()));
     }
 
-    public User saveUser(User user) {
-        return users.save(prepare(user));
-    }
-
-    public Group saveGroup(Group group) {
-        return groups.save(group);
-    }
-
-    // 给DataService用
+    // 给TaskService用
     // 此时所有user和group都不存在
     void saveAll(List<User> userList, List<Group> groupList) {
         Stream<User> users = userList.stream().map(this::prepare);

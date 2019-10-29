@@ -22,7 +22,6 @@ import java.util.Map;
 public class Answer {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @JsonIgnore
     private Integer id;
 
     @ManyToOne
@@ -50,7 +49,6 @@ public class Answer {
     @Convert(converter = MapConverter.class)
     @Column(length = 102400, nullable = false)
     @Basic(fetch = FetchType.LAZY)
-    @JsonProperty(access = Access.WRITE_ONLY)
     private Map<String, Object> body;
 
 }
