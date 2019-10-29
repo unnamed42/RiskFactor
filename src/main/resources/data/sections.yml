@@ -6,7 +6,7 @@
 # type === YESNO_CHOICE
 #     当选为否时，回复内容为false
 #     当选为是时，回复内容为true
-#     当选为是，且enabler打开时，回复内容为所有子问题内容的集合（该表现类似于LIST）
+#     当选为是，且isEnabler打开时，回复内容为所有子问题内容的集合（该表现类似于LIST）
 #     当选为否，且enalber打开时，回复内容为null
 # type === LIST
 #     该问题的回复内容为 { (子问题field: 子问题内容)... }
@@ -41,193 +41,134 @@ sections:
         - label: 出生日期
           field: birthday
           type: DATE
-          option:
-            required: true
+          required: true
         - label: 性别
           field: gender
           type: SINGLE_SELECT
-          option:
-            required: true
-            placeholder: 性别
+          required: true
+          placeholder: 性别
           list:
             - label: 男
             - label: 女
         - label: 民族
           field: ethnic
           type: SINGLE_SELECT
-          option:
-            required: true
-            placeholder: 输入拼音可筛选
-            filterKey: key
+          required: true
+          placeholder: 输入拼音可筛选
+          filterKey: key
           list:
             - label: 汉族
-              option:
-                filterKey: han
+              filterKey: han
             - label: 满族
-              option:
-                filterKey: man
+              filterKey: man
             - label: 蒙古族
-              option:
-                filterKey: menggu
+              filterKey: menggu
             - label: 回族
-              option:
-                filterKey: hui
+              filterKey: hui
             - label: 藏族
-              option:
-                filterKey: zang
+              filterKey: zang
             - label: 维吾尔族
-              option:
-                filterKey: weiwuer
+              filterKey: weiwuer
             - label: 苗族
-              option:
-                filterKey: miao
+              filterKey: miao
             - label: 彝族
-              option:
-                filterKey: yi
+              filterKey: yi
             - label: 壮族
-              option:
-                filterKey: zhuang
+              filterKey: zhuang
             - label: 布依族
-              option:
-                filterKey: buyi
+              filterKey: buyi
             - label: 侗族
-              option:
-                filterKey: dong
+              filterKey: dong
             - label: 瑶族
-              option:
-                filterKey: yao
+              filterKey: yao
             - label: 白族
-              option:
-                filterKey: bai
+              filterKey: bai
             - label: 土家族
-              option:
-                filterKey: tujia
+              filterKey: tujia
             - label: 哈尼族
-              option:
-                filterKey: hani
+              filterKey: hani
             - label: 哈萨克族
-              option:
-                filterKey: hasake
+              filterKey: hasake
             - label: 傣族
-              option:
-                filterKey: dai
+              filterKey: dai
             - label: 黎族
-              option:
-                filterKey: li
+              filterKey: li
             - label: 傈僳族
-              option:
-                filterKey: lisu
+              filterKey: lisu
             - label: 佤族
-              option:
-                filterKey: wa
+              filterKey: wa
             - label: 畲族
-              option:
-                filterKey: she
+              filterKey: she
             - label: 高山族
-              option:
-                filterKey: gaoshan
+              filterKey: gaoshan
             - label: 拉祜族
-              option:
-                filterKey: lahu
+              filterKey: lahu
             - label: 水族
-              option:
-                filterKey: shui
+              filterKey: shui
             - label: 东乡族
-              option:
-                filterKey: dongxiang
+              filterKey: dongxiang
             - label: 纳西族
-              option:
-                filterKey: naxi
+              filterKey: naxi
             - label: 景颇族
-              option:
-                filterKey: jingpo
+              filterKey: jingpo
             - label: 柯尔克孜族
-              option:
-                filterKey: keerkezi
+              filterKey: keerkezi
             - label: 土族
-              option:
-                filterKey: tu
+              filterKey: tu
             - label: 达斡尔族
-              option:
-                filterKey: dawoer
+              filterKey: dawoer
             - label: 仫佬族
-              option:
-                filterKey: mulao
+              filterKey: mulao
             - label: 羌族
-              option:
-                filterKey: qiang
+              filterKey: qiang
             - label: 布朗族
-              option:
-                filterKey: bulang
+              filterKey: bulang
             - label: 撒拉族
-              option:
-                filterKey: sala
+              filterKey: sala
             - label: 毛南族
-              option:
-                filterKey: maonan
+              filterKey: maonan
             - label: 仡佬族
-              option:
-                filterKey: gelao
+              filterKey: gelao
             - label: 锡伯族
-              option:
-                filterKey: xibo
+              filterKey: xibo
             - label: 阿昌族
-              option:
-                filterKey: achang
+              filterKey: achang
             - label: 普米族
-              option:
-                filterKey: pumi
+              filterKey: pumi
             - label: 朝鲜族
-              option:
-                filterKey: chaoxian
+              filterKey: chaoxian
             - label: 塔吉克族
-              option:
-                filterKey: tajike
+              filterKey: tajike
             - label: 怒族
-              option:
-                filterKey: nu
+              filterKey: nu
             - label: 乌孜别克族
-              option:
-                filterKey: wuzibieke
+              filterKey: wuzibieke
             - label: 俄罗斯族
-              option:
-                filterKey: eluosi
+              filterKey: eluosi
             - label: 鄂温克族
-              option:
-                filterKey: ewenke
+              filterKey: ewenke
             - label: 德昂族
-              option:
-                filterKey: deang
+              filterKey: deang
             - label: 保安族
-              option:
-                filterKey: baoan
+              filterKey: baoan
             - label: 裕固族
-              option:
-                filterKey: yugu
+              filterKey: yugu
             - label: 京族
-              option:
-                filterKey: jing
+              filterKey: jing
             - label: 塔塔尔族
-              option:
-                filterKey: tataer
+              filterKey: tataer
             - label: 独龙族
-              option:
-                filterKey: dulong
+              filterKey: dulong
             - label: 鄂伦春族
-              option:
-                filterKey: elunchun
+              filterKey: elunchun
             - label: 赫哲族
-              option:
-                filterKey: hezhe
+              filterKey: hezhe
             - label: 门巴族
-              option:
-                filterKey: menba
+              filterKey: menba
             - label: 珞巴族
-              option:
-                filterKey: luoba
+              filterKey: luoba
             - label: 基诺族
-              option:
-                filterKey: jinuo
+              filterKey: jinuo
         - label: 籍贯
           field: birth
           type: LIST
@@ -235,18 +176,15 @@ sections:
             - label: 省
               field: province
               type: TEXT
-              option:
-                required: true
+              required: true
             - label: 市
               field: city
               type: TEXT
-              option:
-                required: true
+              required: true
         - label: 职业
           field: job
           type: SINGLE_SELECT
-          option:
-            required: true
+          required: true
           list:
             - label: 退（离）休人员
             - label: 国家公务员
@@ -267,208 +205,176 @@ sections:
             - label: 省
               field: province
               type: TEXT
-              option:
-                required: true
+              required: true
             - label: 市
               field: city
               type: TEXT
-              option:
-                required: true
+              required: true
             - label: 县
               field: county
               type: TEXT
-              option:
-                required: true
+              required: true
         - label: 身高（米）
           field: height
           type: NUMBER
-          option:
-            required: true
-            placeholder: 身高
+          required: true
+          placeholder: 身高
         - label: 体重（千克）
           field: weight
           type: NUMBER
-          option:
-            required: true
-            placeholder: 体重
+          required: true
+          placeholder: 体重
     - title: 现病史
       questions:
         - label: 就诊或入院日期
           field: treatmentTime
           type: DATE
-          option:
-            required: true
+          required: true
         - label: 发病时间
           field: onsetTime
           type: DATE
-          option:
-            required: true
-            detail: 精确到年，月份或日期未知用1月1日代替
+          required: true
+          yesno: 精确到年，月份或日期未知用1月1日代替
         - label: 就诊症状
           field: symtoms
           type: MULTI_CHOICE
           list:
             - label: 腹痛
               field: 1
-              option:
-                enabler: true
+              isEnabler: true
               list:
                 - label: 持续时间
                   field: duration
                   type: NUMBER
-                  option:
-                    required: true
+                  required: true
                   list:
                     - field: unit
                       type: SINGLE_SELECT
-                      option:
-                        prefixPostfix: false
-                        defaultSelected: 天
+                      addonPosition: postfix
+                      selected: 天
                       list:
                         - label: 天
                         - label: 月
                         - label: 年
             - label: 腹胀
               field: 2
-              option:
-                enabler: true
+              isEnabler: true
               list:
                 - label: 持续时间
                   field: duration
                   type: NUMBER
-                  option:
-                    required: true
+                  required: true
                   list:
                     - field: unit
                       type: SINGLE_SELECT
-                      option:
-                        prefixPostfix: false
-                        defaultSelected: 天
+                      addonPosition: postfix
+                      selected: 天
                       list:
                         - label: 天
                         - label: 月
                         - label: 年
             - label: 黄疸
               field: 3
-              option:
-                enabler: true
+              isEnabler: true
               list:
                 - label: 持续时间
                   field: duration
                   type: NUMBER
-                  option:
-                    required: true
+                  required: true
                   list:
                     - field: unit
                       type: SINGLE_SELECT
-                      option:
-                        prefixPostfix: false
-                        defaultSelected: 天
+                      addonPosition: postfix
+                      selected: 天
                       list:
                         - label: 天
                         - label: 月
                         - label: 年
             - label: 恶心呕吐
               field: 4
-              option:
-                enabler: true
+              isEnabler: true
               list:
                 - label: 持续时间
                   field: duration
                   type: NUMBER
-                  option:
-                    required: true
+                  required: true
                   list:
                     - field: unit
                       type: SINGLE_SELECT
-                      option:
-                        prefixPostfix: false
-                        defaultSelected: 天
+                      addonPosition: postfix
+                      selected: 天
                       list:
                         - label: 天
                         - label: 月
                         - label: 年
             - label: 乏力纳差
               field: 5
-              option:
-                enabler: true
+              isEnabler: true
               list:
                 - label: 持续时间
                   field: duration
                   type: NUMBER
-                  option:
-                    required: true
+                  required: true
                   list:
                     - field: unit
                       type: SINGLE_SELECT
-                      option:
-                        prefixPostfix: false
-                        defaultSelected: 天
+                      addonPosition: postfix
+                      selected: 天
                       list:
                         - label: 天
                         - label: 月
                         - label: 年
             - label: 消瘦
               field: 6
-              option:
-                enabler: true
+              isEnabler: true
               list:
                 - label: 持续时间
                   field: duration
                   type: NUMBER
-                  option:
-                    required: true
+                  required: true
                   list:
                     - field: unit
                       type: SINGLE_SELECT
-                      option:
-                        prefixPostfix: false
-                        defaultSelected: 天
+                      addonPosition: postfix
+                      selected: 天
                       list:
                         - label: 天
                         - label: 月
                         - label: 年
             - label: 发热
               field: 7
-              option:
-                enabler: true
+              isEnabler: true
               list:
                 - label: 持续时间
                   field: duration
                   type: NUMBER
-                  option:
-                    required: true
+                  required: true
                   list:
                     - field: unit
                       type: SINGLE_SELECT
-                      option:
-                        prefixPostfix: false
-                        defaultSelected: 天
+                      addonPosition: postfix
+                      selected: 天
                       list:
                         - label: 天
                         - label: 月
                         - label: 年
             - label: 其他
               field: 8
-              option:
-                enabler: true
+              isEnabler: true
               list:
                 - field: name
                   type: TEXT
-                  option:
-                    required: true
-                    placeholder: 症状名称
+                  required: true
+                  placeholder: 症状名称
                 - label: 持续时间
                   field: duration
                   type: NUMBER
-                  option:
-                    required: true
+                  required: true
                   list:
                     - field: unit
                       type: SINGLE_SELECT
-                      option:
-                        prefixPostfix: false
-                        defaultSelected: 天
+                      addonPosition: postfix
+                      selected: 天
                       list:
                         - label: 天
                         - label: 月
@@ -490,127 +396,108 @@ sections:
               list:
                 - type: TEXT
                   field: name
-                  option:
-                    required: true
-                    placeholder: 症状名称
+                  required: true
+                  placeholder: 症状名称
     - title: 既往病史
       questions:
         - label: 胆囊炎
           field: cholecystitis
           type: YESNO_CHOICE
-          option:
-            detail: 有/无
-            enabler: true
+          yesno: 有/无
+          isEnabler: true
           list:
             - field: severity
               type: SINGLE_CHOICE
-              option:
-                required: true
+              required: true
               list:
                 - label: 急性
                 - label: 慢性
         - label: 胆囊结石
           field: gallstone
           type: YESNO_CHOICE
-          option:
-            detail: 有/无
-            enabler: true
+          yesno: 有/无
+          isEnabler: true
           list:
             - type: LIST
               list:
                 - field: severity
                   type: YESNO_CHOICE
-                  option:
-                    required: true
-                    placeholder: 急性/慢性
-                    detail: 急性/慢性
+                  required: true
+                  placeholder: 急性/慢性
+                  yesno: 急性/慢性
                 - field: size
                   label: 大小
                   type: NUMBER
-                  option:
-                    required: true
-                    detail: 大小请填写二维值，单位：毫米
+                  required: true
+                  yesno: 大小请填写二维值，单位：毫米
         - label: 胆囊息肉
           field: gallbladderPolyps
           type: YESNO_CHOICE
-          option:
-            detail: 有/无
-            enabler: true
+          yesno: 有/无
+          isEnabler: true
           list:
             - type: LIST
               list:
                 - field: severity
                   type: YESNO_CHOICE
-                  option:
-                    required: true
-                    placeholder: 急性/慢性
-                    detail: 急性/慢性
+                  required: true
+                  placeholder: 急性/慢性
+                  yesno: 急性/慢性
                 - field: size
                   label: 大小
                   type: NUMBER
-                  option:
-                    required: true
-                    detail: 大小请填写二维值，单位：毫米
+                  required: true
+                  yesno: 大小请填写二维值，单位：毫米
         - label: 胆管结石
           field: bileDuctStone
           type: YESNO_CHOICE
-          option:
-            detail: 有/无
-            enabler: true
+          yesno: 有/无
+          isEnabler: true
           list:
             - field: type
               type: YESNO_CHOICE
-              option:
-                required: true
-                detail: 肝内胆管结石/肝外胆管结石
+              required: true
+              yesno: 肝内胆管结石/肝外胆管结石
         - label: Mirrizi综合征
           field: mirrizi
           type: YESNO_CHOICE
-          option:
-            detail: 有/无
+          yesno: 有/无
         - label: 胆道系统感染
           field: biliarySystemInfection
           type: YESNO_CHOICE
-          option:
-            detail: 有/无
+          yesno: 有/无
         - label: 寄生虫病
           field: parasiticDisease
           type: YESNO_CHOICE
-          option:
-            detail: 有/无
-            enabler: true
+          yesno: 有/无
+          isEnabler: true
           list:
             - field: type
               type: MULTI_CHOICE
-              option:
-                required: true
+              required: true
               list:
                 - label: 胆道蛔虫
                 - label: 华支睾吸虫
         - label: 胆胰管汇合异常
           field: pancreaticobiliaryConfluence
           type: YESNO_CHOICE
-          option:
-            detail: 有/无
+          yesno: 有/无
         - label: 心脑血管疾病
           field: cardiovascularDisease
           type: YESNO_CHOICE
-          option:
-            detail: 有/无
-            enabler: true
+          yesno: 有/无
+          isEnabler: true
           list:
             - field: types
               type: MULTI_CHOICE
-              option:
-                required: true
+              required: true
               list:
                 - label: 高血压
                 - label: 糖尿病
                 - label: 其他
                   field: name
                   type: TEXT
-                  option:
-                    required: true
+                  required: true
         - label: 手术史
           field: surgicalHistory
           type: LIST_APPENDABLE
@@ -618,14 +505,12 @@ sections:
             - label: 手术时间
               field: date
               type: DATE
-              option:
-                required: true
-                detail: 精确到年，如月份和日期未知，用1月或1日代替
+              required: true
+              yesno: 精确到年，如月份和日期未知，用1月或1日代替
             - label: 手术名称
               field: name
               type: TEXT
-              option:
-                required: true
+              required: true
         - label: 其他
           field: other
           type: LIST_APPENDABLE
@@ -633,44 +518,35 @@ sections:
             - label: 病症名称
               field: name
               type: TEXT
-              option:
-                required: true
+              required: true
     - title: 个人史
       questions:
         - label: 吸烟
           field: smoking
           type: YESNO_CHOICE
-          option:
-            enabler: true
-            detail: 是/否
+          isEnabler: true
           list:
             - label: 支/天
               type: NUMBER
               field: count
-              option:
-                required: true
+              required: true
             - label: 年
               type: NUMBER
               field: year
-              option:
-                required: true
+              required: true
         - label: 饮酒
           field: drinking
           type: YESNO_CHOICE
-          option:
-            enabler: true
-            detail: 是/否
+          isEnabler: true
           list:
             - label: 两/天
               type: NUMBER
               field: count
-              option:
-                required: true
+              required: true
             - label: 年
               type: NUMBER
               field: year
-              option:
-                required: true
+              required: true
         - label: 饮水
           type: MULTI_CHOICE
           field: water
@@ -693,9 +569,8 @@ sections:
         - label: 肿瘤
           type: YESNO_CHOICE
           field: cancer
-          option:
-            enabler: true
-            detail: 有/无
+          isEnabler: true
+          yesno: 有/无
           list:
             - type: MULTI_CHOICE
               field: type
@@ -707,9 +582,8 @@ sections:
         - label: 胆道疾病
           type: YESNO_CHOICE
           field: biliaryDisease
-          option:
-            enabler: true
-            detail: 有/无
+          isEnabler: true
+          yesno: 有/无
           list:
             - type: MULTI_CHOICE
               field: type
@@ -722,8 +596,7 @@ sections:
         - label: 心血管疾病
           type: YESNO_CHOICE
           field: cardiovascularDisease
-          option:
-            detail: 有/无
+          yesno: 有/无
   - title: 术前情况
     sections:
     - title: 影像学检查
@@ -731,9 +604,8 @@ sections:
         - label: B超
           field: ultrasound
           type: YESNO_CHOICE
-          option:
-            detail: 有/无
-            enabler: true
+          yesno: 有/无
+          isEnabler: true
           list:
             - type: LIST
               list:
@@ -747,9 +619,8 @@ sections:
         - label: CT
           field: ct
           type: YESNO_CHOICE
-          option:
-            detail: 有/无
-            enabler: true
+          yesno: 有/无
+          isEnabler: true
           list:
             - type: LIST
               list:
@@ -763,9 +634,8 @@ sections:
         - label: MRI
           field: mri
           type: YESNO_CHOICE
-          option:
-            detail: 有/无
-            enabler: true
+          yesno: 有/无
+          isEnabler: true
           list:
             - type: LIST
               list:
@@ -779,9 +649,8 @@ sections:
         - label: 经皮肝穿刺胆管造影（PTC）
           field: ptc
           type: YESNO_CHOICE
-          option:
-            detail: 有/无
-            enabler: true
+          yesno: 有/无
+          isEnabler: true
           list:
             - type: LIST
               list:
@@ -795,9 +664,8 @@ sections:
         - label: 超声内镜（EUS）
           field: eus
           type: YESNO_CHOICE
-          option:
-            detail: 有/无
-            enabler: true
+          yesno: 有/无
+          isEnabler: true
           list:
             - type: LIST
               list:
@@ -811,9 +679,8 @@ sections:
         - label: PET/CT
           field: pet_ct
           type: YESNO_CHOICE
-          option:
-            detail: 有/无
-            enabler: true
+          yesno: 有/无
+          isEnabler: true
           list:
             - type: LIST
               list:
@@ -843,9 +710,7 @@ sections:
         - label: 术前减黄
           type: YESNO_CHOICE
           field: preoperativeYellowing
-          option:
-            enabler: true
-            detail: 是/否
+          isEnabler: true
           list:
             - label: 减黄方式
               field: method
@@ -858,9 +723,8 @@ sections:
         - label: 合并症
           type: YESNO_CHOICE
           field: comorbidity
-          option:
-            enabler: true
-            detail: 有/无
+          isEnabler: true
+          yesno: 有/无
           list:
             - type: MULTI_CHOICE
               field: type
@@ -885,5 +749,4 @@ sections:
         - label: 随访时间
           type: DATE
           field: date
-          option:
-            enabler: true
+          isEnabler: true

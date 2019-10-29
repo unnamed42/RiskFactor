@@ -87,7 +87,7 @@ public class AccountService implements IDBService {
         userList = this.users.saveAll(users::iterator);
 
         val map = userList.stream().collect(toMap(
-            User::getNickname, value -> value
+            User::getUsername, value -> value
         ));
 
         Function<List<String>, Set<User>> cvt =

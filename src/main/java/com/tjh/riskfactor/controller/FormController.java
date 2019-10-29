@@ -20,7 +20,7 @@ public class FormController {
 
     private final FormService service;
 
-    @GetMapping("/")
+    @GetMapping
     List<Task> availableTasks(Principal principal) {
         return service.availableTasks(principal.getName());
     }

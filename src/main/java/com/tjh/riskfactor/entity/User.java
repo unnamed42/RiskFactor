@@ -19,7 +19,8 @@ public class User {
     @EqualsAndHashCode.Include
     private Integer id;
 
-    private String nickname;
+    @Column(unique = true, nullable = false)
+    private String username;
 
     private String email;
 

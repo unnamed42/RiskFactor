@@ -16,11 +16,9 @@ public interface GroupRepository extends JpaRepository<Group, Integer> {
 
     Optional<Group> findByName(String name);
 
-    Set<Group> findByNameIn(Collection<String> names);
-
-    @Query("select g.name from Group g")
-    List<String> getAllGroupNames();
-
-    boolean existsByName(String name);
+    @Query(nativeQuery = true,
+        value = "select g.* from `group` g, `group_members` m, users u where u.username = :username and m.uid = u.id and m.gid = g.id"
+    )
+    Optional<Group> findUserGroup(String username);
 
 }

@@ -8,7 +8,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.tjh.riskfactor.entity.form.*;
 import com.tjh.riskfactor.repo.QuestionRepository;
-import com.tjh.riskfactor.repo.QuestionOptionRepository;
 import com.tjh.riskfactor.repo.SectionRepository;
 import com.tjh.riskfactor.repo.TaskRepository;
 
@@ -25,7 +24,6 @@ import static java.util.stream.Collectors.toList;
 public class FormService implements IDBService {
 
     private final QuestionRepository questions;
-    private final QuestionOptionRepository questionOptions;
     private final SectionRepository sections;
     private final TaskRepository tasks;
 
@@ -78,10 +76,7 @@ public class FormService implements IDBService {
         val type = q.getType();
         if(type == null)
             q.setType(QuestionType.CHOICE);
-        // 带有message但是没有设置required的Question，其required设置为true
-        val option = q.getOption();
-        if(option != null)
-            q.setOption(questionOptions.save(option));
+        // 设置唯一field
         val key = assignKey(parent, q);
         // 递归设置子问题的缺失属性
         val list = q.getList();
@@ -125,7 +120,7 @@ public class FormService implements IDBService {
     }
 
     @Transactional
-    public Task saveTask(Task task) {
+    Task saveTask(Task task) {
         task.setGroup(accounts.findGroupByName(task.getCenter()));
         task.setSections(task.getSections().stream()
                          .map(this::saveSection).collect(toList()));

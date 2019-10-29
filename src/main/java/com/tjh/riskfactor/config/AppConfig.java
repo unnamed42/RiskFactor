@@ -1,5 +1,7 @@
 package com.tjh.riskfactor.config;
 
+import lombok.val;
+
 import com.fasterxml.jackson.databind.Module;
 import com.fasterxml.jackson.datatype.hibernate5.Hibernate5Module;
 
@@ -18,7 +20,9 @@ public class AppConfig {
      */
     @Bean
     protected Module module() {
-        return new Hibernate5Module();
+        val module = new Hibernate5Module();
+        module.disable(Hibernate5Module.Feature.USE_TRANSIENT_ANNOTATION);
+        return module;
     }
 
     /**

@@ -24,14 +24,12 @@ public class DebugController {
 
     @GetMapping("/forms")
     @ResponseStatus(HttpStatus.OK)
-    @Transactional
     void reloadQuestions() throws IOException {
         data.reloadForms();
     }
 
     @GetMapping("/users")
     @ResponseStatus(HttpStatus.OK)
-    @Transactional
     void reloadUsers() throws IOException {
         data.reloadUsers();
     }
