@@ -6,12 +6,12 @@ import lombok.val;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.tjh.riskfactor.entity.form.*;
 import com.tjh.riskfactor.repo.*;
-import static com.tjh.riskfactor.repo.TaskRepository.*;
-import static com.tjh.riskfactor.repo.AnswerRepository.AnswerBrief;
+import com.tjh.riskfactor.entity.form.*;
+import com.tjh.riskfactor.entity.view.*;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Stream;
 
@@ -31,8 +31,12 @@ public class TaskService implements IDBService {
         tasks.deleteAll();
     }
 
-    public Optional<TaskBrief> findTaskInfoById(Integer id) {
+    public Optional<TaskBrief> taskBrief(Integer id) {
         return tasks.findTaskInfoById(id);
+    }
+
+    public Optional<Task> task(Integer id) {
+        return tasks.findById(id);
     }
 
     /**
@@ -59,7 +63,7 @@ public class TaskService implements IDBService {
      * @return 所有回答
      */
     public List<AnswerBrief> taskAnswers(Integer taskId) {
-        return answers.findByOwnerTaskId(taskId);
+        return answers.findAllByTaskId(taskId);
     }
 
     /**
@@ -69,7 +73,7 @@ public class TaskService implements IDBService {
      * @return 所有该用户创建的回答
      */
     public List<AnswerBrief> taskAnswers(Integer taskId, String username) {
-        return answers.findAnswersInTaskCreatedBy(taskId, username);
+        return answers.findAllByTaskIdCreatedBy(taskId, username);
     }
 
     /**
@@ -80,7 +84,11 @@ public class TaskService implements IDBService {
      */
     public List<AnswerBrief> taskAnswers(Integer taskId, Integer groupId) {
         val names = groups.memberNames(groupId);
-        return answers.findAnswersInTaskCreatedBy(taskId, names);
+        return answers.findAllByTaskIdCreatedBy(taskId, names);
+    }
+
+    public void deleteTaskAnswer(Integer answerId) {
+        answers.deleteById(answerId);
     }
 
     /**
@@ -88,7 +96,7 @@ public class TaskService implements IDBService {
      * @param sid 分节id
      * @return 分节的全部信息
      */
-    public Optional<Section> findSectionById(Integer sid) {
+    public Optional<Section> section(Integer sid) {
         return sections.findById(sid);
     }
 

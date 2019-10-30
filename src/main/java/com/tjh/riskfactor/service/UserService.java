@@ -24,6 +24,10 @@ public class UserService implements IDBService {
         users.deleteAll();
     }
 
+    public Optional<User> user(Integer id) {
+        return users.findById(id);
+    }
+
     public Optional<User> userWithName(String username) {
         return users.findByUsername(username);
     }

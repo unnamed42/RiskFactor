@@ -16,14 +16,14 @@ public interface GroupRepository extends JpaRepository<Group, Integer> {
     Optional<Group> findByName(String name);
 
     @Query(nativeQuery = true,
-        value = "select m.gid from group_admins m left join users u on m.uid = u.id and u.username = :username"
+        value = "select m.gid from group_admins m inner join users u on m.uid = u.id and u.username = :username"
     )
     Optional<Integer> findIdByAdminName(String username);
 
-    @Query("select m.username from Group g join g.members m on g.id = :gid")
+    @Query("select m.username from Group g inner join g.members m on g.id = :gid")
     List<String> findMemberNamesById(Integer gid);
 
-    @Query("select g.name from Group g join g.members m on m.username = :name")
+    @Query("select g.name from Group g inner join g.members m on m.username = :name")
     Optional<String> findNameByMemberName(String name);
 
     @Query("select g.name from Group g join g.admins a on a.username = :name")

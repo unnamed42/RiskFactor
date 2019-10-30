@@ -5,13 +5,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import com.tjh.riskfactor.entity.form.Question;
 
-import java.util.Optional;
-
 @Repository
 public interface QuestionRepository extends JpaRepository<Question, Integer> {
-
-    Optional<Question> findByField(String fieldName);
-
-    boolean existsByField(String field);
-
 }

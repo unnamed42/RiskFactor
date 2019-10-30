@@ -1,29 +1,12 @@
 # 编写规则：
-# type === MULTI_CHOICE
-#     此类问题下允许某些选项为非CHOICE，但只允许TEXT类型
-#     当某个选项为TEXT时，最终问题回复中被选项包含填写内容
-#     该问题的回复为数组
-# type === YESNO_CHOICE
-#     当选为否时，回复内容为false
-#     当选为是时，回复内容为true
-#     当选为是，且isEnabler打开时，回复内容为所有子问题内容的集合（该表现类似于LIST）
-#     当选为否，且enalber打开时，回复内容为null
-# type === LIST
-#     该问题的回复内容为 { (子问题field: 子问题内容)... }
-# type === TEXT || NUMBER
-#     内容为string
-# type === LIST_APPENDABLE
-#     该类问题的list为问题模板，应当视作一个LIST类型，子问题集为list的问题
-#       为了简化设计，将这个LIST问题省去
-#     回复内容为数组长度，0 or undefined
-# type === DATE
-#     内容为string, 格式yyyy-MM-dd
-# type === MULTI_SELECT
-#     内容为半角逗号分隔的字符串，每个区块是所选项目的label
-# type === SINGLE_SELECT
-#     内容为字符串，即所选项目的label
-# type === IMMUTABLE
-#     无回复，其内容为option.placeholder
+# type === list
+# type === null
+#    该类为多选/单选类问题的选项
+#    可携带list，意为被选中时激活的问题
+#    isEnabler不需要设置，当有list的时候自动视为true
+# type === number | text
+#    可携带list，其下所有问题均需设置addonPosition
+#    labelPosition
 name: 胆胰危险因素采集
 center: users
 mtime: 2019-10-29
@@ -33,26 +16,21 @@ sections:
     - title: 一般资料
       questions:
         - label: 中心编号
-          field: centerId
-          type: IMMUTABLE
+          type: disabled
         - label: 研究编号
-          field: surveyId
-          type: IMMUTABLE
+          type: disabled
         - label: 出生日期
-          field: birthday
-          type: DATE
+          type: date
           required: true
         - label: 性别
-          field: gender
-          type: SINGLE_SELECT
+          type: select
           required: true
           placeholder: 性别
           list:
             - label: 男
             - label: 女
         - label: 民族
-          field: ethnic
-          type: SINGLE_SELECT
+          type: select
           required: true
           placeholder: 输入拼音可筛选
           filterKey: key
@@ -170,20 +148,16 @@ sections:
             - label: 基诺族
               filterKey: jinuo
         - label: 籍贯
-          field: birth
-          type: LIST
+          type: list
           list:
             - label: 省
-              field: province
-              type: TEXT
+              type: text
               required: true
             - label: 市
-              field: city
-              type: TEXT
+              type: text
               required: true
         - label: 职业
-          field: job
-          type: SINGLE_SELECT
+          type: select
           required: true
           list:
             - label: 退（离）休人员
@@ -199,57 +173,44 @@ sections:
             - label: 无业人员
             - label: 其他
         - label: 通讯地址
-          field: address
-          type: LIST
+          type: list
           list:
             - label: 省
-              field: province
-              type: TEXT
+              type: text
               required: true
             - label: 市
-              field: city
-              type: TEXT
+              type: text
               required: true
             - label: 县
-              field: county
-              type: TEXT
+              type: text
               required: true
         - label: 身高（米）
-          field: height
-          type: NUMBER
+          type: number
           required: true
           placeholder: 身高
         - label: 体重（千克）
-          field: weight
-          type: NUMBER
+          type: number
           required: true
           placeholder: 体重
     - title: 现病史
       questions:
         - label: 就诊或入院日期
-          field: treatmentTime
-          type: DATE
+          type: date
           required: true
         - label: 发病时间
-          field: onsetTime
-          type: DATE
+          type: date
           required: true
-          yesno: 精确到年，月份或日期未知用1月1日代替
+          description: 精确到年，月份或日期未知用1月1日代替
         - label: 就诊症状
-          field: symtoms
-          type: MULTI_CHOICE
+          type: choice-multi
           list:
             - label: 腹痛
-              field: 1
-              isEnabler: true
               list:
                 - label: 持续时间
-                  field: duration
-                  type: NUMBER
+                  type: number
                   required: true
                   list:
-                    - field: unit
-                      type: SINGLE_SELECT
+                    - type: select
                       addonPosition: postfix
                       selected: 天
                       list:
@@ -257,16 +218,12 @@ sections:
                         - label: 月
                         - label: 年
             - label: 腹胀
-              field: 2
-              isEnabler: true
               list:
                 - label: 持续时间
-                  field: duration
-                  type: NUMBER
+                  type: number
                   required: true
                   list:
-                    - field: unit
-                      type: SINGLE_SELECT
+                    - type: select
                       addonPosition: postfix
                       selected: 天
                       list:
@@ -274,16 +231,12 @@ sections:
                         - label: 月
                         - label: 年
             - label: 黄疸
-              field: 3
-              isEnabler: true
               list:
                 - label: 持续时间
-                  field: duration
-                  type: NUMBER
+                  type: number
                   required: true
                   list:
-                    - field: unit
-                      type: SINGLE_SELECT
+                    - type: select
                       addonPosition: postfix
                       selected: 天
                       list:
@@ -291,16 +244,12 @@ sections:
                         - label: 月
                         - label: 年
             - label: 恶心呕吐
-              field: 4
-              isEnabler: true
               list:
                 - label: 持续时间
-                  field: duration
-                  type: NUMBER
+                  type: number
                   required: true
                   list:
-                    - field: unit
-                      type: SINGLE_SELECT
+                    - type: select
                       addonPosition: postfix
                       selected: 天
                       list:
@@ -308,16 +257,12 @@ sections:
                         - label: 月
                         - label: 年
             - label: 乏力纳差
-              field: 5
-              isEnabler: true
               list:
                 - label: 持续时间
-                  field: duration
-                  type: NUMBER
+                  type: number
                   required: true
                   list:
-                    - field: unit
-                      type: SINGLE_SELECT
+                    - type: select
                       addonPosition: postfix
                       selected: 天
                       list:
@@ -325,16 +270,12 @@ sections:
                         - label: 月
                         - label: 年
             - label: 消瘦
-              field: 6
-              isEnabler: true
               list:
                 - label: 持续时间
-                  field: duration
-                  type: NUMBER
+                  type: number
                   required: true
                   list:
-                    - field: unit
-                      type: SINGLE_SELECT
+                    - type: select
                       addonPosition: postfix
                       selected: 天
                       list:
@@ -342,16 +283,12 @@ sections:
                         - label: 月
                         - label: 年
             - label: 发热
-              field: 7
-              isEnabler: true
               list:
                 - label: 持续时间
-                  field: duration
-                  type: NUMBER
+                  type: number
                   required: true
                   list:
-                    - field: unit
-                      type: SINGLE_SELECT
+                    - type: select
                       addonPosition: postfix
                       selected: 天
                       list:
@@ -359,20 +296,15 @@ sections:
                         - label: 月
                         - label: 年
             - label: 其他
-              field: 8
-              isEnabler: true
               list:
-                - field: name
-                  type: TEXT
+                - type: text
                   required: true
                   placeholder: 症状名称
                 - label: 持续时间
-                  field: duration
-                  type: NUMBER
+                  type: number
                   required: true
                   list:
-                    - field: unit
-                      type: SINGLE_SELECT
+                    - type: select
                       addonPosition: postfix
                       selected: 天
                       list:
@@ -380,8 +312,7 @@ sections:
                         - label: 月
                         - label: 年
         - label: 入院体征
-          field: treatmentSymptoms
-          type: MULTI_CHOICE
+          type: choice-multi
           list:
             - label: 腹部包块
             - label: 黄疸
@@ -392,342 +323,267 @@ sections:
             - label: 心率不齐
             - label: 发热
             - label: 其他
-              field: other
               list:
-                - type: TEXT
-                  field: name
+                - type: text
                   required: true
                   placeholder: 症状名称
     - title: 既往病史
       questions:
         - label: 胆囊炎
-          field: cholecystitis
-          type: YESNO_CHOICE
+          type: either
           yesno: 有/无
-          isEnabler: true
           list:
-            - field: severity
-              type: SINGLE_CHOICE
+            - type: choice
               required: true
               list:
                 - label: 急性
                 - label: 慢性
         - label: 胆囊结石
-          field: gallstone
-          type: YESNO_CHOICE
+          type: either
           yesno: 有/无
-          isEnabler: true
           list:
-            - type: LIST
-              list:
-                - field: severity
-                  type: YESNO_CHOICE
-                  required: true
-                  placeholder: 急性/慢性
-                  yesno: 急性/慢性
-                - field: size
-                  label: 大小
-                  type: NUMBER
-                  required: true
-                  yesno: 大小请填写二维值，单位：毫米
+            - type: either
+              required: true
+              placeholder: 急性/慢性
+              yesno: 急性/慢性
+            - label: 大小
+              type: number
+              required: true
+              yesno: 大小请填写二维值，单位：毫米
         - label: 胆囊息肉
-          field: gallbladderPolyps
-          type: YESNO_CHOICE
+          type: either
           yesno: 有/无
-          isEnabler: true
           list:
-            - type: LIST
-              list:
-                - field: severity
-                  type: YESNO_CHOICE
-                  required: true
-                  placeholder: 急性/慢性
-                  yesno: 急性/慢性
-                - field: size
-                  label: 大小
-                  type: NUMBER
-                  required: true
-                  yesno: 大小请填写二维值，单位：毫米
+            - type: either
+              required: true
+              placeholder: 急性/慢性
+              yesno: 急性/慢性
+            - label: 大小
+              type: number
+              required: true
+              yesno: 大小请填写二维值，单位：毫米
         - label: 胆管结石
-          field: bileDuctStone
-          type: YESNO_CHOICE
+          type: either
           yesno: 有/无
-          isEnabler: true
           list:
-            - field: type
-              type: YESNO_CHOICE
+            - type: either
               required: true
               yesno: 肝内胆管结石/肝外胆管结石
         - label: Mirrizi综合征
-          field: mirrizi
-          type: YESNO_CHOICE
+          type: either
           yesno: 有/无
         - label: 胆道系统感染
-          field: biliarySystemInfection
-          type: YESNO_CHOICE
+          type: either
           yesno: 有/无
         - label: 寄生虫病
-          field: parasiticDisease
-          type: YESNO_CHOICE
+          type: either
           yesno: 有/无
-          isEnabler: true
           list:
-            - field: type
-              type: MULTI_CHOICE
+            - type: choice-multi
               required: true
               list:
                 - label: 胆道蛔虫
                 - label: 华支睾吸虫
         - label: 胆胰管汇合异常
-          field: pancreaticobiliaryConfluence
-          type: YESNO_CHOICE
+          type: either
           yesno: 有/无
         - label: 心脑血管疾病
-          field: cardiovascularDisease
-          type: YESNO_CHOICE
+          type: either
           yesno: 有/无
-          isEnabler: true
           list:
-            - field: types
-              type: MULTI_CHOICE
+            - type: choice-multi
               required: true
               list:
                 - label: 高血压
                 - label: 糖尿病
                 - label: 其他
-                  field: name
-                  type: TEXT
-                  required: true
+                  list:
+                  - type: text
+                    required: true
         - label: 手术史
-          field: surgicalHistory
-          type: LIST_APPENDABLE
+          type: template
           list:
             - label: 手术时间
-              field: date
-              type: DATE
+              type: date
               required: true
-              yesno: 精确到年，如月份和日期未知，用1月或1日代替
+              description: 精确到年，如月份和日期未知，用1月或1日代替
             - label: 手术名称
-              field: name
-              type: TEXT
+              type: text
               required: true
         - label: 其他
-          field: other
-          type: LIST_APPENDABLE
+          type: template
           list:
             - label: 病症名称
-              field: name
-              type: TEXT
+              type: text
               required: true
     - title: 个人史
       questions:
         - label: 吸烟
-          field: smoking
-          type: YESNO_CHOICE
-          isEnabler: true
+          type: either
           list:
             - label: 支/天
-              type: NUMBER
-              field: count
+              type: number
               required: true
+              labelPosition: postfix
             - label: 年
-              type: NUMBER
-              field: year
+              type: number
               required: true
+              labelPosition: postfix
         - label: 饮酒
-          field: drinking
-          type: YESNO_CHOICE
-          isEnabler: true
+          type: either
           list:
             - label: 两/天
-              type: NUMBER
-              field: count
+              type: number
               required: true
+              labelPosition: postfix
             - label: 年
-              type: NUMBER
-              field: year
+              type: number
               required: true
+              labelPosition: postfix
         - label: 饮水
-          type: MULTI_CHOICE
-          field: water
+          type: choice-multi
           list:
             - label: 自来水
             - label: 井水
             - label: 河水
         - label: 饮食
-          type: MULTI_CHOICE
-          field: meal
+          type: choice-multi
           list:
             - label: 高脂
             - label: 普通
             - label: 素食
         - label: BMI（体重/身高²）
-          type: IMMUTABLE
-          field: bmi
+          type: disabled
     - title: 家族史
       questions:
         - label: 肿瘤
-          type: YESNO_CHOICE
-          field: cancer
-          isEnabler: true
+          type: either
           yesno: 有/无
           list:
-            - type: MULTI_CHOICE
-              field: type
+            - type: choice-multi
               list:
                 - label: 胆囊癌
                 - label: 其他
-                  type: TEXT
-                  field: other
+                  type: text
         - label: 胆道疾病
-          type: YESNO_CHOICE
-          field: biliaryDisease
-          isEnabler: true
+          type: either
           yesno: 有/无
           list:
-            - type: MULTI_CHOICE
-              field: type
+            - type: choice-multi
               list:
                 - label: 胆囊结石
                 - label: 胆囊息肉
                 - label: 其他
-                  type: TEXT
-                  field: other
+                  type: text
         - label: 心血管疾病
-          type: YESNO_CHOICE
-          field: cardiovascularDisease
+          type: either
           yesno: 有/无
   - title: 术前情况
     sections:
     - title: 影像学检查
       questions:
         - label: B超
-          field: ultrasound
-          type: YESNO_CHOICE
+          type: either
           yesno: 有/无
-          isEnabler: true
           list:
-            - type: LIST
+            - label: 检查日期
+              type: date
+              required: true
+            - type: template
               list:
-                - label: 检查日期
-                  type: DATE
-                  field: date
-                - type: LIST_APPENDABLE
-                  list:
-                    - label: 检查结果
-                      type: TEXT
+                - label: 检查结果
+                  type: text
+                  required: true
         - label: CT
-          field: ct
-          type: YESNO_CHOICE
+          type: either
           yesno: 有/无
-          isEnabler: true
           list:
-            - type: LIST
+            - label: 检查日期
+              type: date
+              required: true
+            - type: template
               list:
-                - label: 检查日期
-                  type: DATE
-                  field: date
-                - type: LIST_APPENDABLE
-                  list:
-                    - label: 检查结果
-                      type: TEXT
+                - label: 检查结果
+                  type: text
+                  required: true
         - label: MRI
-          field: mri
-          type: YESNO_CHOICE
+          type: either
           yesno: 有/无
-          isEnabler: true
           list:
-            - type: LIST
+            - label: 检查日期
+              type: date
+              required: true
+            - type: template
               list:
-                - label: 检查日期
-                  type: DATE
-                  field: date
-                - type: LIST_APPENDABLE
-                  list:
-                    - label: 检查结果
-                      type: TEXT
+                - label: 检查结果
+                  type: text
+                  required: true
         - label: 经皮肝穿刺胆管造影（PTC）
-          field: ptc
-          type: YESNO_CHOICE
+          type: either
           yesno: 有/无
-          isEnabler: true
           list:
-            - type: LIST
+            - label: 检查日期
+              type: date
+              required: true
+            - type: template
               list:
-                - label: 检查日期
-                  type: DATE
-                  field: date
-                - type: LIST_APPENDABLE
-                  list:
-                    - label: 检查结果
-                      type: TEXT
+                - label: 检查结果
+                  type: text
+                  required: true
         - label: 超声内镜（EUS）
-          field: eus
-          type: YESNO_CHOICE
+          type: either
           yesno: 有/无
-          isEnabler: true
           list:
-            - type: LIST
+            - label: 检查日期
+              type: date
+              required: true
+            - type: template
               list:
-                - label: 检查日期
-                  type: DATE
-                  field: date
-                - type: LIST_APPENDABLE
-                  list:
-                    - label: 检查结果
-                      type: TEXT
+                - label: 检查结果
+                  type: text
+                  required: true
         - label: PET/CT
-          field: pet_ct
-          type: YESNO_CHOICE
+          type: either
           yesno: 有/无
-          isEnabler: true
           list:
-            - type: LIST
+            - label: 检查日期
+              type: date
+              required: true
+            - type: template
               list:
-                - label: 检查日期
-                  type: DATE
-                  field: date
-                - type: LIST_APPENDABLE
-                  list:
-                    - label: 检查结果
-                      type: TEXT
+                - label: 检查结果
+                  type: text
+                  required: true
     - title: 术前诊断
       questions:
-        - type: LIST
+        - type: list
           list:
             - label: 术前诊断
-              field: preoperativeDiagnosis
-              type: TEXT
+              type: text
             - label: 确诊方法
-              field: method
-              type: MULTI_CHOICE
+              type: choice-multi
               list:
                 - label: 细胞学诊断
                 - label: 基因学诊断
                 - label: 其他
-                  field: other
-                  type: TEXT
+                  list:
+                    - type: text
+                      required: true
         - label: 术前减黄
-          type: YESNO_CHOICE
-          field: preoperativeYellowing
-          isEnabler: true
+          type: either
           list:
             - label: 减黄方式
-              field: method
-              type: MULTI_CHOICE
+              type: choice-multi
               list:
                 - label: 经皮肝穿刺胆道引流（PTCD）
                 - label: 经内镜鼻胆管引流（ENBD）
                 - label: 胆道支架
                 - label: 胆囊造瘘
         - label: 合并症
-          type: YESNO_CHOICE
-          field: comorbidity
-          isEnabler: true
+          type: either
           yesno: 有/无
           list:
-            - type: MULTI_CHOICE
-              field: type
+            - type: choice-multi
               list:
                 - label: 肺心病
                 - label: 高血压
@@ -737,16 +593,14 @@ sections:
                 - label: 胰腺癌
                 - label: 胆管癌
                 - label: 其他
-                  type: TEXT
-                  field: other
+                  list:
+                    - type: text
   - title: 随访情况
     sections:
     - title: 随访情况
       questions:
         - label: 就诊号/住院号
-          field: id
-          type: TEXT
+          type: text
         - label: 随访时间
-          type: DATE
-          field: date
+          type: date
           isEnabler: true

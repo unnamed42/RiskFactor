@@ -7,7 +7,6 @@ import lombok.experimental.Accessors;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
-
 import static com.fasterxml.jackson.annotation.JsonInclude.Include;
 
 import static com.tjh.riskfactor.util.Utils.declaredFieldsAnnotated;
@@ -17,31 +16,17 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
-import static java.util.UUID.randomUUID;
 
 @Data @Entity
 @Table(name = "question")
 @Accessors(chain = true)
-@EqualsAndHashCode(onlyExplicitlyIncluded = true)
+@EqualsAndHashCode(of = "id")
 public class Question {
 
-    @PrePersist
-    private void assignFields() {
-        if(type == null)
-            type = QuestionType.CHOICE;
-        if(field == null)
-            field = randomUUID().toString();
-    }
-
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @EqualsAndHashCode.Include
     private Integer id;
 
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
     private QuestionType type;
-
-    private String field;
 
     @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.REMOVE)
     @JoinTable(name = "question_list",
@@ -59,6 +44,9 @@ public class Question {
     @Transient private Boolean isEnabler;
     // 问题标签
     @Transient private String label;
+    // 问题标签位置，仅供输入类组件使用，表示标签的位置
+    // 值的含义同addonPosition
+    @Transient private String labelPosition;
     // 指定YESNO_CHOICE问题的选项内容
     // 格式：[是含义]/[否含义]
     @Transient private String yesno;

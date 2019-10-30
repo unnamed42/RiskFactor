@@ -1,18 +1,26 @@
 package com.tjh.riskfactor.controller;
 
+import com.tjh.riskfactor.entity.form.Answer;
+import com.tjh.riskfactor.entity.form.AnswerSection;
+import com.tjh.riskfactor.service.AnswerService;
 import lombok.RequiredArgsConstructor;
 
+import lombok.val;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
+import com.tjh.riskfactor.entity.form.Section;
+import com.tjh.riskfactor.entity.form.Task;
+import com.tjh.riskfactor.entity.view.*;
 import com.tjh.riskfactor.service.TaskService;
 import com.tjh.riskfactor.service.GroupService;
-import static com.tjh.riskfactor.repo.TaskRepository.*;
-import static com.tjh.riskfactor.repo.AnswerRepository.*;
 import static com.tjh.riskfactor.error.ResponseErrors.notFound;
 import static com.tjh.riskfactor.util.Utils.isRoot;
+import static com.tjh.riskfactor.util.Utils.kvMap;
+import static java.util.stream.Collectors.toList;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequiredArgsConstructor
@@ -20,6 +28,7 @@ public class TaskController {
 
     private final TaskService service;
     private final GroupService groups;
+    private final AnswerService answers;
 
     @GetMapping("/tasks")
     List<TaskBrief> availableTasks(Authentication auth) {
@@ -28,11 +37,17 @@ public class TaskController {
 
     @GetMapping("/task/{id}")
     TaskBrief task(@PathVariable Integer id) {
-        return service.findTaskInfoById(id)
+        return service.taskBrief(id)
                .orElseThrow(() -> notFound("task", id.toString()));
     }
 
     @GetMapping("/task/{id}/sections")
+    List<Section> sections(@PathVariable Integer id) {
+        return service.task(id).map(Task::getSections)
+                .orElseThrow(() -> notFound("task", id.toString()));
+    }
+
+    @GetMapping("/task/{id}/sections/name")
     List<SectionBrief> sectionNames(@PathVariable Integer id) {
         return service.taskSectionsInfo(id);
     }
@@ -46,6 +61,21 @@ public class TaskController {
         return groups.idManagedBy(auth.getName())
                 .map(gid -> service.taskAnswers(id, gid))
                 .orElseGet(() -> service.taskAnswers(id, auth.getName()));
+    }
+
+    @PostMapping("/task/{id}/answer")
+    String postAnswer(@PathVariable Integer id, Authentication auth, @RequestBody Map<String, Map<String, Object>> body) {
+        List<AnswerSection> parts = body.entrySet().stream().map(e -> {
+            val ans = new AnswerSection().setSectionPath(e.getKey()).setBody(e.getValue());
+            return answers.saveAnswerSection(ans);
+        }).collect(toList());
+        Answer ans = answers.saveAnswer(id, auth.getName(), parts);
+        return kvMap("id", ans.getId()).buildJson().get();
+    }
+
+    @DeleteMapping("/task/{id}/answer/{aid}")
+    void deleteAnswer(@PathVariable Integer id, @PathVariable Integer aid) {
+        service.deleteTaskAnswer(aid);
     }
 
 }
