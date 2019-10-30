@@ -5,7 +5,8 @@ import lombok.val;
 import org.springframework.stereotype.Component;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.GrantedAuthority;
+
+import com.tjh.riskfactor.util.Utils;
 
 import java.security.Principal;
 
@@ -17,8 +18,7 @@ public class PermissionEvaluator {
     }
 
     public boolean isRoot() {
-        return authentication().getAuthorities().stream().map(GrantedAuthority::getAuthority)
-                .anyMatch(authority -> authority.equals("root"));
+        return Utils.isRoot(authentication());
     }
 
     public boolean canManage(String username) {

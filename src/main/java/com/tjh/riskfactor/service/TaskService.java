@@ -2,14 +2,14 @@ package com.tjh.riskfactor.service;
 
 import lombok.RequiredArgsConstructor;
 
+import lombok.val;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.tjh.riskfactor.entity.form.*;
-import com.tjh.riskfactor.repo.QuestionRepository;
-import com.tjh.riskfactor.repo.SectionRepository;
-import com.tjh.riskfactor.repo.TaskRepository;
+import com.tjh.riskfactor.repo.*;
 import static com.tjh.riskfactor.repo.TaskRepository.*;
+import static com.tjh.riskfactor.repo.AnswerRepository.AnswerBrief;
 
 import java.util.List;
 import java.util.Optional;
@@ -22,6 +22,9 @@ public class TaskService implements IDBService {
     private final QuestionRepository questions;
     private final SectionRepository sections;
     private final TaskRepository tasks;
+    private final AnswerRepository answers;
+
+    private final GroupService groups;
 
     @Transactional
     public void drop() {
@@ -48,6 +51,36 @@ public class TaskService implements IDBService {
      */
     public List<SectionBrief> taskSectionsInfo(Integer id) {
         return tasks.findSectionNamesById(id);
+    }
+
+    /**
+     * 获取项目下属的所有回答
+     * @param taskId 项目id
+     * @return 所有回答
+     */
+    public List<AnswerBrief> taskAnswers(Integer taskId) {
+        return answers.findByOwnerTaskId(taskId);
+    }
+
+    /**
+     * 获取项目下属的所有由某用户创建的回答
+     * @param taskId 项目id
+     * @param username 用户名
+     * @return 所有该用户创建的回答
+     */
+    public List<AnswerBrief> taskAnswers(Integer taskId, String username) {
+        return answers.findAnswersInTaskCreatedBy(taskId, username);
+    }
+
+    /**
+     * 获取项目下属所有由某用户组创建的回答
+     * @param taskId 项目id
+     * @param groupId 用户组id
+     * @return 所有该用户组创建的回答
+     */
+    public List<AnswerBrief> taskAnswers(Integer taskId, Integer groupId) {
+        val names = groups.memberNames(groupId);
+        return answers.findAnswersInTaskCreatedBy(taskId, names);
     }
 
     /**

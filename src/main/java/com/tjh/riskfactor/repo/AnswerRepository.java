@@ -19,12 +19,25 @@ public interface AnswerRepository extends JpaRepository<Answer, Integer> {
         Date getMtime();
     }
 
-    static final String ANSWER_BRIEF = "select a.id as id, c.username as creator, a.mtime as mtime from Answer a join a.creator c ";
+    @Query(nativeQuery = true,
+        value = "select a.id as id, u.username as creator, a.mtime as mtime from answer a " +
+                "left join task t on a.owner_task_id = t.id and t.id = :taskId " +
+                "left join users u on a.creator_id = u.id"
+    )
+    List<AnswerBrief> findByOwnerTaskId(Integer taskId);
 
-    @Query(ANSWER_BRIEF + "on c.username = :creatorName")
-    List<AnswerBrief> findAnswersByCreatorName(String creatorName);
+    @Query(nativeQuery = true,
+        value = "select a.id as id, u.username as creator, a.mtime as mtime from answer a " +
+                "left join task t on a.owner_task_id = t.id and t.id = :taskId " +
+                "left join users u on a.creator_id = u.id and u.username = :username"
+    )
+    List<AnswerBrief> findAnswersInTaskCreatedBy(Integer taskId, String username);
 
-    @Query(ANSWER_BRIEF + "on c.username in :names")
-    List<AnswerBrief> findAnswersForCreatorNames(Collection<String> names);
+    @Query(nativeQuery = true,
+        value = "select a.id as id, u.username as creator, a.mtime as mtime from answer a " +
+                "left join task t on a.owner_task_id = t.id and t.id = :taskId " +
+                "left join users u on a.creator_id = u.id and u.username in :usernames"
+    )
+    List<AnswerBrief> findAnswersInTaskCreatedBy(Integer taskId, Collection<String> usernames);
 
 }

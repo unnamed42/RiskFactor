@@ -1,9 +1,14 @@
 package com.tjh.riskfactor.util;
 
+import lombok.val;
+
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.TreeNode;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
 
 import static com.tjh.riskfactor.error.ResponseErrors.invalidArg;
 
@@ -12,6 +17,7 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.util.*;
 import java.util.stream.Stream;
+import static java.util.stream.Collectors.toSet;
 
 public class Utils {
 
@@ -68,6 +74,17 @@ public class Utils {
             mapper.treeAsTokens(node),
             mapper.getTypeFactory().constructType(type)
         );
+    }
+
+    public static boolean isRoot(Authentication auth) {
+        return auth.getAuthorities().stream().map(GrantedAuthority::getAuthority)
+                .anyMatch(a -> a.equals("root"));
+    }
+
+    public static boolean hasAnyAuthority(Authentication auth, String ...authorities) {
+        val set = Arrays.stream(authorities).collect(toSet());
+        return auth.getAuthorities().stream().map(GrantedAuthority::getAuthority)
+                .anyMatch(set::contains);
     }
 
 }

@@ -57,13 +57,17 @@ public class GroupService implements IDBService {
         return groups.findNameByMemberName(member);
     }
 
-    /**
-     * 查找被用户管理的用户组的id
-     * @param username 用户组管理员的用户名
-     * @return 用户组id
-     */
     public Optional<Integer> idManagedBy(String username) {
         return groups.findIdByAdminName(username);
+    }
+
+    /**
+     * 查找被用户管理的用户组的名称
+     * @param username 用户组管理员的用户名
+     * @return 用户组名称（非显示用名称）
+     */
+    public Optional<String> nameManagedBy(String username) {
+        return groups.findNameByAdminName(username);
     }
 
     List<Group> saveAll(Stream<Group> groups) {

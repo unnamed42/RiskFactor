@@ -6,8 +6,11 @@ import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import com.tjh.riskfactor.service.TaskService;
-import static com.tjh.riskfactor.repo.TaskRepository.TaskBrief;
+import com.tjh.riskfactor.service.GroupService;
+import static com.tjh.riskfactor.repo.TaskRepository.*;
+import static com.tjh.riskfactor.repo.AnswerRepository.*;
 import static com.tjh.riskfactor.error.ResponseErrors.notFound;
+import static com.tjh.riskfactor.util.Utils.isRoot;
 
 import java.util.List;
 
@@ -16,6 +19,7 @@ import java.util.List;
 public class TaskController {
 
     private final TaskService service;
+    private final GroupService groups;
 
     @GetMapping("/tasks")
     List<TaskBrief> availableTasks(Authentication auth) {
@@ -29,18 +33,19 @@ public class TaskController {
     }
 
     @GetMapping("/task/{id}/sections")
-    List<?> sectionNames(@PathVariable Integer id) {
+    List<SectionBrief> sectionNames(@PathVariable Integer id) {
         return service.taskSectionsInfo(id);
     }
-//
-//    @GetMapping("/task/{id}/answers")
-//    List<?> answers(@PathVariable Integer id) {
-//
-//    }
-//
-//    @GetMapping("task/{id}/{centerId}/answers")
-//    List<?> centerAnswers(@PathVariable Integer id, @PathVariable Integer centerId) {
-//
-//    }
+
+    @GetMapping("/task/{id}/answers")
+    List<AnswerBrief> answers(@PathVariable Integer id, Authentication auth) {
+        // 是root组，返回所有内容
+        if(isRoot(auth))
+            return service.taskAnswers(id);
+        // 根据是否是组管理员，返回所有内容
+        return groups.idManagedBy(auth.getName())
+                .map(gid -> service.taskAnswers(id, gid))
+                .orElseGet(() -> service.taskAnswers(id, auth.getName()));
+    }
 
 }
