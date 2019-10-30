@@ -64,9 +64,9 @@ export class QDynamic extends Component<P, S> {
             />
             {
               list!.map((q, i) => {
-                const field = `${q.field}@${idx}`;
+                const field = `${q.id}@${idx}`;
                 return <Question key={`${idx}-${i}`}
-                  schema={{ ...q, field }}
+                  schema={{ ...q, id: field }}
                   formItemProps={{ required: false, ...(idx === 0 ? undefined : noLabel) }}
                 />;
               })

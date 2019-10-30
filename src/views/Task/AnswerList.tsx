@@ -22,7 +22,7 @@ interface S {
 
 type T = AnswerBrief;
 
-export const Answers: FC<P> = ({ taskId }) => {
+export const AnswerList: FC<P> = ({ taskId }) => {
 
   const [state, setState] = useState<S>({});
 
@@ -48,7 +48,7 @@ export const Answers: FC<P> = ({ taskId }) => {
     <PageHeader title={info.name}
       extra={[
         <Button key="1" type="link" icon="plus">
-          <Link to="/">添加受试者</Link>
+          <Link to={`/task/${taskId}/form`}>添加受试者</Link>
         </Button>,
         <Button key="2" type="link" icon="import">批量导入</Button>
       ]}
@@ -57,15 +57,14 @@ export const Answers: FC<P> = ({ taskId }) => {
       <Table.Column<T> key="id" dataIndex="id" title="受试者编号" />
       <Table.Column<T> key="creator" dataIndex="creator" title="创建人" />
       <Table.Column<T> key="mtime" dataIndex="mtime" title="修改时间" />
+      <Table.Column key="status" dataIndex="" title="患者入组" render={() => <span>患者入组</span>} />
       {
         sections.map(section =>
           <Table.Column<T> key={section.title} dataIndex="" title={section.title}
             render={(_, answer) => sectionLink(answer, section.id)} />
         )
       }
-      <Table.Column<T> key="action" dataIndex="" title="动作" render={actions}/>
+      <Table.Column<T> key="action" dataIndex="" title="动作" render={actions} />
     </Table>
   </div>;
 };
-
-export default Answers;

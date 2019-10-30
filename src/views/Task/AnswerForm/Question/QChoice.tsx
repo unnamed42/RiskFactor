@@ -20,7 +20,7 @@ export const QChoice = forwardRef<any, QProps>((props, ref) => {
   return <Radio.Group ref={ref} value={selected} onChange={onChange}>
     {
       list!.map(q =>
-        <Radio key={q.field} value={q.label}>{q.label}</Radio>
+        <Radio key={q.id} value={q.label}>{q.label}</Radio>
       )
     }
   </Radio.Group>;

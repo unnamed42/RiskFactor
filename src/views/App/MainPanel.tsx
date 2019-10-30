@@ -9,14 +9,10 @@ import { logout } from "@/redux/auth";
 
 import "./MainPanel.less";
 
-interface P {
-  sider?: typeof Layout.Sider;
-}
-
 /**
  * 主窗口组件
  */
-export const MainPanel: FC<P> = ({ children, sider }) => {
+export const MainPanel: FC = ({ children }) => {
 
   const username = useSelector((state: StoreType) => state.auth.username);
   const dispatch = useDispatch();
@@ -35,8 +31,6 @@ export const MainPanel: FC<P> = ({ children, sider }) => {
     </Menu>;
 
   return <Layout hasSider={false} className="main-panel">
-    { sider }
-
     <Layout.Header className="main-header">
       <div className="main-navbar">
         <Dropdown overlay={dropdown} trigger={["click"]}>
@@ -46,9 +40,6 @@ export const MainPanel: FC<P> = ({ children, sider }) => {
         </Dropdown>
       </div>
     </Layout.Header>
-
-    <Layout.Content className="main-content">
-      {children}
-    </Layout.Content>
+    {children}
   </Layout>;
 };

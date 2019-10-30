@@ -5,10 +5,10 @@ import { Select } from "antd";
 import { QProps } from ".";
 
 export const QSelect = forwardRef<Select, QProps<any | any[]>>(({ schema, onChange, value }, ref) => {
-  const { type, list, field, filterKey, placeholder } = schema;
+  const { type, list, id, filterKey, placeholder } = schema;
 
   if (!list)
-    throw new Error(`QSelect ${field} has no list`);
+    throw new Error(`QSelect ${id} has no list`);
 
   const [selected, setSelected] = useState(value);
 
@@ -25,12 +25,12 @@ export const QSelect = forwardRef<Select, QProps<any | any[]>>(({ schema, onChan
     showSearch={!!filterKey}
     placeholder={placeholder}
     filterOption={filterKey ? inputFilter : undefined}
-    mode={type === "MULTI_SELECT" ? "multiple" : undefined}
+    mode={type === "select-multi" ? "multiple" : undefined}
     value={selected} onChange={changed}
   >
     {
-      list.map(({ label, filterKey, field }) => {
-        return <Select.Option key={field} value={label} data-key={filterKey}>
+      list.map(({ label, filterKey, id }) => {
+        return <Select.Option key={id} value={label} data-key={filterKey}>
           {label}
         </Select.Option>;
       })

@@ -1,12 +1,15 @@
 import React, { forwardRef, useState } from "react";
 
 import { Question, QProps } from ".";
-import { fieldName } from "./util";
+import { Question as QSchema } from "@/types/task";
 
-export const QList = forwardRef<any, QProps>((props, ref) => {
+interface P extends Omit<QProps, "schema"> {
+  list: QSchema[];
+}
 
-  const [values, setValues] = useState(props.value || {});
-  const { schema: { list }, onChange } = props;
+export const QList = forwardRef<any, P>(({ value, list, onChange }, ref) => {
+
+  const [values, setValues] = useState(value || {});
 
   const propChanged = (child: string, value: any) => {
     const newValue = { ...values, [child]: value };
@@ -18,8 +21,8 @@ export const QList = forwardRef<any, QProps>((props, ref) => {
   return <div ref={ref}>
     {
       list!.map(q =>
-        <Question key={q.field} schema={q}
-          onChange={value => propChanged(fieldName(q.field), value)}
+        <Question key={q.id} schema={q}
+          onChange={value => propChanged(q.id.toString(), value)}
         />)
     }
   </div>;

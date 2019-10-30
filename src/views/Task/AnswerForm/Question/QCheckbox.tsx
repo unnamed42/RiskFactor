@@ -29,9 +29,7 @@ export const QCheckbox = forwardRef<any, QProps<string[]>>(({ schema, onChange, 
           <Checkbox key={idx} value={label}>
             {label}
             {
-              list && chosen.includes(label) && <QList schema={{
-                field: "", type: "LIST", list
-              }}/>
+              list && chosen.includes(label) && <QList list={list} />
             }
           </Checkbox>
           <br />

@@ -16,21 +16,22 @@ import { QImmutable } from "./QImmutable";
 
 import { validationRules } from "./util";
 
+import { Question as QSchema } from "@/types/task";
+
 import { assign } from "lodash";
 
 import "./index.less";
 
-const renderer = (type: Question["type"]) => {
+const renderer = (type: QSchema["type"]) => {
   switch (type) {
-    case "NUMBER": case "TEXT": return QInput;
-    case "SINGLE_SELECT": case "MULTI_SELECT": return QSelect;
-    case "DATE": return QDate;
-    case "LIST": return QList;
-    case "LIST_APPENDABLE": return QDynamic;
-    case "YESNO_CHOICE": return QYesNo;
-    case "SINGLE_CHOICE": return QChoice;
-    case "MULTI_CHOICE": return QCheckbox;
-    case "IMMUTABLE": return QImmutable;
+    case "disabled": return QImmutable;
+    case "date": return QDate;
+    case "number": case "text": return QInput;
+    case "select": case "select-multi": return QSelect;
+    case "choice": return QChoice;
+    case "choice-multi": return QCheckbox;
+    case "either": return QYesNo;
+    case "template": return QDynamic;
     default: return forwardRef(() => <div />);
   }
 };
@@ -38,7 +39,7 @@ const renderer = (type: Question["type"]) => {
 export const FormContext = createContext(null as WrappedFormUtils | null);
 
 export interface QProps<T = any> {
-  schema: Question;
+  schema: QSchema;
   value?: T;
   onChange?: (value: T) => void;
 }
@@ -46,31 +47,37 @@ export interface QProps<T = any> {
 interface P extends QProps {
   formItemProps?: FormItemProps;
   decorator?: GetFieldDecoratorOptions;
+  noFormItem?: boolean;
 }
 
-export const Question = forwardRef<any, P>(({ formItemProps, children, decorator, ...props }, ref) => {
+export const Question = forwardRef<any, P>(({ formItemProps, noFormItem, children, decorator, ...props }, ref) => {
 
   const { schema, onChange } = props;
-  const { type, label, field } = schema;
+  const { type, label, id } = schema;
 
   const { getFieldDecorator } = useContext(FormContext)!;
 
   const layout: FormItemProps = {
-    labelCol: { xs: { span: 24 }, sm: { span: 4 } },
-    wrapperCol: { xs: { span: 24 }, sm: { span: 20 } }
+    // labelCol: { xs: { span: 24 }, sm: { span: 4 } },
+    // wrapperCol: { xs: { span: 24 }, sm: { span: 20 } }
   };
 
   const rules = validationRules(schema);
 
   const Renderer = renderer(type);
-  const child = <Renderer schema={schema} ref={ref} onChange={onChange} />;
+  const child = type !== "list" ?
+      <Renderer schema={schema} ref={ref} onChange={onChange} /> :
+      <QList list={schema.list!} ref={ref} onChange={onChange} />;
+
+  const body = type && type !== "list" ?
+      getFieldDecorator(id.toString(), { ...rules, ...decorator })(child) :
+      child;
+
+  if(noFormItem)
+    return <div>{body}{children}</div>;
 
   return <Form.Item label={label} {...assign(layout, formItemProps)}>
-    {
-      field.includes("/") && type !== "LIST" ?
-        getFieldDecorator(field, { ...rules, ...decorator })(child) :
-        child
-    }
+    {body}
     {children}
   </Form.Item>;
 });

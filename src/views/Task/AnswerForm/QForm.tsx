@@ -1,29 +1,16 @@
 import React, { Component } from "react";
 
-import { Form } from "antd";
+import {Button, Form} from "antd";
 import { FormComponentProps } from "antd/lib/form";
 
-import { PageLoading } from "@/components";
-
 import { FormContext, Question } from "./Question";
+import { Section } from "@/types/task";
 
 interface P extends FormComponentProps {
-  source?: Section;
+  source: Section;
   answer?: any;
+  onSubmit?: () => void;
 }
-
-export const repackAnswer = (values: any) => {
-  const ret: any = {};
-  Object.keys(values).forEach(key => {
-    const prop = values[key];
-    if ("field" in prop) {
-      const value = prop.value;
-      ret[key] = Array.isArray(value) ? value.map(repackAnswer) : value;
-    } else
-      ret[key] = repackAnswer(prop);
-  });
-  return ret;
-};
 
 // to use refs elegantly, has to be class component
 export class QFormD extends Component<P> {
@@ -39,16 +26,20 @@ export class QFormD extends Component<P> {
   }
 
   render() {
-    const { source, form } = this.props;
-    if (!source)
-      return <PageLoading />;
+    const { source: { questions }, form, onSubmit } = this.props;
+    const style = { labelCol: { span: 4 }, wrapperCol: { span: 14 } };
     return <Form layout="horizontal">
       <FormContext.Provider value={form}>
         {
-          source.questions && source.questions.map(q =>
-            <Question schema={q} key={q.field} />
+          questions && questions.map(q =>
+            <Question schema={q} key={q.id}
+              formItemProps={style}
+            />
           )
         }
+        <Form.Item wrapperCol={{ span: 14, offset: 4 }}>
+          <Button type="primary" onClick={() => onSubmit && onSubmit()}>提交</Button>
+        </Form.Item>
       </FormContext.Provider>
     </Form>;
   }

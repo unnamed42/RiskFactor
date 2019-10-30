@@ -9,11 +9,9 @@ export const QYesNo = forwardRef<any, QProps<string>>(({ schema, value, onChange
 
   const [choice, setChoice] = useState(value);
 
-  const { field, list, isEnabler, yesno } = schema;
-  if (!yesno)
-    throw new Error(`QYesNoChoice ${field} has no option detail`);
+  const { list, yesno } = schema;
 
-  const [yes, no] = yesno.split("/");
+  const [yes, no] = (yesno || "是/否").split("/");
 
   const parentChanged = (e: RadioChangeEvent) => {
     const { value } = e.target;
@@ -25,10 +23,10 @@ export const QYesNo = forwardRef<any, QProps<string>>(({ schema, value, onChange
   };
 
   const renderChild = () => {
-    if (choice !== yes || !isEnabler)
+    if (choice !== yes || !list)
       return null;
-    return list!.map(q =>
-      <Question key={q.field} schema={q} />
+    return list.map(q =>
+      <Question key={q.id} schema={q} />
     );
   };
 
@@ -36,7 +34,7 @@ export const QYesNo = forwardRef<any, QProps<string>>(({ schema, value, onChange
     <Radio value={yes}>{yes}</Radio>
     <Radio value={no}>{no}</Radio>
     {
-      isEnabler && choice === yes ?
+      list && choice === yes ?
         renderChild() :
         null
     }

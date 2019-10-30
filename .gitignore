@@ -15,6 +15,7 @@ yarn-error.log*
 .idea
 *.iml
 .vscode
+.ccls-cache
 *.suo
 *.ntvs*
 *.njsproj

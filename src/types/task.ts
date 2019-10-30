@@ -1,18 +1,18 @@
-export type QType = "TEXT" | "NUMBER" | "DATE" | "CHOICE" | "IMMUTABLE" |
-  "YESNO_CHOICE" | "LIST" | "LIST_APPENDABLE" |
-  "MULTI_CHOICE" | "SINGLE_CHOICE" |
-  "MULTI_SELECT" | "SINGLE_SELECT";
+export type QType =
+  "text" | "number" | "date" | "disabled" | "either" |
+  "list" | "template" |
+  "choice" | "choice-multi" | "select" | "select-multi";
 
 export interface Question {
-  type: QType;
-  field: string;
+  id: number | string;
+  type?: QType;
   label?: string;
   list?: Question[];
 
   required?: boolean;
-  isEnabler?: boolean;
   yesno?: string;
   addonPosition?: "prefix" | "postfix";
+  labelPosition?: "prefix" | "postfix";
   selected?: string;
   description?: string;
   placeholder?: string;
