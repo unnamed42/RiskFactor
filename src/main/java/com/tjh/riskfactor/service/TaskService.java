@@ -10,7 +10,7 @@ import com.tjh.riskfactor.entity.form.*;
 import com.tjh.riskfactor.repo.QuestionRepository;
 import com.tjh.riskfactor.repo.SectionRepository;
 import com.tjh.riskfactor.repo.TaskRepository;
-
+import static com.tjh.riskfactor.repo.TaskRepository.*;
 import static com.tjh.riskfactor.error.ResponseErrors.notFound;
 
 import java.util.Base64;
@@ -44,39 +44,48 @@ public class TaskService implements IDBService {
         tasks.deleteAll();
     }
 
-    public List<Task> availableTasks(String username) {
-        return tasks.findAll();
+    /**
+     * 获取用户能访问的项目
+     * @param username 用户名
+     * @return 能访问的项目的基本信息
+     */
+    public List<TaskBrief> availableTasks(String username) {
+        return tasks.findAllTasks();
     }
 
-    public List<String> taskSectionTitles(Integer id) {
+    /**
+     * 获取项目下属的分节的基本信息
+     * @param id 项目id
+     * @return 所有分节的基本信息
+     */
+    public List<SectionBrief> taskSectionsInfo(Integer id) {
         return tasks.findSectionNamesById(id);
     }
 
-    public List<Section> taskSections(Integer id) {
-        return tasks.findSectionsById(id);
+    /**
+     * 获取分节
+     * @param sid 分节id
+     * @return 分节的全部信息
+     */
+    public Section findSectionById(Integer sid) {
+        return sections.findById(sid).orElseThrow(() -> notFound("section", sid.toString()));
     }
 
     // 沿问题路径生成唯一key
     private static String key(String parent, Question q) {
-        if(parent == null) return null;
+        if(parent == null)
+            return null;
         val field = q.getField();
-        if(field == null) {
+        if(field == null)
             // 类型为LIST的问题，本身在路径中无意义，作为包装存在，可以不参与生成
             // 对于这类Question，路径处理中跳过，即生成key为 [父问题field]/[LIST子问题field]
-            if(q.getType() == QuestionType.LIST)
-                return parent;
-            // 其余为null
-            return null;
-        }
+            return q.getType() == QuestionType.LIST ? parent : null;
         return String.format("%s/%s", parent, field);
     }
 
     private String assignKey(String parent, Question q) {
         String key = key(parent, q);
-        // 没有field的Question，即不重要的Question，随机生成field（用于前端的唯一key）
-        if(key == null || q.getType() == QuestionType.LIST)
-            q.setField(uuid());
-        else
+        if(key != null && q.getType() != QuestionType.LIST)
             q.setField(key);
         return key;
     }
@@ -84,10 +93,6 @@ public class TaskService implements IDBService {
     // 存储Question中的其他相关实体，确保存储q之前它的所有属性都是数据库中存在的
     @Transactional
     Question assignFields(Question q, String parent) {
-        // 默认type为CHOICE
-        val type = q.getType();
-        if(type == null)
-            q.setType(QuestionType.CHOICE);
         // 设置唯一field
         val key = assignKey(parent, q);
         // 递归设置子问题的缺失属性
@@ -97,15 +102,6 @@ public class TaskService implements IDBService {
             q.setList(questions.saveAll(subq::iterator));
         }
         return q;
-    }
-
-    public Section section(String sectionTitle) {
-        return sections.findByTitle(sectionTitle)
-               .orElseThrow(() -> notFound("form", sectionTitle));
-    }
-
-    public Question saveQuestion(Question q) {
-        return questions.save(assignFields(q, null));
     }
 
     @Transactional
@@ -118,15 +114,7 @@ public class TaskService implements IDBService {
             return sections.save(section.setSections(ss));
         }
         val qs = section.getQuestions();
-        // 将Section的id当作初始parent
-        // 在Section未存入数据库之前，断开Questions存入数据库，来获取一个id
-        if(section.getId() == null) {
-            section.setQuestions(null);
-            section.setSections(null);
-            section = sections.save(section);
-        }
-        val parent = section.getId().toString();
-        Stream<Question> qss = qs.stream().map(q -> assignFields(q, parent));
+        Stream<Question> qss = qs.stream().map(q -> assignFields(q, "$"));
         section.setQuestions(questions.saveAll(qss::iterator));
         return sections.save(section);
     }

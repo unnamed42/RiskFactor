@@ -1,6 +1,9 @@
 package com.tjh.riskfactor.entity.form;
 
 import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.Setter;
 import lombok.experimental.Accessors;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -27,11 +30,6 @@ public class Task {
     @JsonIgnore
     private Group group;
 
-    // 用来给JSON用的，传入内容为用户组名
-    @Transient
-    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
-    private String center;
-
     @Column(nullable = false)
     private String name;
 
@@ -48,8 +46,12 @@ public class Task {
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private List<Section> sections;
 
+    // 用来给JSON用的，传入内容为用户组名
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+    @Transient private String center;
+
     @JsonProperty(value = "center", access = JsonProperty.Access.READ_ONLY)
-    public String getGroupName() {
+    @Transient public String getGroupName() {
         return group.getName();
     }
 

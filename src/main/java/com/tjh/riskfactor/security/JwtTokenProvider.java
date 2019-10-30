@@ -7,6 +7,8 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.SignatureAlgorithm;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+
 import org.springframework.stereotype.Component;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
@@ -14,13 +16,13 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 
-import com.tjh.riskfactor.util.JsonBuilder;
-
 import javax.servlet.http.HttpServletRequest;
 
 import java.util.Date;
 import java.util.Optional;
 import java.util.stream.Collectors;
+
+import static com.tjh.riskfactor.util.Utils.kvMap;
 
 @Component
 @RequiredArgsConstructor
@@ -49,12 +51,12 @@ public class JwtTokenProvider {
                 .setIssuedAt(now).setExpiration(expiry).compact();
     }
 
-    public String tokenToJson(String token) {
+    public Optional<String> tokenToJson(String token) {
         val claims = parseClaims(token);
-        return new JsonBuilder().add("username", claims.getSubject())
+        return kvMap().add("username", claims.getSubject())
                 .add(claimedProperty, claims.get(claimedProperty))
                 .add("issued_at", claims.getIssuedAt())
-                .add("expire_at", claims.getExpiration()).build();
+                .add("expire_at", claims.getExpiration()).buildJson();
     }
 
     private Claims parseClaims(String token) {

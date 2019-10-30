@@ -1,14 +1,17 @@
 package com.tjh.riskfactor.controller;
 
 import lombok.RequiredArgsConstructor;
+
+import lombok.val;
+
+import org.springframework.web.bind.annotation.*;
 import org.springframework.security.core.Authentication;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RestController;
 
 import com.tjh.riskfactor.service.AnswerService;
-import static com.tjh.riskfactor.repo.AnswerRepository.AnswerBrief;
+import static com.tjh.riskfactor.util.Utils.want;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequiredArgsConstructor
@@ -17,8 +20,13 @@ public class AnswerController {
     private final AnswerService service;
 
     @GetMapping("/answer")
-    List<AnswerBrief> readableAnswers(Authentication auth) {
-        return service.readableAnswers(auth.getName());
+    List<?> writableAnswers(Authentication auth) {
+        return service.writableAnswers(auth.getName());
+    }
+
+    @PostMapping("/answer")
+    void submit(@RequestBody Map<String, Object> node) {
+        val task = want(node, "task", String.class);
     }
 
 }

@@ -2,6 +2,8 @@ package com.tjh.riskfactor.error;
 
 import lombok.val;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+
 import org.springframework.stereotype.Component;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
@@ -11,13 +13,13 @@ import org.springframework.web.context.request.WebRequest;
 
 import javax.servlet.http.HttpServletRequest;
 
-import com.tjh.riskfactor.util.JsonBuilder;
-
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.Date;
 import java.util.stream.Collectors;
+
+import static com.tjh.riskfactor.util.Utils.toJson;
 
 @Component
 public class ApiErrorBuilder {
@@ -81,7 +83,7 @@ public class ApiErrorBuilder {
         }
 
         public String json() {
-            return JsonBuilder.from(error);
+            return toJson(error).get();
         }
 
         ResponseEntity<Object> response() {

@@ -26,7 +26,7 @@ public class AnswerService implements IDBService {
      * @param username 用户名
      * @return 所有Answer的id
      */
-    public List<AnswerBrief> readableAnswers(String username) {
+    public List<AnswerBrief> writableAnswers(String username) {
         val gid = accounts.findManagingGroupId(username);
         return gid.map(accounts::findMemberNamesByGid).map(answers::findAnswersForCreatorNames)
                 .orElseGet(() -> answers.findAnswersByCreatorName(username));

@@ -1,11 +1,9 @@
 package com.tjh.riskfactor.service;
 
 import lombok.val;
-import lombok.var;
 import lombok.RequiredArgsConstructor;
 
 import org.springframework.stereotype.Service;
-import org.springframework.web.server.ResponseStatusException;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
@@ -14,8 +12,6 @@ import com.tjh.riskfactor.entity.Group;
 import com.tjh.riskfactor.repo.UserRepository;
 import com.tjh.riskfactor.repo.GroupRepository;
 import static com.tjh.riskfactor.error.ResponseErrors.notFound;
-import static com.tjh.riskfactor.error.ResponseErrors.conflict;
-import static com.tjh.riskfactor.error.ResponseErrors.invalidArg;
 import static java.util.stream.Collectors.*;
 
 import java.util.*;
@@ -42,7 +38,7 @@ public class AccountService implements IDBService {
     /**
      * 查找用户所管理的用户组
      * @param username 用户名
-     * @return 该用户管理的用户组，为空则代表用户并不是组管理员
+     * @return 该用户管理的用户组id，为空则代表用户并不是组管理员
      */
     public Optional<Integer> findManagingGroupId(String username) {
         return users.findIdByUsername(username)
@@ -73,7 +69,7 @@ public class AccountService implements IDBService {
         return user.setPassword(encoder.encode(user.getPassword()));
     }
 
-    // 给TaskService用
+    // 给DataService用
     // 此时所有user和group都不存在
     void saveAll(List<User> userList, List<Group> groupList) {
         Stream<User> users = userList.stream().map(this::prepare);

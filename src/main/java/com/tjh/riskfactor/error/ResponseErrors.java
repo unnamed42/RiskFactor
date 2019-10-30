@@ -16,8 +16,12 @@ public class ResponseErrors {
         return new ResponseStatusException(HttpStatus.CONFLICT, message);
     }
 
+    public static ResponseStatusException invalidArg(String message) {
+        return new ResponseStatusException(HttpStatus.BAD_REQUEST, message);
+    }
+
     public static ResponseStatusException invalidArg(String field, String value) {
         val message = String.format("argument [%s] has invalid value [%s]", field, value);
-        return new ResponseStatusException(HttpStatus.BAD_REQUEST, message);
+        return invalidArg(message);
     }
 }

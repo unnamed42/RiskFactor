@@ -35,8 +35,8 @@ public class Section {
 
     @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.REMOVE)
     @JoinTable(name = "section_question_list",
-        joinColumns = @JoinColumn(name = "sid", referencedColumnName = "id"),
-        inverseJoinColumns = @JoinColumn(name = "qid", referencedColumnName = "id")
+        joinColumns = @JoinColumn(name = "sid"),
+        inverseJoinColumns = @JoinColumn(name = "qid")
     )
     @OrderColumn(name = "seq", nullable = false)
     private List<Question> questions;

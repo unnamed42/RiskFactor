@@ -22,7 +22,7 @@ public interface AnswerRepository extends JpaRepository<Answer, Integer> {
     @Query("select a.id, c.username as creator, a.mtime from Answer a join a.creator c where c.username = :creatorName")
     List<AnswerBrief> findAnswersByCreatorName(String creatorName);
 
-    @Query("select a.id as id, c.username as creator, a.mtime as mtime from Answer a join a.creator c where c.username in :names")
+    @Query("select a.id, c.username as creator, a.mtime from Answer a join a.creator c where c.username in :names")
     List<AnswerBrief> findAnswersForCreatorNames(Collection<String> names);
 
 }

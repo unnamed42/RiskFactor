@@ -1,17 +1,23 @@
 package com.tjh.riskfactor.entity.form;
 
-import lombok.*;
+import lombok.val;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
+
 import static com.fasterxml.jackson.annotation.JsonInclude.Include;
+
+import static com.tjh.riskfactor.util.Utils.declaredFieldsAnnotated;
 
 import javax.persistence.*;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
+import static java.util.UUID.randomUUID;
 
 @Data @Entity
 @Table(name = "question")
@@ -19,16 +25,22 @@ import java.util.stream.Collectors;
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class Question {
 
+    @PrePersist
+    private void assignFields() {
+        if(type == null)
+            type = QuestionType.CHOICE;
+        if(field == null)
+            field = randomUUID().toString();
+    }
+
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     @EqualsAndHashCode.Include
-    @JsonIgnore
     private Integer id;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private QuestionType type = QuestionType.CHOICE;
+    private QuestionType type;
 
-    @Column(unique = true)
     private String field;
 
     @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.REMOVE)
@@ -75,20 +87,20 @@ public class Question {
     @Access(AccessType.PROPERTY)
     @JsonIgnore
     public String getOption() {
-        String fields = Arrays.stream(this.getClass().getDeclaredFields())
-                .filter(field -> field.isAnnotationPresent(Transient.class))
-                .map(field -> {
+        String fields = declaredFieldsAnnotated(this.getClass(), Transient.class).map(field -> {
             field.setAccessible(true);
+            val name = field.getName();
             try {
-                val name = field.getName(); val value = field.get(this);
+                val value = field.get(this);
                 if(value == null)
                     return null;
                 if(field.getType().equals(Boolean.class) && ((Boolean) value))
                     return name;
                 else
                     return String.format("%s:%s", name, value);
-            } catch(ReflectiveOperationException ignored) { return null; }
+            } catch(IllegalAccessException ignored) { return null; }
         }).filter(Objects::nonNull).collect(Collectors.joining("$;"));
+
         return fields.isEmpty() ? null : fields;
     }
 
@@ -104,9 +116,7 @@ public class Question {
                     field.set(this, true);
                 else
                     field.set(this, value[1]);
-            } catch (ReflectiveOperationException e) {
-                e.printStackTrace();
-            }
+            } catch (IllegalAccessException | NoSuchFieldException ignored) {}
         });
     }
 
