@@ -14,6 +14,9 @@ export const Routes: FC = () =>
       <PrivateRoute exact path="/" component={TaskList} />
       <PrivateRoute path="/task/:id/answers"
         render={({ match }) => <AnswerList taskId={match.params.id} />} />
+      <PrivateRoute path="/task/:id/form/:ansId"
+        render={({ match: { params } }) => <AnswerForm taskId={params.id} answerId={params.ansId} /> } />
+
       <PrivateRoute path="/task/:id/form"
         render={({ match: { params } }) => <AnswerForm taskId={params.id} /> } />
     </Switch>

@@ -27,11 +27,10 @@ export const QInput = forwardRef<Input, QProps>(({ schema, onChange, value }, re
   const addon = () => {
     if (!list)
       return {};
-    const [childSchema] = list;
-    const { addonPosition } = childSchema;
+    const { addonPosition } = list[0];
     if (addonPosition === undefined)
       throw new Error(`Input addon is invalid`);
-    const element = <Question schema={childSchema} noFormItem
+    const element = <Question schema={list[0]} noFormItem
       formItemProps={{ labelCol: {}, wrapperCol: {} }}
     />;
     if (addonPosition === "prefix")
@@ -41,7 +40,7 @@ export const QInput = forwardRef<Input, QProps>(({ schema, onChange, value }, re
   };
 
   return <Input ref={ref} value={input} type="text"
-    onChange={type === "number" ? inputFilter : onChange}
+    onChange={type === "number" ? inputFilter : changed}
     placeholder={placeholder}
     {...addon()}
   />;

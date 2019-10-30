@@ -4,7 +4,7 @@ import { Link } from "react-router-dom";
 import { Button, PageHeader, message, Table } from "antd";
 
 import {
-  taskSections, taskAnswers, task,
+  taskSections, taskAnswers, task, deleteAnswer,
   SectionBrief, AnswerBrief, TaskBrief
 } from "@/api/task";
 
@@ -37,11 +37,19 @@ export const AnswerList: FC<P> = ({ taskId }) => {
   if (!info || !sections)
     return <div />;
 
-  const sectionLink = (answer: T, sectionId: number) =>
-    <div />;
+  const sectionLink = (answer: T, section: SectionBrief) =>
+    <Link to={`/task/${taskId}/form/${answer.id}/${section.id}`}>{section.title}</Link>;
+
+  const delAnswer = (answer: T) =>
+    deleteAnswer(answer.id).then(() => { window.location.reload(); message.success("删除成功") })
+        .catch(err => message.error(err.message));
 
   const actions = (text: any, answer: T) => {
-    return <Link to="#">删除</Link>;
+    return <span>
+      <Link to={`/task/${taskId}/form/${answer.id}`}>查看</Link>
+      &nbsp;
+      <Link to="#" onClick={() => delAnswer(answer)}>删除</Link>
+    </span>;
   };
 
   return <div>
@@ -53,7 +61,7 @@ export const AnswerList: FC<P> = ({ taskId }) => {
         <Button key="2" type="link" icon="import">批量导入</Button>
       ]}
     />
-    <Table<T> dataSource={answers}>
+    <Table<T> dataSource={answers} rowKey="id">
       <Table.Column<T> key="id" dataIndex="id" title="受试者编号" />
       <Table.Column<T> key="creator" dataIndex="creator" title="创建人" />
       <Table.Column<T> key="mtime" dataIndex="mtime" title="修改时间" />
@@ -61,7 +69,7 @@ export const AnswerList: FC<P> = ({ taskId }) => {
       {
         sections.map(section =>
           <Table.Column<T> key={section.title} dataIndex="" title={section.title}
-            render={(_, answer) => sectionLink(answer, section.id)} />
+            render={(_, answer) => sectionLink(answer, section)} />
         )
       }
       <Table.Column<T> key="action" dataIndex="" title="动作" render={actions} />

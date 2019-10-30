@@ -4,6 +4,10 @@ import { TaskBrief, SectionBrief, AnswerBrief, Section } from "@/types/task";
 
 export * from "@/types/task";
 
+interface IdResponse {
+    id: string | number;
+}
+
 /**
  * 获取Task的基础信息
  * @param taskId Task的id
@@ -44,3 +48,15 @@ export const taskAnswers = async (taskId: number | string) =>
  */
 export const section = async (sectionId: number | string) =>
   await request<Section>({ url: `/section/${sectionId}` });
+
+export const answer = async (answerId: number | string) =>
+  await request({ url: `/answer/${answerId}` });
+
+export const deleteAnswer = async (answerId: number | string) =>
+  await request({ url: `/task/0/answer/${answerId}`, method: "DELETE" });
+
+export const postAnswerSection = async (sectionId: number | string, value: any) =>
+  await request<IdResponse>({ url: `/answer/section/${sectionId}`, data: value, method: "POST" });
+
+export const postAnswer = async (taskId: number | string, value: any) =>
+  await request<IdResponse>({ url: `/task/${taskId}/answer`, data: value, method: "POST" });
