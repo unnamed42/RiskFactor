@@ -11,6 +11,10 @@ type P = ButtonProps & {
   onClick?: MouseEventHandler<HTMLElement>;
 };
 
+/**
+ * 按钮按下后，等待一段时间才能再次click
+ * 可用于请求验证码的按钮，请求一次之后60s以内不能再次请求
+ */
 export const TimedButton: FC<P> = ({ interval, text, onClick, ...rest }) => {
 
   const [suspended, setSuspended] = useStateAsync(false);

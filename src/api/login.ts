@@ -2,16 +2,15 @@ import { request } from "@/api/http";
 
 import { ApiToken, ApiTokenInfo } from "@/types/auth";
 
-export * from "@/types/auth";
+/**
+ * 用户名密码登录
+ */
+export const login = async (username: string, password: string) =>
+  await request<ApiToken>({ url: "/auth", data: { username, password }, method: "POST" });
 
-export type LoginPayload = Readonly<{
-  username: string,
-  password: string
-}>;
-
-export const login = async (payload: LoginPayload) =>
-  await request<ApiToken>({ url: "/auth", data: payload, method: "POST" });
-
+/**
+ * 登录后请求当前登录token的详细信息（用户名，过期时间）
+ */
 export const tokenInfo = async () =>
   await request<ApiTokenInfo>({ url: "/auth" });
 

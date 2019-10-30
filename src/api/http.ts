@@ -27,6 +27,10 @@ export interface Error {
   body?: string;
 }
 
+/**
+ * 向REST API请求数据的通用工具函数
+ * @param config 传递给Axios的配置
+ */
 export const request = async <T = any>(config: AxiosRequestConfig): Promise<T> => {
   if (!config.method)
     config.method = "GET";

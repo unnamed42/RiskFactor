@@ -1,4 +1,4 @@
-import React, { FC, ReactNode } from "react";
+import React, { FC } from "react";
 import { Link } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 
@@ -13,6 +13,9 @@ interface P {
   sider?: typeof Layout.Sider;
 }
 
+/**
+ * 主窗口组件
+ */
 export const MainPanel: FC<P> = ({ children, sider }) => {
 
   const username = useSelector((state: StoreType) => state.auth.username);

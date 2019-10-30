@@ -33,7 +33,9 @@ const initState = {
 ///
 /// actions
 ///
-interface LoginPayload extends api.LoginPayload {
+interface LoginPayload {
+  username: string;
+  password: string;
   remember: boolean;
 }
 interface AuthActionType {
@@ -46,7 +48,7 @@ type AuthActionThunk = ThunkAction<void, typeof initState, null, Action<AuthActi
 export const login = (payload: LoginPayload, onLoginSuccess?: () => void): AuthActionThunk => async dispatch => {
   dispatch({ type: AuthAction.LOGIN_POSTING });
   try {
-    const { token } = await api.login(payload);
+    const { token } = await api.login(payload.username, payload.password);
     // this is needed for http requests
     auth.token = token;
     const { username, expire_at } = await api.tokenInfo();
