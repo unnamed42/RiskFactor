@@ -55,6 +55,16 @@ export const answer = async (answerId: number | string) =>
 export const deleteAnswer = async (answerId: number | string) =>
   await request({ url: `/task/0/answer/${answerId}`, method: "DELETE" });
 
+export const downloadAnswer = (answerId: number | string) =>
+  request({ url: `/answer/${answerId}/file`, responseType: "blob" }).then(data => {
+    const url = window.URL.createObjectURL(new Blob([data]));
+    const link = document.createElement("a");
+    link.href = url;
+    link.setAttribute("download", "export.json");
+    document.body.appendChild(link);
+    link.click();
+  });
+
 export const postAnswerSection = async (sectionId: number | string, value: any) =>
   await request<IdResponse>({ url: `/answer/section/${sectionId}`, data: value, method: "POST" });
 

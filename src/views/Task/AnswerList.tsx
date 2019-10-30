@@ -1,11 +1,11 @@
 import React, { FC, useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 
-import { Button, PageHeader, message, Table } from "antd";
+import {Button, PageHeader, message, Table, Upload} from "antd";
 
 import {
   taskSections, taskAnswers, task, deleteAnswer,
-  SectionBrief, AnswerBrief, TaskBrief
+  SectionBrief, AnswerBrief, TaskBrief, downloadAnswer
 } from "@/api/task";
 
 import { Error } from "@/api/http";
@@ -48,6 +48,8 @@ export const AnswerList: FC<P> = ({ taskId }) => {
     return <span>
       <Link to={`/task/${taskId}/form/${answer.id}`}>查看</Link>
       &nbsp;
+      <Link to="#" onClick={() => downloadAnswer(answer.id)}>导出</Link>
+      &nbsp;
       <Link to="#" onClick={() => delAnswer(answer)}>删除</Link>
     </span>;
   };
@@ -58,7 +60,20 @@ export const AnswerList: FC<P> = ({ taskId }) => {
         <Button key="1" type="link" icon="plus">
           <Link to={`/task/${taskId}/form`}>添加受试者</Link>
         </Button>,
-        <Button key="2" type="link" icon="import">批量导入</Button>
+        <Upload key="_2" action={`http://localhost:8090/task/${taskId}/answer/file`}
+          headers={{authorization: `Bearer ${localStorage.getItem("auth.token")}`}}
+          onChange={(info) => {
+            if(info.file.status !== "uploading")
+              console.log(info.file, info.fileList);
+            if(info.file.status === "done")
+              message.success(`${info.file.name} 上传成功`)
+            else
+              message.error(`${info.file.name} 上传失败`)
+          }}
+        >
+          <Button key="2" type="link" icon="import">批量导入</Button>
+        </Upload>
+
       ]}
     />
     <Table<T> dataSource={answers} rowKey="id">
