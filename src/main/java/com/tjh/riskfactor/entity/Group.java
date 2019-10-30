@@ -1,12 +1,11 @@
 package com.tjh.riskfactor.entity;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-import lombok.ToString;
 import lombok.experimental.Accessors;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 import javax.persistence.*;
 
@@ -16,15 +15,24 @@ import java.util.Set;
 @Data @Entity
 @Table(name = "group")
 @Accessors(chain = true)
-@EqualsAndHashCode(onlyExplicitlyIncluded = true)
+@EqualsAndHashCode(of = "id")
 public class Group {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @EqualsAndHashCode.Include
     private Integer id;
 
+    /**
+     * 用于内部标识的用户组名，比如"root"
+     */
     @Column(unique = true, nullable = false)
     private String name;
+
+    /**
+     * 用于外部展示的用户组名，比如“华中科技大学”
+     * 在本项目中也用作分中心名称
+     */
+    @Column(nullable = false)
+    private String displayName;
 
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.DETACH)
     @JoinTable(name = "group_members",
@@ -32,12 +40,7 @@ public class Group {
         inverseJoinColumns = @JoinColumn(name = "uid")
     )
     @JsonIgnore
-    @ToString.Exclude
     private Set<User> members;
-
-    @Transient
-    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
-    private List<String> memberNames;
 
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.DETACH)
     @JoinTable(name = "group_admins",
@@ -45,11 +48,12 @@ public class Group {
         inverseJoinColumns = @JoinColumn(name = "gid")
     )
     @JsonIgnore
-    @ToString.Exclude
     private Set<User> admins;
 
-    @Transient
-    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
-    private List<String> adminNames;
+    @JsonProperty(value = "members", access = JsonProperty.Access.WRITE_ONLY)
+    @Transient private List<String> memberNames;
+
+    @JsonProperty(value = "admins", access = JsonProperty.Access.WRITE_ONLY)
+    @Transient private List<String> adminNames;
 
 }

@@ -5,8 +5,8 @@ import lombok.experimental.Accessors;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import static com.fasterxml.jackson.annotation.JsonFormat.Shape;
-import static com.fasterxml.jackson.annotation.JsonProperty.Access;
 
 import com.tjh.riskfactor.entity.User;
 import com.tjh.riskfactor.entity.cvt.MapConverter;
@@ -25,11 +25,18 @@ public class Answer {
 
     @ManyToOne
     @JoinColumn(referencedColumnName = "id", nullable = false)
+    @JsonIgnore
     private User creator;
 
     @ManyToOne
     @JoinColumn(referencedColumnName = "id", nullable = false)
-    private Section answerTo;
+    @JsonIgnore
+    private Task ownerTask;
+
+    @ManyToOne
+    @JoinColumn(referencedColumnName = "id", nullable = false)
+    @JsonIgnore
+    private Section ownerSection;
 
     @Column(nullable = false)
     @JsonFormat(shape = Shape.STRING, pattern = "yyyy-MM-dd")
@@ -40,12 +47,13 @@ public class Answer {
     @Basic(fetch = FetchType.LAZY)
     private Map<String, Object> body;
 
-    // 用于配置文件中，设置创建者用户名
-    @JsonProperty(access = Access.WRITE_ONLY)
-    @Transient private String creatorName;
+    @JsonProperty("creator")
+    @Transient public String getCreator() { return creator.getUsername(); }
 
-    //
-    @JsonProperty(access = Access.WRITE_ONLY)
-    @Transient private String section;
+    @JsonProperty("ownerSection")
+    @Transient public Integer ownerSectionId() { return ownerSection.getId(); }
+
+    @JsonProperty("ownerTask")
+    @Transient public Integer ownerTaskId() { return ownerTask.getId(); }
 
 }

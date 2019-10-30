@@ -2,6 +2,7 @@ package com.tjh.riskfactor.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.val;
+
 import org.springframework.stereotype.Service;
 
 import com.tjh.riskfactor.repo.AnswerRepository;
@@ -13,8 +14,8 @@ import java.util.List;
 @RequiredArgsConstructor
 public class AnswerService implements IDBService {
 
+    private final GroupService groups;
     private final AnswerRepository answers;
-    private final AccountService accounts;
 
     @Override
     public void drop() {
@@ -27,8 +28,8 @@ public class AnswerService implements IDBService {
      * @return 所有Answer的id
      */
     public List<AnswerBrief> writableAnswers(String username) {
-        val gid = accounts.findManagingGroupId(username);
-        return gid.map(accounts::findMemberNamesByGid).map(answers::findAnswersForCreatorNames)
+        val gid = groups.idManagedBy(username);
+        return gid.map(groups::memberNames).map(answers::findAnswersForCreatorNames)
                 .orElseGet(() -> answers.findAnswersByCreatorName(username));
     }
 

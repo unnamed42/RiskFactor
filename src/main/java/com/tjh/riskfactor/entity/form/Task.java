@@ -1,9 +1,6 @@
 package com.tjh.riskfactor.entity.form;
 
 import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.Setter;
 import lombok.experimental.Accessors;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -21,6 +18,12 @@ import java.util.List;
 @Table(name = "task")
 @Accessors(chain = true)
 public class Task {
+
+    @PrePersist
+    private void assignFields() {
+        if(mtime == null)
+            mtime = new Date();
+    }
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
@@ -51,8 +54,8 @@ public class Task {
     @Transient private String center;
 
     @JsonProperty(value = "center", access = JsonProperty.Access.READ_ONLY)
-    @Transient public String getGroupName() {
-        return group.getName();
+    @Transient public String getCenterName() {
+        return group.getDisplayName();
     }
 
 }

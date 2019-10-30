@@ -1,16 +1,16 @@
 package com.tjh.riskfactor.util;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.TreeNode;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import static com.tjh.riskfactor.error.ResponseErrors.invalidArg;
 
+import java.io.IOException;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Stream;
 
 public class Utils {
@@ -61,6 +61,13 @@ public class Utils {
 
     public static MapBuilder kvMap(String key1, Object value1) {
         return new MapBuilder().add(key1, value1);
+    }
+
+    public static <T> T readTreeAsType(ObjectMapper mapper, TreeNode node, TypeReference<T> type) throws IOException {
+        return mapper.readValue(
+            mapper.treeAsTokens(node),
+            mapper.getTypeFactory().constructType(type)
+        );
     }
 
 }

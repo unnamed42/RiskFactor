@@ -1,17 +1,20 @@
 groups:
   - name: root
-    memberNames:
+    displayName: 全部分中心
+    members:
       - admin
-    adminNames:
+    admins:
       - admin
   - name: users
-    memberNames:
+    displayName: 华中科技大学
+    members:
       - user
       - user2
-    adminNames:
+    admins:
       - user
   - name: nobody
-    memberNames:
+    displayName: 无
+    members:
       - banned
 users:
   - username: admin

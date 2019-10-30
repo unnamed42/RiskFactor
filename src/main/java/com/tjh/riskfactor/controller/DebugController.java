@@ -19,10 +19,10 @@ public class DebugController {
 
     private final DataService data;
 
-    @GetMapping("/debug/forms")
+    @GetMapping("/debug/tasks")
     @ResponseStatus(HttpStatus.OK)
     void reloadQuestions() throws IOException {
-        data.reloadForms();
+        data.reloadTask();
     }
 
     @GetMapping("/debug/users")

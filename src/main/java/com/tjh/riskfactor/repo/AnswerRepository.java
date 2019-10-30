@@ -19,10 +19,12 @@ public interface AnswerRepository extends JpaRepository<Answer, Integer> {
         Date getMtime();
     }
 
-    @Query("select a.id, c.username as creator, a.mtime from Answer a join a.creator c where c.username = :creatorName")
+    static final String ANSWER_BRIEF = "select a.id as id, c.username as creator, a.mtime as mtime from Answer a join a.creator c ";
+
+    @Query(ANSWER_BRIEF + "on c.username = :creatorName")
     List<AnswerBrief> findAnswersByCreatorName(String creatorName);
 
-    @Query("select a.id, c.username as creator, a.mtime from Answer a join a.creator c where c.username in :names")
+    @Query(ANSWER_BRIEF + "on c.username in :names")
     List<AnswerBrief> findAnswersForCreatorNames(Collection<String> names);
 
 }

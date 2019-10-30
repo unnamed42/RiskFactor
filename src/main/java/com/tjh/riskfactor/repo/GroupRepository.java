@@ -20,13 +20,13 @@ public interface GroupRepository extends JpaRepository<Group, Integer> {
     )
     Optional<Integer> findIdByMemberId(Integer uid);
 
-    @Query("select g from Group g join g.admins a where a.username = :username")
-    Optional<Group> findManagingGroup(String username);
+    @Query("select g.id from Group g join g.admins a on a.username = :username")
+    Optional<Integer> findIdByAdminName(String username);
 
-    @Query("select m.username from Group g join g.members m where g.id = :gid")
+    @Query("select m.username from Group g join g.members m on g.id = :gid")
     List<String> findMemberNamesById(Integer gid);
 
-    @Query("select g.name from Group g join g.members m where m.username = :member")
-    Optional<String> findNameByMemberName(String member);
+    @Query("select g.name from Group g join g.members m on m.username = :name")
+    Optional<String> findNameByMemberName(String name);
 
 }
