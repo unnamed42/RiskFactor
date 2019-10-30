@@ -16,11 +16,10 @@ import java.util.List;
 
 @Data @Entity
 @Accessors(chain = true)
-@EqualsAndHashCode(onlyExplicitlyIncluded = true)
+@EqualsAndHashCode(of = "id")
 public class Section {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @EqualsAndHashCode.Include
     private Integer id;
 
     @Column(nullable = false)

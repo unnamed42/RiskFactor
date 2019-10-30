@@ -12,11 +12,10 @@ import javax.persistence.*;
 @Data @Entity
 @Table(name = "users")
 @Accessors(chain = true)
-@EqualsAndHashCode(onlyExplicitlyIncluded = true)
+@EqualsAndHashCode(of = "id")
 public class User {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @EqualsAndHashCode.Include
     private Integer id;
 
     @Column(unique = true, nullable = false)
@@ -27,9 +26,5 @@ public class User {
     @Column(nullable = false)
     @JsonProperty(access = Access.WRITE_ONLY)
     private String password;
-
-    @Transient
-    @JsonProperty(access = Access.WRITE_ONLY)
-    private String groupName;
 
 }
