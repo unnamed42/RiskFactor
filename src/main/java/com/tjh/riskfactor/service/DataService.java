@@ -21,8 +21,8 @@ import static com.tjh.riskfactor.error.ResponseErrors.notFound;
 import java.util.*;
 import java.io.IOException;
 import java.util.function.Function;
-import static java.util.stream.Collectors.toMap;
-import static java.util.stream.Collectors.toSet;
+import java.util.stream.Stream;
+import static java.util.stream.Collectors.*;
 
 @Service
 @RequiredArgsConstructor
@@ -85,10 +85,10 @@ public class DataService {
             Function<List<String>, Set<User>> cvt =
                 list -> list != null ? list.stream().map(map::get).collect(toSet()) : null;
 
-            this.groups.saveAll(groupList.stream().peek(group -> {
-                group.setMembers(cvt.apply(group.getMemberNames()));
-                group.setAdmins(cvt.apply(group.getAdminNames()));
-            }));
+            this.groups.saveAll(groupList.stream().map(group ->
+                group.setMembers(cvt.apply(group.getMemberNames()))
+                    .setAdmins(cvt.apply(group.getAdminNames()))
+            ));
         }
     }
 
@@ -98,7 +98,8 @@ public class DataService {
                 section.getSections().stream().peek(this::prepareSection));
             return section.setSections(sections);
         }
-        val questions = section.getQuestions().stream().map(q -> this.assignFields(q, "$"));
+        Stream<Question> questions = section.getQuestions().stream()
+                .map(q -> this.assignFields(q, "$"));
         return section.setQuestions(this.tasks.saveQuestions(questions));
     }
 

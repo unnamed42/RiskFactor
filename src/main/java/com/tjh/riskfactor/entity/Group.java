@@ -44,8 +44,8 @@ public class Group {
 
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.DETACH)
     @JoinTable(name = "group_admins",
-        joinColumns = @JoinColumn(name = "admin"),
-        inverseJoinColumns = @JoinColumn(name = "gid")
+        joinColumns = @JoinColumn(name = "gid"),
+        inverseJoinColumns = @JoinColumn(name = "uid")
     )
     @JsonIgnore
     private Set<User> admins;
