@@ -1,13 +1,17 @@
 import { request } from "./http";
 
+import { TaskBrief, SectionBrief, AnswerBrief } from "@/types/task";
+
+export * from "@/types/task";
+
+export const task = async (taskId: number | string) =>
+  await request<TaskBrief>({ url: `/task/${taskId}` });
+
 export const tasks = async () =>
-  await request<Task[]>({ url: "/task" });
+  await request<TaskBrief[]>({ url: "/tasks" });
 
-export const taskSections = async (taskId: number) =>
-  await request<Section[]>({ url: `/task/${taskId}/sections` });
+export const taskSections = async (taskId: number | string) =>
+  await request<SectionBrief[]>({ url: `/task/${taskId}/sections` });
 
-export const sectionTitles = async (taskId: number) =>
-  await request<string[]>({ url: `/task/${taskId}/section-names` });
-
-export const answers = async () =>
-  await request<AnswerBrief[]>({ url: `/answer` });
+export const taskAnswers = async (taskId: number | string) =>
+  await request<AnswerBrief[]>({ url: `/task/${taskId}/answers` });

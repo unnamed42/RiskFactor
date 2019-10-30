@@ -17,10 +17,20 @@ http.interceptors.request.use(config => {
   return config;
 }, Promise.reject);
 
+// general error response
+export interface Error {
+  timestamp: number;
+  status: number;
+  error: string;
+  message: string;
+  stacktrace?: string;
+  body?: string;
+}
+
 export const request = async <T = any>(config: AxiosRequestConfig): Promise<T> => {
   if (!config.method)
     config.method = "GET";
-  const { data } = await http.request<ApiError | T>(config);
+  const { data } = await http.request<Error | T>(config);
   if ("error" in data)
     throw data;
   return data;

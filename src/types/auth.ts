@@ -1,13 +1,3 @@
-// general error response
-export interface ApiError {
-  timestamp: number;
-  status: number;
-  error: string;
-  message: string;
-  stacktrace?: string;
-  body?: string;
-}
-
 // post /auth
 export interface ApiToken {
   username: string;

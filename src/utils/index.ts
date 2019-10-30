@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 
 // wrapper around useState, report new value after setState
 export const useStateAsync = <T>(init?: T | undefined): [T | undefined, (x: T) => Promise<T>] => {

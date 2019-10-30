@@ -1,6 +1,7 @@
 import { Action } from "redux";
 import { ThunkAction } from "redux-thunk";
 
+import { Error } from "@/api/http";
 import * as api from "@/api/login";
 import { auth } from "@/api/persist";
 
@@ -54,7 +55,7 @@ export const login = (payload: LoginPayload, onLoginSuccess?: () => void): AuthA
     dispatch({ type: AuthAction.LOGIN_SUCCESS, payload: { token, username, expiry: expire_at } });
     if (onLoginSuccess) onLoginSuccess();
   } catch (e) {
-    const error = e as ApiError;
+    const error = e as Error;
     dispatch({ type: AuthAction.LOGIN_FAILURE, payload: { error: error.message } });
   }
 };

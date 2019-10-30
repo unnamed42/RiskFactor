@@ -5,13 +5,10 @@ import { LoginForm } from "./LoginForm";
 
 import "./index.less";
 
-export const Login = withRouter(({ history, ...props }) => {
+export const Login = withRouter(({ history, location: { state } }) => {
 
-  const redirect = () => {
-    const { state } = props.location;
-    const referrer = state ? state.from : "/";
-    history.push(referrer);
-  };
+  const redirect = () =>
+    history.push(state ? state.from : "/");
 
   return (
     <div>

@@ -19,18 +19,26 @@ export interface Question {
   filterKey?: string;
 }
 
-export interface Section {
+export interface SectionBrief {
+  id: number;
   title: string;
+}
+
+export interface Section extends SectionBrief {
   sections?: Section[];
   questions?: Question[];
 }
 
-export interface Task {
+export interface TaskBrief {
   id: number;
   center: string;
   name: string;
   mtime: string;
-  sections: Section[];
+}
+
+export interface Task extends TaskBrief {
+  sections?: Section[];
+  questions?: Question[];
 }
 
 export interface AnswerBrief {
