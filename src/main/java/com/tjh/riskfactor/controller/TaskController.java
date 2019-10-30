@@ -1,5 +1,7 @@
 package com.tjh.riskfactor.controller;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.tjh.riskfactor.entity.form.Answer;
 import com.tjh.riskfactor.entity.form.AnswerSection;
 import com.tjh.riskfactor.service.AnswerService;
@@ -14,11 +16,14 @@ import com.tjh.riskfactor.entity.form.Task;
 import com.tjh.riskfactor.entity.view.*;
 import com.tjh.riskfactor.service.TaskService;
 import com.tjh.riskfactor.service.GroupService;
+import org.springframework.web.multipart.MultipartFile;
+
 import static com.tjh.riskfactor.error.ResponseErrors.notFound;
 import static com.tjh.riskfactor.util.Utils.isRoot;
 import static com.tjh.riskfactor.util.Utils.kvMap;
 import static java.util.stream.Collectors.toList;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
@@ -71,6 +76,13 @@ public class TaskController {
         }).collect(toList());
         Answer ans = answers.saveAnswer(id, auth.getName(), parts);
         return kvMap("id", ans.getId()).buildJson().get();
+    }
+
+    @PostMapping("/task/{id}/answer/file")
+    String postAnswer(@PathVariable Integer id, Authentication auth, @RequestParam("file")MultipartFile file) throws IOException {
+        val mapper = new ObjectMapper();
+        val type = new TypeReference<Map<String, Map<String, Object>>>(){};
+        return postAnswer(id, auth, mapper.readValue(file.getInputStream(), type));
     }
 
     @DeleteMapping("/task/{id}/answer/{aid}")
