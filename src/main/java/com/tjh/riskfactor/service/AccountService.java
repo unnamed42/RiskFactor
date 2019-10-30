@@ -11,12 +11,11 @@ import com.tjh.riskfactor.entity.User;
 import com.tjh.riskfactor.entity.Group;
 import com.tjh.riskfactor.repo.UserRepository;
 import com.tjh.riskfactor.repo.GroupRepository;
-import static com.tjh.riskfactor.error.ResponseErrors.notFound;
-import static java.util.stream.Collectors.*;
 
 import java.util.*;
-import java.util.function.Function;
 import java.util.stream.Stream;
+import java.util.function.Function;
+import static java.util.stream.Collectors.*;
 
 /**
  * 提供用户与组操作，暴露用户数据库和组数据库两个数据库的操作。
@@ -54,9 +53,21 @@ public class AccountService implements IDBService {
         return groups.findMemberNamesById(gid);
     }
 
-    public Group findGroupByName(String name) {
-        return groups.findByName(name)
-               .orElseThrow(() -> notFound("group", name));
+    public Optional<Group> findGroupByName(String name) {
+        return groups.findByName(name);
+    }
+
+    public Optional<User> findUserByName(String username) {
+        return users.findByUsername(username);
+    }
+
+    /**
+     * 利用成员用户名查找所属用户组，然后返回用户组名
+     * @param username 成员用户名
+     * @return 所属用户组名
+     */
+    public Optional<String> findGroupNameByMemberName(String username) {
+        return groups.findNameByMemberName(username);
     }
 
     ///

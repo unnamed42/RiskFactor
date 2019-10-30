@@ -1,5 +1,6 @@
 package com.tjh.riskfactor.entity.form;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
@@ -31,6 +32,7 @@ public class Section {
         inverseJoinColumns = @JoinColumn(name = "sid")
     )
     @OrderColumn(name = "seq", nullable = false)
+    @JsonInclude(JsonInclude.Include.NON_EMPTY)
     private List<Section> sections;
 
     @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.REMOVE)
@@ -39,6 +41,7 @@ public class Section {
         inverseJoinColumns = @JoinColumn(name = "qid")
     )
     @OrderColumn(name = "seq", nullable = false)
+    @JsonInclude(JsonInclude.Include.NON_EMPTY)
     private List<Question> questions;
 
 }

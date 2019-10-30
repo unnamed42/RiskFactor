@@ -15,6 +15,7 @@ import static com.tjh.riskfactor.error.ResponseErrors.notFound;
 
 import java.util.Base64;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Stream;
 import java.security.SecureRandom;
 import static java.util.stream.Collectors.toList;
@@ -67,8 +68,8 @@ public class TaskService implements IDBService {
      * @param sid 分节id
      * @return 分节的全部信息
      */
-    public Section findSectionById(Integer sid) {
-        return sections.findById(sid).orElseThrow(() -> notFound("section", sid.toString()));
+    public Optional<Section> findSectionById(Integer sid) {
+        return sections.findById(sid);
     }
 
     // 沿问题路径生成唯一key
@@ -121,9 +122,10 @@ public class TaskService implements IDBService {
 
     @Transactional
     Task saveTask(Task task) {
-        task.setGroup(accounts.findGroupByName(task.getCenter()));
-        task.setSections(task.getSections().stream()
-                         .map(this::saveSection).collect(toList()));
+        val group = accounts.findGroupByName(task.getCenter())
+                     .orElseThrow(() -> notFound("group", task.getCenter()));
+        task.setGroup(group).setSections(task.getSections().stream()
+                                         .map(this::saveSection).collect(toList()));
         return tasks.save(task);
     }
 
