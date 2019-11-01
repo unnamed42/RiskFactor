@@ -1,6 +1,5 @@
 package com.tjh.riskfactor.config;
 
-import lombok.val;
 import lombok.RequiredArgsConstructor;
 
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -57,7 +56,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
      */
     @Bean
     protected AuthenticationProvider daoAuthenticationProvider() {
-        val provider = new DaoAuthenticationProvider();
+        final var provider = new DaoAuthenticationProvider();
         provider.setUserDetailsService(service);
         provider.setPasswordEncoder(encoder);
         provider.setHideUserNotFoundExceptions(false);
@@ -70,14 +69,14 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
      */
     @Bean
     protected FilterRegistrationBean<CorsFilter> simpleCorsFilter() {
-        val source = new UrlBasedCorsConfigurationSource();
-        val config = new CorsConfiguration();
+        final var source = new UrlBasedCorsConfigurationSource();
+        final var config = new CorsConfiguration();
         config.setAllowCredentials(true);
         config.setAllowedOrigins(Arrays.asList("http://localhost:8080", "http://127.0.0.1:8080"));
         config.setAllowedMethods(Collections.singletonList("*"));
         config.setAllowedHeaders(Collections.singletonList("*"));
         source.registerCorsConfiguration("/**", config);
-        val bean = new FilterRegistrationBean<>(new CorsFilter(source));
+        final var bean = new FilterRegistrationBean<>(new CorsFilter(source));
         bean.setOrder(Ordered.HIGHEST_PRECEDENCE);
         return bean;
     }

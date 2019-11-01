@@ -24,6 +24,14 @@ public class UserService implements IDBService {
         users.deleteAll();
     }
 
+    public Optional<String> myGroupName(Integer uid) {
+        return users.findGroupNameByUserId(uid);
+    }
+
+    public Optional<Integer> managedGroupId(Integer uid) {
+        return users.findGroupIdManagedByUserId(uid);
+    }
+
     public Optional<User> user(Integer id) {
         return users.findById(id);
     }

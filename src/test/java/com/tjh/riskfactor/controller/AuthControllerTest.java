@@ -1,7 +1,5 @@
 package com.tjh.riskfactor.controller;
 
-import lombok.val;
-
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -41,8 +39,8 @@ public class AuthControllerTest extends TestBase {
         mvc.perform(get("/auth").header(AUTHORIZATION, "Bearer ")).andExpect(status().isUnauthorized());
         mvc.perform(get("/auth").header(AUTHORIZATION, "Bearer 123456")).andExpect(status().isUnauthorized());
         // 登录用户
-        val req = get("/auth").header(AUTHORIZATION, "Bearer " + token(mvc, "admin", "admin"));
-        val json = mvc.perform(req).andExpect(status().isOk()).andReturn().getResponse().getContentAsString();
+        final var req = get("/auth").header(AUTHORIZATION, "Bearer " + token(mvc, "admin", "admin"));
+        final var json = mvc.perform(req).andExpect(status().isOk()).andReturn().getResponse().getContentAsString();
         assertThat(fromJson(json)).containsKeys("issued_at", "expire_at", claimed);
     }
 

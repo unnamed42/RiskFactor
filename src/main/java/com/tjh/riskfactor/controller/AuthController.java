@@ -1,24 +1,23 @@
 package com.tjh.riskfactor.controller;
 
-import lombok.val;
 import lombok.RequiredArgsConstructor;
-
-import com.fasterxml.jackson.core.JsonProcessingException;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.*;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.bind.annotation.*;
 
 import com.tjh.riskfactor.security.JwtTokenProvider;
-
 import static com.tjh.riskfactor.util.Utils.kvMap;
 import static com.tjh.riskfactor.util.Utils.want;
 
-import javax.servlet.http.HttpServletRequest;
 import java.util.Map;
 
+/**
+ * 负责用户登录信息的Controller
+ */
 @RestController
 @RequiredArgsConstructor
 public class AuthController {
@@ -26,10 +25,10 @@ public class AuthController {
     private final AuthenticationManager authManager;
     private final JwtTokenProvider provider;
 
-    private String authenticate(String username, String password) {
+    private Authentication authenticate(String username, String password) {
         try {
-            val authToken = new UsernamePasswordAuthenticationToken(username, password);
-            return provider.generateToken(authManager.authenticate(authToken));
+            final var authToken = new UsernamePasswordAuthenticationToken(username, password);
+            return authManager.authenticate(authToken);
         } catch (BadCredentialsException e) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED,
                     "wrong password");
@@ -42,20 +41,30 @@ public class AuthController {
         }
     }
 
+    /**
+     * 请求登录，返回JWT。请求JSON格式为：
+     * {
+     *     "username": [username],
+     *     "password": [password]
+     * }
+     * 给予应答内容的JSON格式为：
+     * {
+     *     "token": [token]
+     * }
+     * 不需要包含多余信息，因为token中已经编码了用户名和用户id
+     *
+     * @param body 请求体，格式如上
+     * @return token应答，格式如上
+     */
     @PostMapping("/auth")
     String requestToken(@RequestBody Map<String, String> body) {
-        val username = want(body, "username", String.class);
-        val password = want(body, "password", String.class);
+        final var username = want(body, "username", String.class);
+        final var password = want(body, "password", String.class);
 
-        val token = authenticate(username, password);
+        final var auth = authenticate(username, password);
+        final var token = provider.generateToken(auth);
 
-        return kvMap("username", username).add("token", token).buildJson().get();
-    }
-
-    @GetMapping("/auth")
-    String tokenInfo(HttpServletRequest request) {
-        // the token is validated before here, no need for invalidity report
-        return provider.resolveToken(request).flatMap(provider::tokenToJson).get();
+        return kvMap(token, "token").buildJson().get();
     }
 
 }

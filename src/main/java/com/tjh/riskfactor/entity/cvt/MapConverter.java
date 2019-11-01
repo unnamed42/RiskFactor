@@ -1,6 +1,5 @@
 package com.tjh.riskfactor.entity.cvt;
 
-import lombok.val;
 import lombok.extern.slf4j.Slf4j;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -28,7 +27,7 @@ public class MapConverter implements AttributeConverter<Map<String, Object>, Str
     @Override
     public Map<String, Object> convertToEntityAttribute(String source) {
         try {
-            val type = new TypeReference<Map<String, Object>>() {};
+            final var type = new TypeReference<Map<String, Object>>() {};
             return mapper.readValue(source, type);
         } catch(JsonProcessingException e) {
             log.error(e.getMessage());

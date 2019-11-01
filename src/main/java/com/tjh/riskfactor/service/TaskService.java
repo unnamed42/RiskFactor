@@ -2,7 +2,6 @@ package com.tjh.riskfactor.service;
 
 import lombok.RequiredArgsConstructor;
 
-import lombok.val;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -11,7 +10,6 @@ import com.tjh.riskfactor.entity.form.*;
 import com.tjh.riskfactor.entity.view.*;
 
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Stream;
 
@@ -69,11 +67,11 @@ public class TaskService implements IDBService {
     /**
      * 获取项目下属的所有由某用户创建的回答
      * @param taskId 项目id
-     * @param username 用户名
+     * @param uid 用户id
      * @return 所有该用户创建的回答
      */
-    public List<AnswerBrief> taskAnswers(Integer taskId, String username) {
-        return answers.findAllByTaskIdCreatedBy(taskId, username);
+    public List<AnswerBrief> userAnswers(Integer taskId, Integer uid) {
+        return answers.findTaskAnswersCreatedBy(taskId, uid);
     }
 
     /**
@@ -82,8 +80,8 @@ public class TaskService implements IDBService {
      * @param groupId 用户组id
      * @return 所有该用户组创建的回答
      */
-    public List<AnswerBrief> taskAnswers(Integer taskId, Integer groupId) {
-        val names = groups.memberNames(groupId);
+    public List<AnswerBrief> centerAnswers(Integer taskId, Integer groupId) {
+        final var names = groups.memberNames(groupId);
         return answers.findAllByTaskIdCreatedBy(taskId, names);
     }
 

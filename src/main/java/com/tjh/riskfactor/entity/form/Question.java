@@ -1,6 +1,5 @@
 package com.tjh.riskfactor.entity.form;
 
-import lombok.val;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
@@ -77,9 +76,9 @@ public class Question {
     public String getOption() {
         String fields = declaredFieldsAnnotated(this.getClass(), Transient.class).map(field -> {
             field.setAccessible(true);
-            val name = field.getName();
+            final var name = field.getName();
             try {
-                val value = field.get(this);
+                final var value = field.get(this);
                 if(value == null)
                     return null;
                 if(field.getType().equals(Boolean.class) && ((Boolean) value))
@@ -96,9 +95,9 @@ public class Question {
         if(option == null)
             return;
         Arrays.stream(option.split("\\$;")).forEach(part -> {
-            val value = part.split(":");
+            final var value = part.split(":");
             try {
-                val field = this.getClass().getDeclaredField(value[0]);
+                final var field = this.getClass().getDeclaredField(value[0]);
                 field.setAccessible(true);
                 if(value.length == 1)
                     field.set(this, true);

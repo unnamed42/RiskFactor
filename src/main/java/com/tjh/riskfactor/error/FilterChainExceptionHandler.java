@@ -1,7 +1,5 @@
 package com.tjh.riskfactor.error;
 
-import lombok.val;
-
 import org.springframework.stereotype.Component;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.web.filter.GenericFilterBean;
@@ -40,8 +38,8 @@ public class FilterChainExceptionHandler extends GenericFilterBean {
         try {
             filterChain.doFilter(request, response);
         } catch(RuntimeException e) {
-            val hRequest = (HttpServletRequest)request;
-            val hResponse = (HttpServletResponse)response;
+            final var hRequest = (HttpServletRequest)request;
+            final var hResponse = (HttpServletResponse)response;
             resolver.resolveException(hRequest, hResponse, null, e);
         }
     }

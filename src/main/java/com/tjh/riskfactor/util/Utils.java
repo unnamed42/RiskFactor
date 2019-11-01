@@ -1,7 +1,5 @@
 package com.tjh.riskfactor.util;
 
-import lombok.val;
-
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.TreeNode;
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -16,6 +14,7 @@ import java.io.IOException;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.util.*;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import static java.util.stream.Collectors.toSet;
 
@@ -61,6 +60,14 @@ public class Utils {
         }
     }
 
+    public static String join(Collection<?> collection) {
+        if(collection == null)
+            return "[]";
+        final var sb = new StringBuilder("[");
+        collection.forEach(item -> sb.append(' ').append(item));
+        return sb.append(" ]").toString();
+    }
+
     public static MapBuilder kvMap() {
         return new MapBuilder();
     }
@@ -76,13 +83,8 @@ public class Utils {
         );
     }
 
-    public static boolean isRoot(Authentication auth) {
-        return auth.getAuthorities().stream().map(GrantedAuthority::getAuthority)
-                .anyMatch(a -> a.equals("root"));
-    }
-
     public static boolean hasAnyAuthority(Authentication auth, String ...authorities) {
-        val set = Arrays.stream(authorities).collect(toSet());
+        final var set = Arrays.stream(authorities).collect(toSet());
         return auth.getAuthorities().stream().map(GrantedAuthority::getAuthority)
                 .anyMatch(set::contains);
     }

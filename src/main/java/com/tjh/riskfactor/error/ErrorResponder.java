@@ -1,7 +1,6 @@
 package com.tjh.riskfactor.error;
 
 import lombok.RequiredArgsConstructor;
-import lombok.val;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
@@ -21,7 +20,7 @@ public class ErrorResponder {
     public void response(HttpServletRequest request, HttpServletResponse response,
                          Exception ex, HttpStatus status, String message) throws IOException {
         SecurityContextHolder.clearContext();
-        val error = builder.withStatus(status).request(request)
+        final var error = builder.withStatus(status).request(request)
                         .message(message).exception(ex).json();
         response.setStatus(status.value());
         response.setHeader("Content-Type", "application/json");

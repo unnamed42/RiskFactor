@@ -56,11 +56,6 @@ public class GroupService implements IDBService {
     public Optional<String> groupNameWithMember(String member) {
         return groups.findNameByMemberName(member);
     }
-
-    public Optional<Integer> idManagedBy(String username) {
-        return groups.findIdByAdminName(username);
-    }
-
     /**
      * 查找被用户管理的用户组的名称
      * @param username 用户组管理员的用户名

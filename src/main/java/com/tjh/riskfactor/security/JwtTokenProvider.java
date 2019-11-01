@@ -1,13 +1,10 @@
 package com.tjh.riskfactor.security;
 
-import lombok.val;
 import lombok.RequiredArgsConstructor;
 
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.SignatureAlgorithm;
-
-import com.fasterxml.jackson.core.JsonProcessingException;
 
 import org.springframework.stereotype.Component;
 import org.springframework.beans.factory.annotation.Value;
@@ -21,8 +18,6 @@ import javax.servlet.http.HttpServletRequest;
 import java.util.Date;
 import java.util.Optional;
 import java.util.stream.Collectors;
-
-import static com.tjh.riskfactor.util.Utils.kvMap;
 
 @Component
 @RequiredArgsConstructor
@@ -40,23 +35,16 @@ public class JwtTokenProvider {
     private final UserDetailsService userDetailsService;
 
     public String generateToken(Authentication auth) {
-        val authorities = auth.getAuthorities().stream()
+        final var authorities = auth.getAuthorities().stream()
                 .map(GrantedAuthority::getAuthority)
                 .collect(Collectors.joining(","));
-        val expiryMs = expiryHours.longValue() * 3600000L;
+        final var expiryMs = expiryHours.longValue() * 3600000L;
         Date now = new Date(), expiry = new Date(now.getTime() + expiryMs);
         return Jwts.builder().setSubject(auth.getName())
                 .claim(claimedProperty, authorities)
                 .signWith(SignatureAlgorithm.HS256, signingKey)
-                .setIssuedAt(now).setExpiration(expiry).compact();
-    }
-
-    public Optional<String> tokenToJson(String token) {
-        val claims = parseClaims(token);
-        return kvMap().add("username", claims.getSubject())
-                .add(claimedProperty, claims.get(claimedProperty))
-                .add("issued_at", claims.getIssuedAt())
-                .add("expire_at", claims.getExpiration()).buildJson();
+                .setIssuedAt(now).setExpiration(expiry)
+                .setId(((JwtUserDetails)auth.getPrincipal()).userId().toString()).compact();
     }
 
     private Claims parseClaims(String token) {
@@ -64,8 +52,8 @@ public class JwtTokenProvider {
     }
 
     Authentication getAuthentication(String token) {
-        val username = parseClaims(token).getSubject();
-        val details = userDetailsService.loadUserByUsername(username);
+        final var username = parseClaims(token).getSubject();
+        final var details = userDetailsService.loadUserByUsername(username);
         return new UsernamePasswordAuthenticationToken(details, "", details.getAuthorities());
     }
 

@@ -14,6 +14,9 @@ import javax.persistence.*;
 import java.util.Date;
 import java.util.List;
 
+/**
+ * 一个项目
+ */
 @Data @Entity
 @Table(name = "task")
 @Accessors(chain = true)

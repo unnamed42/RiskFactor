@@ -1,6 +1,5 @@
 package com.tjh.riskfactor.error;
 
-import lombok.val;
 import lombok.RequiredArgsConstructor;
 
 import org.springframework.http.HttpHeaders;
@@ -18,7 +17,7 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 
 import javax.servlet.http.HttpServletRequest;
 
-import java.util.Collection;
+import static com.tjh.riskfactor.util.Utils.join;
 
 @RestControllerAdvice
 @RequiredArgsConstructor
@@ -26,19 +25,11 @@ public class ExceptionsHandler extends ResponseEntityExceptionHandler {
 
     private final ApiErrorBuilder builder;
 
-    private static String join(Collection<?> list) {
-        if(list == null)
-            return "[]";
-        val sb = new StringBuilder().append('[');
-        list.forEach(item -> sb.append(' ').append(item));
-        return sb.append(" ]").toString();
-    }
-
     @Override
     protected ResponseEntity<Object> handleHttpRequestMethodNotSupported(
         HttpRequestMethodNotSupportedException ex,
         HttpHeaders headers, HttpStatus status, WebRequest request) {
-        val message = ex.getMethod() +
+        final var message = ex.getMethod() +
                 " is not supported on requested uri. Supported methods are: " +
                 join(ex.getSupportedHttpMethods());
         return builder.withStatus(HttpStatus.BAD_REQUEST)
@@ -48,7 +39,7 @@ public class ExceptionsHandler extends ResponseEntityExceptionHandler {
     @Override
     protected ResponseEntity<Object> handleNoHandlerFoundException(
             NoHandlerFoundException ex, HttpHeaders headers, HttpStatus status, WebRequest request) {
-        val message = "no handler for method " + ex.getHttpMethod();
+        final var message = "no handler for method " + ex.getHttpMethod();
         return builder.withStatus(HttpStatus.BAD_REQUEST)
                 .request(request).message(message).exception(ex).response();
     }
@@ -57,7 +48,7 @@ public class ExceptionsHandler extends ResponseEntityExceptionHandler {
     protected ResponseEntity<Object> handleHttpMediaTypeNotSupported(
         HttpMediaTypeNotSupportedException ex,
         HttpHeaders headers, HttpStatus status, WebRequest request) {
-        val message = ex.getContentType() +
+        final var message = ex.getContentType() +
                 " media type is not supported. Supported types are: " +
                 join(ex.getSupportedMediaTypes());
         return builder.withStatus(HttpStatus.UNSUPPORTED_MEDIA_TYPE)

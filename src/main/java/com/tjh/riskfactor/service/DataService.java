@@ -1,6 +1,5 @@
 package com.tjh.riskfactor.service;
 
-import lombok.val;
 import lombok.RequiredArgsConstructor;
 
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -21,7 +20,6 @@ import static com.tjh.riskfactor.error.ResponseErrors.notFound;
 import java.util.*;
 import java.io.IOException;
 import java.util.function.Function;
-import java.util.stream.Stream;
 import static java.util.stream.Collectors.*;
 
 @Service
@@ -57,29 +55,29 @@ public class DataService {
     }
 
     private void loadTasks() throws IOException {
-        val type = new TypeReference<Task>() {};
-        try(val is = TypeReference.class.getResourceAsStream("/data/task.yml")) {
-            val task = mapper.readValue(is, type);
+        final var type = new TypeReference<Task>() {};
+        try(final var is = TypeReference.class.getResourceAsStream("/data/task.yml")) {
+            final var task = mapper.readValue(is, type);
 
-            val group = groups.groupWithName(task.getCenter())
+            final var group = groups.groupWithName(task.getCenter())
                      .orElseThrow(() -> notFound("group", task.getCenter()));
-            val sections = this.tasks.saveSections(task.getSections().stream().map(this::prepareSection));
+            final var sections = this.tasks.saveSections(task.getSections().stream().map(this::prepareSection));
             this.tasks.saveTask(task.setGroup(group).setSections(sections));
         }
     }
 
     private void loadUsers() throws IOException {
-        val userListType = new TypeReference<List<User>>() {};
-        val groupListType = new TypeReference<List<Group>>() {};
+        final var userListType = new TypeReference<List<User>>() {};
+        final var groupListType = new TypeReference<List<Group>>() {};
 
-        try(val is = ObjectMapper.class.getResourceAsStream("/data/user.yml")) {
-            val node = mapper.readTree(is); assert node.isObject();
-            val root = (ObjectNode)node;
+        try(final var is = ObjectMapper.class.getResourceAsStream("/data/user.yml")) {
+            final var node = mapper.readTree(is); assert node.isObject();
+            final var root = (ObjectNode)node;
 
             List<User> userList = readTreeAsType(mapper, root.get("users"), userListType);
             List<Group> groupList = readTreeAsType(mapper, root.get("groups"), groupListType);
 
-            val map = this.users.saveAll(userList.stream().map(this.users::encoded)).stream()
+            final var map = this.users.saveAll(userList.stream().map(this.users::encoded)).stream()
                       .collect(toMap(User::getUsername, u -> u));
 
             Function<List<String>, Set<User>> cvt =
@@ -94,7 +92,7 @@ public class DataService {
 
     private Question prepareQuestion(Question q) {
         if(q.getList() != null) {
-            val questions = this.tasks.saveQuestions(
+            final var questions = this.tasks.saveQuestions(
                 q.getList().stream().peek(this::prepareQuestion));
             return q.setList(questions);
         }
@@ -103,12 +101,12 @@ public class DataService {
 
     private Section prepareSection(Section section) {
         if(section.getSections() != null) {
-            val sections = this.tasks.saveSections(
+            final var sections = this.tasks.saveSections(
                 section.getSections().stream().map(this::prepareSection));
             section.setSections(sections);
         }
         if(section.getQuestions() != null) {
-            val questions = this.tasks.saveQuestions(
+            final var questions = this.tasks.saveQuestions(
                 section.getQuestions().stream().map(this::prepareQuestion));
             section.setQuestions(questions);
         }

@@ -1,9 +1,5 @@
 package com.tjh.riskfactor.error;
 
-import lombok.val;
-
-import com.fasterxml.jackson.core.JsonProcessingException;
-
 import org.springframework.stereotype.Component;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
@@ -62,7 +58,7 @@ public class ApiErrorBuilder {
         Builder request(WebRequest request) {
             if(!(request instanceof ServletWebRequest))
                 throw new RuntimeException("ApiErrorBuilder supports only HTTP requests");
-            val hRequest = ((ServletWebRequest)request).getRequest();
+            final var hRequest = ((ServletWebRequest)request).getRequest();
             return this.request(hRequest);
         }
 
@@ -75,7 +71,7 @@ public class ApiErrorBuilder {
             if(error.getMessage() == null)
                 error.setMessage(ex.getMessage());
             if(debug) {
-                val writer = new StringWriter();
+                final var writer = new StringWriter();
                 ex.printStackTrace(new PrintWriter(writer));
                 error.setStacktrace(writer.toString());
             }
@@ -87,7 +83,7 @@ public class ApiErrorBuilder {
         }
 
         ResponseEntity<Object> response() {
-            val status = HttpStatus.valueOf(error.getStatus());
+            final var status = HttpStatus.valueOf(error.getStatus());
             return new ResponseEntity<>(error, status);
         }
 

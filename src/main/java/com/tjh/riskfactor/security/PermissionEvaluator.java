@@ -1,12 +1,8 @@
 package com.tjh.riskfactor.security;
 
-import lombok.val;
-
 import org.springframework.stereotype.Component;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-
-import com.tjh.riskfactor.util.Utils;
 
 import java.security.Principal;
 
@@ -17,12 +13,16 @@ public class PermissionEvaluator {
         return SecurityContextHolder.getContext().getAuthentication();
     }
 
+    private static JwtUserDetails principal() {
+        return (JwtUserDetails) authentication().getPrincipal();
+    }
+
     public boolean isRoot() {
-        return Utils.isRoot(authentication());
+        return principal().isRoot();
     }
 
     public boolean canManage(String username) {
-        val user = (Principal)authentication().getPrincipal();
+        final var user = (Principal)authentication().getPrincipal();
         if(user.getName().equals(username))
             return true;
         return isRoot();
