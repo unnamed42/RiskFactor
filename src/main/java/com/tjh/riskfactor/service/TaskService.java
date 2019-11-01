@@ -35,12 +35,7 @@ public class TaskService implements ILoadableService<Task> {
         return repo.findById(id);
     }
 
-    /**
-     * 获取用户能访问的项目
-     * @param username 用户名
-     * @return 能访问的项目的基本信息
-     */
-    public List<TaskBrief> availableTasks(String username) {
+    public List<TaskBrief> tasks() {
         return repo.findAllTasks();
     }
 

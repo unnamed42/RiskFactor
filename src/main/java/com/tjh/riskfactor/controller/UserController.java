@@ -4,14 +4,15 @@ import lombok.RequiredArgsConstructor;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import com.tjh.riskfactor.service.UserService;
+import com.tjh.riskfactor.security.PermissionEvaluator;
+import static com.tjh.riskfactor.util.Utils.optional;
+import static com.tjh.riskfactor.error.ResponseErrors.notFound;
+import static com.tjh.riskfactor.error.ResponseErrors.forbidden;
 
 import java.util.Map;
-
-import static com.tjh.riskfactor.util.Utils.require;
 
 /**
  * 用户相关操作，比如设置用户信息，检查用户名重名等
@@ -21,6 +22,7 @@ import static com.tjh.riskfactor.util.Utils.require;
 public class UserController {
 
     private final UserService service;
+    private final PermissionEvaluator permission;
 
     /**
      * 检查用户名{@code username}是否存在
@@ -43,9 +45,15 @@ public class UserController {
      * @param body 请求内容
      */
     @PutMapping("/user/{id}")
-    @PreAuthorize("@e.writeUserPermitted(#id)")
     public void updateInfo(@PathVariable Integer id, @RequestBody Map<String, String> body) {
-        final var username = require(body, "username");
+        final var user = service.user(id).orElseThrow(() -> notFound("user", id.toString()));
+        if(!permission.writeUserPermitted(id))
+            throw forbidden(String.format("not permitted to update user [%d]", id));
+        if(body.size() == 0)
+            return;
+        optional(body, "username").ifPresent(user::setUsername);
+        optional(body, "password").map(service::encodePassword).ifPresent(user::setPassword);
+        service.save(user);
     }
 
 }

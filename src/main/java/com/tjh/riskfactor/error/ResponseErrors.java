@@ -9,6 +9,10 @@ public class ResponseErrors {
         return new ResponseStatusException(HttpStatus.NOT_FOUND, message);
     }
 
+    public static ResponseStatusException forbidden(String message) {
+        return new ResponseStatusException(HttpStatus.FORBIDDEN, message);
+    }
+
     public static ResponseStatusException conflict(String field, String name) {
         final var message = String.format("%s [%s] already exists", field, name);
         return new ResponseStatusException(HttpStatus.CONFLICT, message);

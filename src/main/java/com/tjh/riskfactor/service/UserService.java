@@ -43,6 +43,10 @@ public class UserService implements ILoadableService<User> {
         return repo.findByUsername(username);
     }
 
+    public String encodePassword(String password) {
+        return encoder.encode(password);
+    }
+
     User encoded(User u) {
         return u.setPassword(encoder.encode(u.getPassword()));
     }

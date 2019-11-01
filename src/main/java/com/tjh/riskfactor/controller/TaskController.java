@@ -26,46 +26,55 @@ import static java.util.stream.Collectors.toList;
 @RequiredArgsConstructor
 public class TaskController {
 
-    private final TaskService tasks;
+    private final TaskService service;
     private final GroupService groups;
     private final UserService users;
     private final AnswerService answers;
 
-    @GetMapping("/tasks")
-    List<TaskBrief> availableTasks(Authentication auth) {
-        return tasks.availableTasks(auth.getName());
+    /**
+     * 获取全部项目的基础信息
+     * @return 全部项目的基础信息
+     */
+    @GetMapping("/task")
+    public List<TaskBrief> tasks() {
+        return service.tasks();
     }
 
+    /**
+     * 获取某个项目的基础信息
+     * @param id 项目id
+     * @return 基础信息
+     */
     @GetMapping("/task/{id}")
-    TaskBrief task(@PathVariable Integer id) {
-        return tasks.taskBrief(id)
+    public TaskBrief task(@PathVariable Integer id) {
+        return service.taskBrief(id)
                .orElseThrow(() -> notFound("task", id.toString()));
     }
 
     @GetMapping("/task/{id}/sections")
-    List<Section> sections(@PathVariable Integer id) {
-        return tasks.task(id).map(Task::getSections)
+    public List<Section> sections(@PathVariable Integer id) {
+        return service.task(id).map(Task::getSections)
                 .orElseThrow(() -> notFound("task", id.toString()));
     }
 
     @GetMapping("/task/{id}/sections/name")
-    List<SectionBrief> sectionNames(@PathVariable Integer id) {
-        return tasks.taskSectionsInfo(id);
+    public List<SectionBrief> sectionNames(@PathVariable Integer id) {
+        return service.taskSectionsInfo(id);
     }
 
     @GetMapping("/task/{id}/answers")
-    List<AnswerBrief> answers(@PathVariable Integer id, @AuthenticationPrincipal JwtUserDetails userDetails) {
+    public List<AnswerBrief> answers(@PathVariable Integer id, @AuthenticationPrincipal JwtUserDetails userDetails) {
         // 是root组，返回所有内容
         if(userDetails.isRoot())
-            return tasks.taskAnswers(id);
+            return service.taskAnswers(id);
         // 根据是否是组管理员，返回所有内容
         return users.managedGroupId(userDetails.getId())
-            .map(gid -> tasks.centerAnswers(id, gid))
-            .orElseGet(() -> tasks.userAnswers(id, userDetails.getId()));
+            .map(gid -> service.centerAnswers(id, gid))
+            .orElseGet(() -> service.userAnswers(id, userDetails.getId()));
     }
 
     @PostMapping("/task/{id}/answer")
-    String postAnswer(@PathVariable Integer id, Authentication auth, @RequestBody Map<String, Map<String, Object>> body) {
+    public String postAnswer(@PathVariable Integer id, Authentication auth, @RequestBody Map<String, Map<String, Object>> body) {
         List<AnswerSection> parts = body.entrySet().stream().map(e -> {
             final var ans = new AnswerSection().setSectionPath(e.getKey()).setBody(e.getValue());
             return answers.saveAnswerSection(ans);
@@ -75,15 +84,10 @@ public class TaskController {
     }
 
     @PostMapping("/task/{id}/answer/file")
-    String postAnswer(@PathVariable Integer id, Authentication auth, @RequestParam("file")MultipartFile file) throws IOException {
+    public String postAnswer(@PathVariable Integer id, Authentication auth, @RequestParam("file")MultipartFile file) throws IOException {
         final var mapper = new ObjectMapper();
         final var type = new TypeReference<Map<String, Map<String, Object>>>(){};
         return postAnswer(id, auth, mapper.readValue(file.getInputStream(), type));
-    }
-
-    @DeleteMapping("/task/{id}/answer/{aid}")
-    void deleteAnswer(@PathVariable Integer id, @PathVariable Integer aid) {
-        tasks.deleteTaskAnswer(aid);
     }
 
 }

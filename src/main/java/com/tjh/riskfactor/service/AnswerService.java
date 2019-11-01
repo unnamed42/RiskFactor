@@ -28,6 +28,10 @@ public class AnswerService {
         return answers.findById(id);
     }
 
+    public void delete(Integer id) {
+        answers.deleteById(id);
+    }
+
     public AnswerSection saveAnswerSection(AnswerSection ans) {
         return answerSections.save(ans);
     }
