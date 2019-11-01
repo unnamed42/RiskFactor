@@ -8,7 +8,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import static com.fasterxml.jackson.annotation.JsonInclude.Include;
 
-import static com.tjh.riskfactor.util.Utils.declaredFieldsAnnotated;
+import static com.tjh.riskfactor.util.Utils.annotatedDeclaredFields;
 
 import javax.persistence.*;
 import java.util.Arrays;
@@ -74,7 +74,7 @@ public class Question {
     @Access(AccessType.PROPERTY)
     @JsonIgnore
     public String getOption() {
-        String fields = declaredFieldsAnnotated(this.getClass(), Transient.class).map(field -> {
+        String fields = annotatedDeclaredFields(this.getClass(), Transient.class).map(field -> {
             field.setAccessible(true);
             final var name = field.getName();
             try {

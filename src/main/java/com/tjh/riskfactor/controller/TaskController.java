@@ -59,9 +59,9 @@ public class TaskController {
         if(userDetails.isRoot())
             return tasks.taskAnswers(id);
         // 根据是否是组管理员，返回所有内容
-        return users.managedGroupId(userDetails.userId())
+        return users.managedGroupId(userDetails.getId())
             .map(gid -> tasks.centerAnswers(id, gid))
-            .orElseGet(() -> tasks.userAnswers(id, userDetails.userId()));
+            .orElseGet(() -> tasks.userAnswers(id, userDetails.getId()));
     }
 
     @PostMapping("/task/{id}/answer")

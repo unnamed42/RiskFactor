@@ -1,48 +1,55 @@
 package com.tjh.riskfactor.security;
 
-import com.tjh.riskfactor.entity.User;
+import lombok.Getter;
+
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
+
+import com.tjh.riskfactor.entity.User;
 
 import java.util.Collection;
 import java.util.Collections;
 
 public class JwtUserDetails implements UserDetails {
 
-    private String username;
-    private String password;
-    private Integer id;
+    private User user;
     private Collection<SimpleGrantedAuthority> authorities;
 
     public JwtUserDetails(User entity, String groupName) {
-        username = entity.getUsername();
-        password = entity.getPassword();
-        id = entity.getId();
-        authorities = Collections.singleton(new SimpleGrantedAuthority(groupName));
+        user = entity;
+        authorities = Collections.singletonList(new SimpleGrantedAuthority(groupName));
     }
 
-    public Integer userId() {
-        return id;
+    public Integer getId() {
+        return user.getId();
     }
 
     public boolean isRoot() {
-        return authorities.stream().anyMatch(a -> a.getAuthority().equals("root"));
+        return isInGroup("root");
     }
 
-   @Override
+    public boolean isGroupAdmin() {
+        return user.isAdmin();
+    }
+
+    private boolean isInGroup(String name) {
+        return authorities.stream().anyMatch(a -> a.getAuthority().equals(name));
+    }
+
+    @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return authorities;
     }
 
     @Override
     public String getPassword() {
-        return password;
+        return user.getPassword();
     }
 
     @Override
     public String getUsername() {
-        return username;
+        return user.getUsername();
     }
 
     @Override
@@ -52,7 +59,7 @@ public class JwtUserDetails implements UserDetails {
 
     @Override
     public boolean isAccountNonLocked() {
-        return true;
+        return !isInGroup("nobody");
     }
 
     @Override

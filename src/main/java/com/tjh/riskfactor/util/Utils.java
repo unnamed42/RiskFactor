@@ -14,7 +14,6 @@ import java.io.IOException;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.util.*;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import static java.util.stream.Collectors.toSet;
 
@@ -37,7 +36,11 @@ public class Utils {
         }
     }
 
-    public static <K, V> V want(Map<K, ?> map, K key, Class<? extends V> clazz) {
+    public static <K, V> V require(Map<K, V> map, K key) {
+        return optional(map, key).orElseThrow(() -> invalidArg(key.toString(), "null"));
+    }
+
+    public static <K, V> V require(Map<K, ?> map, K key, Class<? extends V> clazz) {
         Object value = map.get(key);
         if(value == null)
             throw invalidArg(key.toString(), "null");
@@ -46,7 +49,11 @@ public class Utils {
         return clazz.cast(value);
     }
 
-    public static Stream<Field> declaredFieldsAnnotated(Class<?> clazz, Class<? extends Annotation> annotation) {
+    public static <K, V> Optional<V> optional(Map<K, V> map, K key) {
+        return Optional.ofNullable(map.get(key));
+    }
+
+    public static Stream<Field> annotatedDeclaredFields(Class<?> clazz, Class<? extends Annotation> annotation) {
         return Arrays.stream(clazz.getDeclaredFields())
                .filter(field -> field.isAnnotationPresent(annotation))
                .peek(field -> field.setAccessible(true));
@@ -58,6 +65,11 @@ public class Utils {
         } catch (JsonProcessingException e) {
             return Optional.empty();
         }
+    }
+
+    public static Map<String, Object> fromJson(String json) throws JsonProcessingException {
+        var type = new TypeReference<Map<String, Object>>() {};
+        return new ObjectMapper().readValue(json, type);
     }
 
     public static String join(Collection<?> collection) {

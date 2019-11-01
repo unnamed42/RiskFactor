@@ -4,8 +4,8 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import static com.fasterxml.jackson.annotation.JsonProperty.Access;
 
 import javax.persistence.*;
 
@@ -24,7 +24,19 @@ public class User {
     private String email;
 
     @Column(nullable = false)
-    @JsonProperty(access = Access.WRITE_ONLY)
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String password;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(referencedColumnName = "id", nullable = false)
+    @JsonIgnore
+    private Group group;
+
+    @Column(nullable = false)
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+    private boolean isAdmin = false;
+
+    @JsonProperty(value = "group", access = JsonProperty.Access.WRITE_ONLY)
+    @Transient private String groupName;
 
 }

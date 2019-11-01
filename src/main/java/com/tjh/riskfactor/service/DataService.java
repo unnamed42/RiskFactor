@@ -62,7 +62,7 @@ public class DataService {
             final var group = groups.groupWithName(task.getCenter())
                      .orElseThrow(() -> notFound("group", task.getCenter()));
             final var sections = this.tasks.saveSections(task.getSections().stream().map(this::prepareSection));
-            this.tasks.saveTask(task.setGroup(group).setSections(sections));
+            this.tasks.save(task.setGroup(group).setSections(sections));
         }
     }
 
@@ -77,15 +77,11 @@ public class DataService {
             List<User> userList = readTreeAsType(mapper, root.get("users"), userListType);
             List<Group> groupList = readTreeAsType(mapper, root.get("groups"), groupListType);
 
-            final var map = this.users.saveAll(userList.stream().map(this.users::encoded)).stream()
-                      .collect(toMap(User::getUsername, u -> u));
+            var groups = this.groups.saveAll(groupList).stream()
+                         .collect(toMap(Group::getName, g -> g));
 
-            Function<List<String>, Set<User>> cvt =
-                list -> list != null ? list.stream().map(map::get).collect(toSet()) : null;
-
-            this.groups.saveAll(groupList.stream().map(group ->
-                group.setMembers(cvt.apply(group.getMemberNames()))
-                    .setAdmins(cvt.apply(group.getAdminNames()))
+            this.users.saveAll(userList.stream().peek(
+                u -> users.encoded(u.setGroup(groups.get(u.getGroupName())))
             ));
         }
     }

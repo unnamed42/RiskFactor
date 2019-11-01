@@ -21,13 +21,13 @@ public class DebugController {
 
     @GetMapping("/debug/tasks")
     @ResponseStatus(HttpStatus.OK)
-    void reloadQuestions() throws IOException {
+    public void reloadQuestions() throws IOException {
         data.reloadTask();
     }
 
     @GetMapping("/debug/users")
     @ResponseStatus(HttpStatus.OK)
-    void reloadUsers() throws IOException {
+    public void reloadUsers() throws IOException {
         data.reloadUsers();
     }
 

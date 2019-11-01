@@ -1,5 +1,6 @@
 package com.tjh.riskfactor.service;
 
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 import org.springframework.stereotype.Service;
@@ -15,26 +16,23 @@ import java.util.stream.Stream;
 
 @Service
 @RequiredArgsConstructor
-public class TaskService implements IDBService {
+public class TaskService implements ILoadableService<Task> {
 
     private final QuestionRepository questions;
     private final SectionRepository sections;
-    private final TaskRepository tasks;
     private final AnswerRepository answers;
+
+    @Getter
+    private final TaskRepository repo;
 
     private final GroupService groups;
 
-    @Transactional
-    public void drop() {
-        tasks.deleteAll();
-    }
-
     public Optional<TaskBrief> taskBrief(Integer id) {
-        return tasks.findTaskInfoById(id);
+        return repo.findTaskInfoById(id);
     }
 
     public Optional<Task> task(Integer id) {
-        return tasks.findById(id);
+        return repo.findById(id);
     }
 
     /**
@@ -43,7 +41,7 @@ public class TaskService implements IDBService {
      * @return 能访问的项目的基本信息
      */
     public List<TaskBrief> availableTasks(String username) {
-        return tasks.findAllTasks();
+        return repo.findAllTasks();
     }
 
     /**
@@ -52,7 +50,7 @@ public class TaskService implements IDBService {
      * @return 所有分节的基本信息
      */
     public List<SectionBrief> taskSectionsInfo(Integer id) {
-        return tasks.findSectionNamesById(id);
+        return repo.findSectionNamesById(id);
     }
 
     /**
@@ -104,10 +102,6 @@ public class TaskService implements IDBService {
 
     List<Question> saveQuestions(Stream<Question> questions) {
         return this.questions.saveAll(questions::iterator);
-    }
-
-    void saveTask(Task t) {
-        tasks.save(t);
     }
 
 }

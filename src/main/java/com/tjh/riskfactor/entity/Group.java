@@ -5,11 +5,9 @@ import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonProperty;
 
 import javax.persistence.*;
 
-import java.util.List;
 import java.util.Set;
 
 @Data @Entity
@@ -34,26 +32,8 @@ public class Group {
     @Column(nullable = false)
     private String displayName;
 
-    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.DETACH)
-    @JoinTable(name = "group_members",
-        joinColumns = @JoinColumn(name = "gid"),
-        inverseJoinColumns = @JoinColumn(name = "uid")
-    )
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "group")
     @JsonIgnore
     private Set<User> members;
-
-    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.DETACH)
-    @JoinTable(name = "group_admins",
-        joinColumns = @JoinColumn(name = "gid"),
-        inverseJoinColumns = @JoinColumn(name = "uid")
-    )
-    @JsonIgnore
-    private Set<User> admins;
-
-    @JsonProperty(value = "members", access = JsonProperty.Access.WRITE_ONLY)
-    @Transient private List<String> memberNames;
-
-    @JsonProperty(value = "admins", access = JsonProperty.Access.WRITE_ONLY)
-    @Transient private List<String> adminNames;
 
 }

@@ -2,13 +2,11 @@ package com.tjh.riskfactor.config;
 
 import lombok.RequiredArgsConstructor;
 
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.Ordered;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.filter.CorsFilter;
@@ -28,6 +26,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 
 import com.tjh.riskfactor.error.ErrorResponder;
 import com.tjh.riskfactor.security.JwtTokenFilter;
+import com.tjh.riskfactor.security.JwtUserDetailsService;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -37,8 +36,7 @@ import java.util.Collections;
 @RequiredArgsConstructor
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
-    @Qualifier("jwtUserDetailsService")
-    private final UserDetailsService service;
+    private final JwtUserDetailsService userDetailsService;
     private final PasswordEncoder encoder;
     private final JwtTokenFilter jwtFilter;
     private final ErrorResponder e;
@@ -57,7 +55,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     @Bean
     protected AuthenticationProvider daoAuthenticationProvider() {
         final var provider = new DaoAuthenticationProvider();
-        provider.setUserDetailsService(service);
+        provider.setUserDetailsService(userDetailsService);
         provider.setPasswordEncoder(encoder);
         provider.setHideUserNotFoundExceptions(false);
         return provider;
@@ -94,7 +92,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
             .formLogin().disable()
             .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
             .authorizeRequests()
-                .antMatchers(HttpMethod.POST, "/auth").permitAll()
+                .antMatchers(HttpMethod.POST, "/login").permitAll()
                 .antMatchers("/test", "/test/**").permitAll()
                 .anyRequest().authenticated().and()
             .exceptionHandling()

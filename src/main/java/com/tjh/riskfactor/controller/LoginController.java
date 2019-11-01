@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.*;
 
 import com.tjh.riskfactor.security.JwtTokenProvider;
 import static com.tjh.riskfactor.util.Utils.kvMap;
-import static com.tjh.riskfactor.util.Utils.want;
+import static com.tjh.riskfactor.util.Utils.require;
 
 import java.util.Map;
 
@@ -20,7 +20,7 @@ import java.util.Map;
  */
 @RestController
 @RequiredArgsConstructor
-public class AuthController {
+public class LoginController {
 
     private final AuthenticationManager authManager;
     private final JwtTokenProvider provider;
@@ -56,15 +56,15 @@ public class AuthController {
      * @param body 请求体，格式如上
      * @return token应答，格式如上
      */
-    @PostMapping("/auth")
-    String requestToken(@RequestBody Map<String, String> body) {
-        final var username = want(body, "username", String.class);
-        final var password = want(body, "password", String.class);
+    @PostMapping("/login")
+    public Map<String, Object> requestToken(@RequestBody Map<String, String> body) {
+        final var username = require(body, "username", String.class);
+        final var password = require(body, "password", String.class);
 
         final var auth = authenticate(username, password);
         final var token = provider.generateToken(auth);
 
-        return kvMap(token, "token").buildJson().get();
+        return kvMap("token", token).build();
     }
 
 }

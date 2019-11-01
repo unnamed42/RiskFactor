@@ -24,7 +24,7 @@ public class AnswerController {
     private final AnswerService service;
 
     @GetMapping("/answer/{id}")
-    Map<String, Map<String, Object>> answer(@PathVariable Integer id) {
+    public Map<String, Map<String, Object>> answer(@PathVariable Integer id) {
         final var ans = service.answer(id).orElseThrow(() -> notFound("answer", id.toString()));
         final var map = new HashMap<String, Map<String, Object>>();
         for(final var anssec : ans.getParts())
@@ -33,7 +33,7 @@ public class AnswerController {
     }
 
     @GetMapping(value = "/answer/{id}/file")
-    HttpEntity<byte[]> answerFile(@PathVariable Integer id, HttpServletResponse response) throws IOException {
+    public HttpEntity<byte[]> answerFile(@PathVariable Integer id, HttpServletResponse response) throws IOException {
         final var value = answer(id);
         final var mapper = new ObjectMapper();
         final var headers = new HttpHeaders();

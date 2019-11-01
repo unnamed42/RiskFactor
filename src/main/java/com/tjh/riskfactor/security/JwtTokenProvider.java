@@ -32,6 +32,8 @@ public class JwtTokenProvider {
     @Value("${security.jwt.claimed-property}")
     private String claimedProperty;
 
+    private static final String BEARER = "Bearer ";
+
     private final UserDetailsService userDetailsService;
 
     public String generateToken(Authentication auth) {
@@ -44,7 +46,7 @@ public class JwtTokenProvider {
                 .claim(claimedProperty, authorities)
                 .signWith(SignatureAlgorithm.HS256, signingKey)
                 .setIssuedAt(now).setExpiration(expiry)
-                .setId(((JwtUserDetails)auth.getPrincipal()).userId().toString()).compact();
+                .setId(((JwtUserDetails)auth.getPrincipal()).getId().toString()).compact();
     }
 
     private Claims parseClaims(String token) {
@@ -57,10 +59,10 @@ public class JwtTokenProvider {
         return new UsernamePasswordAuthenticationToken(details, "", details.getAuthorities());
     }
 
-    public Optional<String> resolveToken(HttpServletRequest request) {
+    Optional<String> resolveToken(HttpServletRequest request) {
         return Optional.ofNullable(request.getHeader("Authorization"))
-                .filter(token -> token.startsWith("Bearer "))
-                .map(token -> token.substring(7));
+                .filter(token -> token.startsWith(BEARER))
+                .map(token -> token.substring(BEARER.length()));
     }
 
     boolean validateToken(String token) {

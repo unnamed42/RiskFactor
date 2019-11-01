@@ -14,6 +14,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.tjh.riskfactor.service.DataService;
 
+/**
+ * 一些乱七八糟的Bean都放在这里
+ */
 @Configuration
 public class AppConfig {
 
@@ -24,7 +27,7 @@ public class AppConfig {
      * 启用Jackson的Hibernates LAZY fetch支持
      */
     @Bean
-    protected Module module() {
+    public Module module() {
         final var module = new Hibernate5Module();
         module.disable(Hibernate5Module.Feature.USE_TRANSIENT_ANNOTATION);
         return module;
@@ -34,7 +37,7 @@ public class AppConfig {
      * 默认密码哈希。Spring的BCrypt哈希实现已经包含了密码加盐
      */
     @Bean @Primary
-    protected PasswordEncoder passwordEncoder() {
+    public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder(strength);
     }
 
@@ -42,7 +45,7 @@ public class AppConfig {
      * 初始化数据库数据
      */
     @Bean
-    CommandLineRunner runner(DataService service) {
+    public CommandLineRunner runner(DataService service) {
         return new CommandLineRunner() {
             @Override @Transactional
             public void run(String... args) throws Exception {

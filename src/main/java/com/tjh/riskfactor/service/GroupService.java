@@ -1,5 +1,6 @@
 package com.tjh.riskfactor.service;
 
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 import org.springframework.stereotype.Service;
@@ -13,13 +14,10 @@ import java.util.stream.Stream;
 
 @Service
 @RequiredArgsConstructor
-public class GroupService implements IDBService {
+public class GroupService implements ILoadableService<Group> {
 
-    private final GroupRepository groups;
-
-    public void drop() {
-        groups.deleteAll();
-    }
+    @Getter
+    private final GroupRepository repo;
 
     /**
      * 获取用户组的所有用户的用户名
@@ -27,7 +25,7 @@ public class GroupService implements IDBService {
      * @return 用户组成员的用户名
      */
     public List<String> memberNames(Integer gid) {
-        return groups.findMemberNamesById(gid);
+        return repo.findMemberNamesById(gid);
     }
 
     /**
@@ -36,7 +34,7 @@ public class GroupService implements IDBService {
      * @return 用户组
      */
     public Optional<Group> groupWithId(Integer gid) {
-        return groups.findById(gid);
+        return repo.findById(gid);
     }
 
     /**
@@ -45,27 +43,7 @@ public class GroupService implements IDBService {
      * @return 用户组
      */
     public Optional<Group> groupWithName(String name) {
-        return groups.findByName(name);
+        return repo.findByName(name);
     }
 
-    /**
-     * 根据用户成员的用户名获取该用户所在用户组名称
-     * @param member 成员用户名
-     * @return 用户所在用户组名称
-     */
-    public Optional<String> groupNameWithMember(String member) {
-        return groups.findNameByMemberName(member);
-    }
-    /**
-     * 查找被用户管理的用户组的名称
-     * @param username 用户组管理员的用户名
-     * @return 用户组名称（非显示用名称）
-     */
-    public Optional<String> nameManagedBy(String username) {
-        return groups.findNameByAdminName(username);
-    }
-
-    List<Group> saveAll(Stream<Group> groups) {
-        return this.groups.saveAll(groups::iterator);
-    }
 }

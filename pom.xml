@@ -22,7 +22,6 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
     <java.version>11</java.version>
-    <jvm.options>--illegal-access=deny</jvm.options>
   </properties>
 
   <dependencies>
@@ -74,10 +73,23 @@
       <version>8.0.13</version>
     </dependency>
 
+    <!-- json web token -->
     <dependency>
       <groupId>io.jsonwebtoken</groupId>
-      <artifactId>jjwt</artifactId>
-      <version>0.9.1</version>
+      <artifactId>jjwt-api</artifactId>
+      <version>0.10.7</version>
+    </dependency>
+    <dependency>
+      <groupId>io.jsonwebtoken</groupId>
+      <artifactId>jjwt-impl</artifactId>
+      <version>0.10.7</version>
+      <scope>runtime</scope>
+    </dependency>
+    <dependency>
+      <groupId>io.jsonwebtoken</groupId>
+      <artifactId>jjwt-jackson</artifactId>
+      <version>0.10.7</version>
+      <scope>runtime</scope>
     </dependency>
     <!-- jackson hibernate 5 lazy fetch support -->
     <dependency>
@@ -100,10 +112,6 @@
       <groupId>org.junit.jupiter</groupId>
       <artifactId>junit-jupiter-engine</artifactId>
       <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.junit.vintage</groupId>
-      <artifactId>junit-vintage-engine</artifactId>
     </dependency>
     <dependency>
       <groupId>org.junit.platform</groupId>
@@ -131,17 +139,6 @@
         <configuration>
           <source>${java.version}</source>
           <target>${java.version}</target>
-          <compilerArgs>
-            <arg>${jvm.options}</arg>
-          </compilerArgs>
-        </configuration>
-      </plugin>
-      <!-- configure test environment -->
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-surefire-plugin</artifactId>
-        <configuration>
-          <argLine>${jvm.options}</argLine>
         </configuration>
       </plugin>
       <!-- enable column lazy fetch support in hibernate -->

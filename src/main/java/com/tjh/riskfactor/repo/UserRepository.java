@@ -13,18 +13,17 @@ public interface UserRepository extends JpaRepository<User, Integer> {
 
     Optional<User> findByUsername(String username);
 
+    boolean existsByUsername(String username);
+
     @Query("select u.id from User u where u.username = :username")
     Optional<Integer> findIdByUsername(String username);
 
-    @Query(nativeQuery = true,
-        value = "select g.name from `group` g where g.id = " +
-                "(select m.gid from group_members m inner join users u on m.uid = u.id and u.id = :uid)"
-    )
-    Optional<String> findGroupNameByUserId(Integer uid);
+    @Query("select g.name from User u inner join u.group g on u.id = :uid")
+    Optional<String> findGroupName(Integer uid);
 
-    @Query(nativeQuery = true,
-        value = "select m.gid from group_members m inner join users u on m.uid = u.id and u.id = :uid"
+    @Query(nativeQuery = true, value =
+        "select u.group_id from users u where u.id = :uid"
     )
-    Optional<Integer> findGroupIdManagedByUserId(Integer uid);
+    Optional<Integer> findManagedGroupId(Integer uid);
 
 }
