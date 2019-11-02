@@ -29,7 +29,7 @@ public class ExceptionsHandler extends ResponseEntityExceptionHandler {
     protected ResponseEntity<Object> handleHttpRequestMethodNotSupported(
         HttpRequestMethodNotSupportedException ex,
         HttpHeaders headers, HttpStatus status, WebRequest request) {
-        final var message = ex.getMethod() +
+        var message = ex.getMethod() +
                 " is not supported on requested uri. Supported methods are: " +
                 join(ex.getSupportedHttpMethods());
         return builder.withStatus(HttpStatus.BAD_REQUEST)
@@ -39,7 +39,7 @@ public class ExceptionsHandler extends ResponseEntityExceptionHandler {
     @Override
     protected ResponseEntity<Object> handleNoHandlerFoundException(
             NoHandlerFoundException ex, HttpHeaders headers, HttpStatus status, WebRequest request) {
-        final var message = "no handler for method " + ex.getHttpMethod();
+        var message = "no handler for method " + ex.getHttpMethod();
         return builder.withStatus(HttpStatus.BAD_REQUEST)
                 .request(request).message(message).exception(ex).response();
     }
@@ -48,7 +48,7 @@ public class ExceptionsHandler extends ResponseEntityExceptionHandler {
     protected ResponseEntity<Object> handleHttpMediaTypeNotSupported(
         HttpMediaTypeNotSupportedException ex,
         HttpHeaders headers, HttpStatus status, WebRequest request) {
-        final var message = ex.getContentType() +
+        var message = ex.getContentType() +
                 " media type is not supported. Supported types are: " +
                 join(ex.getSupportedMediaTypes());
         return builder.withStatus(HttpStatus.UNSUPPORTED_MEDIA_TYPE)

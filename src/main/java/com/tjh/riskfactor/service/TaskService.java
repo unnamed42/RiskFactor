@@ -1,10 +1,9 @@
 package com.tjh.riskfactor.service;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import com.tjh.riskfactor.repo.*;
 import com.tjh.riskfactor.entity.form.*;
@@ -16,23 +15,18 @@ import java.util.stream.Stream;
 
 @Service
 @RequiredArgsConstructor
-public class TaskService implements ILoadableService<Task> {
+public class TaskService implements IDBService<Task> {
 
     private final QuestionRepository questions;
     private final SectionRepository sections;
     private final AnswerRepository answers;
+    private final GroupService groups;
 
     @Getter
     private final TaskRepository repo;
 
-    private final GroupService groups;
-
     public Optional<TaskBrief> taskBrief(Integer id) {
         return repo.findTaskInfoById(id);
-    }
-
-    public Optional<Task> task(Integer id) {
-        return repo.findById(id);
     }
 
     public List<TaskBrief> tasks() {
@@ -74,7 +68,7 @@ public class TaskService implements ILoadableService<Task> {
      * @return 所有该用户组创建的回答
      */
     public List<AnswerBrief> centerAnswers(Integer taskId, Integer groupId) {
-        final var names = groups.memberNames(groupId);
+        var names = groups.memberNames(groupId);
         return answers.findAllByTaskIdCreatedBy(taskId, names);
     }
 
@@ -99,4 +93,8 @@ public class TaskService implements ILoadableService<Task> {
         return this.questions.saveAll(questions::iterator);
     }
 
+    @Override
+    public String getEntityName() {
+        return "task";
+    }
 }

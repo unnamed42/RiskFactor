@@ -17,11 +17,11 @@ public class JwtUserDetailsService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String username) {
-        final var user = users.userWithName(username).orElseThrow(() -> {
-            final var message = String.format("user [%s] not found", username);
+        var user = users.userWithName(username).orElseThrow(() -> {
+            var message = String.format("user [%s] not found", username);
             return new UsernameNotFoundException(message);
         });
-        final var groupName = users.myGroupName(user.getId()).orElse("nobody");
+        var groupName = users.myGroupName(user.getId()).orElse("nobody");
         return new JwtUserDetails(user, groupName);
     }
 

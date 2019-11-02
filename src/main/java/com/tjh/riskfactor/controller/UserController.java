@@ -9,7 +9,6 @@ import org.springframework.web.bind.annotation.*;
 import com.tjh.riskfactor.service.UserService;
 import com.tjh.riskfactor.security.PermissionEvaluator;
 import static com.tjh.riskfactor.util.Utils.optional;
-import static com.tjh.riskfactor.error.ResponseErrors.notFound;
 import static com.tjh.riskfactor.error.ResponseErrors.forbidden;
 
 import java.util.Map;
@@ -46,13 +45,13 @@ public class UserController {
      */
     @PutMapping("/user/{id}")
     public void updateInfo(@PathVariable Integer id, @RequestBody Map<String, String> body) {
-        final var user = service.user(id).orElseThrow(() -> notFound("user", id.toString()));
+        var user = service.checkedFind(id);
         if(!permission.writeUserPermitted(id))
             throw forbidden(String.format("not permitted to update user [%d]", id));
         if(body.size() == 0)
             return;
         optional(body, "username").ifPresent(user::setUsername);
-        optional(body, "password").map(service::encodePassword).ifPresent(user::setPassword);
+        optional(body, "password").map(service::encode).ifPresent(user::setPassword);
         service.save(user);
     }
 

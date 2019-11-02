@@ -58,7 +58,7 @@ public class ApiErrorBuilder {
         Builder request(WebRequest request) {
             if(!(request instanceof ServletWebRequest))
                 throw new RuntimeException("ApiErrorBuilder supports only HTTP requests");
-            final var hRequest = ((ServletWebRequest)request).getRequest();
+            var hRequest = ((ServletWebRequest)request).getRequest();
             return this.request(hRequest);
         }
 
@@ -71,7 +71,7 @@ public class ApiErrorBuilder {
             if(error.getMessage() == null)
                 error.setMessage(ex.getMessage());
             if(debug) {
-                final var writer = new StringWriter();
+                var writer = new StringWriter();
                 ex.printStackTrace(new PrintWriter(writer));
                 error.setStacktrace(writer.toString());
             }
@@ -83,7 +83,7 @@ public class ApiErrorBuilder {
         }
 
         ResponseEntity<Object> response() {
-            final var status = HttpStatus.valueOf(error.getStatus());
+            var status = HttpStatus.valueOf(error.getStatus());
             return new ResponseEntity<>(error, status);
         }
 

@@ -2,14 +2,13 @@ package com.tjh.riskfactor.security;
 
 import lombok.RequiredArgsConstructor;
 
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.*;
+import io.jsonwebtoken.security.Keys;
+import io.jsonwebtoken.security.SignatureException;
 
 import org.springframework.stereotype.Component;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 
@@ -17,8 +16,11 @@ import javax.servlet.http.HttpServletRequest;
 
 import java.util.Date;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
+/**
+ * 提供Json Web Token的编解码功能
+ * 在标准的JWT当中添加了一个 {@code idt} 的claim，用来表示用户id
+ */
 @Component
 @RequiredArgsConstructor
 public class JwtTokenProvider {
@@ -29,33 +31,29 @@ public class JwtTokenProvider {
     @Value("${security.jwt.expiry-hours}")
     private Integer expiryHours;
 
-    @Value("${security.jwt.claimed-property}")
-    private String claimedProperty;
-
     private static final String BEARER = "Bearer ";
 
     private final UserDetailsService userDetailsService;
 
     public String generateToken(Authentication auth) {
-        final var authorities = auth.getAuthorities().stream()
-                .map(GrantedAuthority::getAuthority)
-                .collect(Collectors.joining(","));
-        final var expiryMs = expiryHours.longValue() * 3600000L;
-        Date now = new Date(), expiry = new Date(now.getTime() + expiryMs);
+        var id = ((JwtUserDetails)auth.getPrincipal()).getId();
+        var expiryMs = expiryHours.longValue() * 3600000L;
+        var now = new Date();
+        var expiry = new Date(now.getTime() + expiryMs);
         return Jwts.builder().setSubject(auth.getName())
-                .claim(claimedProperty, authorities)
-                .signWith(SignatureAlgorithm.HS256, signingKey)
+                .signWith(Keys.hmacShaKeyFor(signingKey.getBytes()), SignatureAlgorithm.HS256)
                 .setIssuedAt(now).setExpiration(expiry)
-                .setId(((JwtUserDetails)auth.getPrincipal()).getId().toString()).compact();
+                .claim("idt", id)
+                .setNotBefore(expiry).compact();
     }
 
-    private Claims parseClaims(String token) {
+    private Claims parseClaims(String token) throws ExpiredJwtException, UnsupportedJwtException, MalformedJwtException, SignatureException, IllegalArgumentException {
         return Jwts.parser().setSigningKey(signingKey).parseClaimsJws(token).getBody();
     }
 
     Authentication getAuthentication(String token) {
-        final var username = parseClaims(token).getSubject();
-        final var details = userDetailsService.loadUserByUsername(username);
+        var username = parseClaims(token).getSubject();
+        var details = userDetailsService.loadUserByUsername(username);
         return new UsernamePasswordAuthenticationToken(details, "", details.getAuthorities());
     }
 
@@ -65,7 +63,7 @@ public class JwtTokenProvider {
                 .map(token -> token.substring(BEARER.length()));
     }
 
-    boolean validateToken(String token) {
+    boolean validateToken(String token) throws ExpiredJwtException, UnsupportedJwtException, MalformedJwtException, SignatureException, IllegalArgumentException {
         return parseClaims(token).getExpiration().after(new Date());
     }
 

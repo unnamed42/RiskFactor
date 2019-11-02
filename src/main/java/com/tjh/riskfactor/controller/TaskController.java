@@ -53,8 +53,7 @@ public class TaskController {
 
     @GetMapping("/task/{id}/sections")
     public List<Section> sections(@PathVariable Integer id) {
-        return service.task(id).map(Task::getSections)
-                .orElseThrow(() -> notFound("task", id.toString()));
+        return service.checkedFind(id).getSections();
     }
 
     @GetMapping("/task/{id}/sections/name")
@@ -76,7 +75,7 @@ public class TaskController {
     @PostMapping("/task/{id}/answer")
     public String postAnswer(@PathVariable Integer id, Authentication auth, @RequestBody Map<String, Map<String, Object>> body) {
         List<AnswerSection> parts = body.entrySet().stream().map(e -> {
-            final var ans = new AnswerSection().setSectionPath(e.getKey()).setBody(e.getValue());
+            var ans = new AnswerSection().setSectionPath(e.getKey()).setBody(e.getValue());
             return answers.saveAnswerSection(ans);
         }).collect(toList());
         Answer ans = answers.saveAnswer(id, auth.getName(), parts);
@@ -85,8 +84,8 @@ public class TaskController {
 
     @PostMapping("/task/{id}/answer/file")
     public String postAnswer(@PathVariable Integer id, Authentication auth, @RequestParam("file")MultipartFile file) throws IOException {
-        final var mapper = new ObjectMapper();
-        final var type = new TypeReference<Map<String, Map<String, Object>>>(){};
+        var mapper = new ObjectMapper();
+        var type = new TypeReference<Map<String, Map<String, Object>>>(){};
         return postAnswer(id, auth, mapper.readValue(file.getInputStream(), type));
     }
 

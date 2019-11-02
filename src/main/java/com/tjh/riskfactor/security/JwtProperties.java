@@ -14,9 +14,13 @@ public class JwtProperties {
      * Top secret used to sign tokens
      */
     private String signingKey;
+
     private String securityRealm;
-    private String claimedProperty;
+
     private Integer expiryHours;
+
+    private Integer notBefore;
+
     private Integer encodingStrength;
 
 }

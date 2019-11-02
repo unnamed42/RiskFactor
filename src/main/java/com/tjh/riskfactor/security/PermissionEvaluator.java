@@ -25,7 +25,7 @@ public class PermissionEvaluator {
      * @return 有权限更改与否
      */
     public boolean writeUserPermitted(Integer userId) {
-        final var curr = me();
+        var curr = me();
         // 自己可以更改
         if(curr.getId().equals(userId))
             return true;

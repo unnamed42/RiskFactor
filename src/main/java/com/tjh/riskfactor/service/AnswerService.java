@@ -37,9 +37,9 @@ public class AnswerService {
     }
 
     public Answer saveAnswer(Integer taskId, String username, List<AnswerSection> parts) {
-        final var ans = new Answer().setParts(parts)
+        var ans = new Answer().setParts(parts)
                 .setCreator(users.userWithName(username).orElseThrow(() -> notFound("user", username)))
-                .setTask(tasks.task(taskId).orElseThrow(() -> notFound("task", taskId.toString())))
+                .setTask(tasks.checkedFind(taskId))
                 .setMtime(new Date());
         return answers.save(ans);
     }

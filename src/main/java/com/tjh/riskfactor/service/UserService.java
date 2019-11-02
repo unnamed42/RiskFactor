@@ -13,7 +13,7 @@ import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
-public class UserService implements ILoadableService<User> {
+public class UserService implements IDBService<User> {
 
     @Getter
     private final UserRepository repo;
@@ -21,10 +21,6 @@ public class UserService implements ILoadableService<User> {
 
     public boolean hasUsername(String username) {
         return repo.existsByUsername(username);
-    }
-
-    public boolean isAdminOn(Integer uid, Integer gid) {
-        return false;
     }
 
     public Optional<String> myGroupName(Integer uid) {
@@ -35,15 +31,11 @@ public class UserService implements ILoadableService<User> {
         return repo.findManagedGroupId(uid);
     }
 
-    public Optional<User> user(Integer id) {
-        return repo.findById(id);
-    }
-
     public Optional<User> userWithName(String username) {
         return repo.findByUsername(username);
     }
 
-    public String encodePassword(String password) {
+    public String encode(String password) {
         return encoder.encode(password);
     }
 
@@ -51,4 +43,8 @@ public class UserService implements ILoadableService<User> {
         return u.setPassword(encoder.encode(u.getPassword()));
     }
 
+    @Override
+    public String getEntityName() {
+        return "user";
+    }
 }

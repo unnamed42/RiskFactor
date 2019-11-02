@@ -27,7 +27,7 @@ public class LoginController {
 
     private Authentication authenticate(String username, String password) {
         try {
-            final var authToken = new UsernamePasswordAuthenticationToken(username, password);
+            var authToken = new UsernamePasswordAuthenticationToken(username, password);
             return authManager.authenticate(authToken);
         } catch (BadCredentialsException e) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED,
@@ -58,11 +58,11 @@ public class LoginController {
      */
     @PostMapping("/login")
     public Map<String, Object> requestToken(@RequestBody Map<String, String> body) {
-        final var username = require(body, "username", String.class);
-        final var password = require(body, "password", String.class);
+        var username = require(body, "username", String.class);
+        var password = require(body, "password", String.class);
 
-        final var auth = authenticate(username, password);
-        final var token = provider.generateToken(auth);
+        var auth = authenticate(username, password);
+        var token = provider.generateToken(auth);
 
         return kvMap("token", token).build();
     }

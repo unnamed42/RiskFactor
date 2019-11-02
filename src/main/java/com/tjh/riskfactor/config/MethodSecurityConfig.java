@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Primary;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.method.configuration.GlobalMethodSecurityConfiguration;
 
@@ -18,7 +19,7 @@ public class MethodSecurityConfig extends GlobalMethodSecurityConfiguration {
 
     private final PermissionEvaluator evaluator;
 
-    @Bean(name = "e")
+    @Bean(name = "e") @Primary
     public PermissionEvaluator permissionEvaluator() {
         return evaluator;
     }

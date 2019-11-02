@@ -38,8 +38,8 @@ public class FilterChainExceptionHandler extends GenericFilterBean {
         try {
             filterChain.doFilter(request, response);
         } catch(RuntimeException e) {
-            final var hRequest = (HttpServletRequest)request;
-            final var hResponse = (HttpServletResponse)response;
+            var hRequest = (HttpServletRequest)request;
+            var hResponse = (HttpServletResponse)response;
             resolver.resolveException(hRequest, hResponse, null, e);
         }
     }

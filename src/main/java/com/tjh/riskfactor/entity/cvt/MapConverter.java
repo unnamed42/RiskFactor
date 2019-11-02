@@ -27,7 +27,7 @@ public class MapConverter implements AttributeConverter<Map<String, Object>, Str
     @Override
     public Map<String, Object> convertToEntityAttribute(String source) {
         try {
-            final var type = new TypeReference<Map<String, Object>>() {};
+            var type = new TypeReference<Map<String, Object>>() {};
             return mapper.readValue(source, type);
         } catch(JsonProcessingException e) {
             log.error(e.getMessage());

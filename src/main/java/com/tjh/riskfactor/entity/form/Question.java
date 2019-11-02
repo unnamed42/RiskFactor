@@ -76,9 +76,9 @@ public class Question {
     public String getOption() {
         String fields = annotatedDeclaredFields(this.getClass(), Transient.class).map(field -> {
             field.setAccessible(true);
-            final var name = field.getName();
+            var name = field.getName();
             try {
-                final var value = field.get(this);
+                var value = field.get(this);
                 if(value == null)
                     return null;
                 if(field.getType().equals(Boolean.class) && ((Boolean) value))
@@ -95,9 +95,9 @@ public class Question {
         if(option == null)
             return;
         Arrays.stream(option.split("\\$;")).forEach(part -> {
-            final var value = part.split(":");
+            var value = part.split(":");
             try {
-                final var field = this.getClass().getDeclaredField(value[0]);
+                var field = this.getClass().getDeclaredField(value[0]);
                 field.setAccessible(true);
                 if(value.length == 1)
                     field.set(this, true);

@@ -1,8 +1,8 @@
 package com.tjh.riskfactor.service;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import com.tjh.riskfactor.entity.Group;
@@ -10,11 +10,10 @@ import com.tjh.riskfactor.repo.GroupRepository;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Stream;
 
 @Service
 @RequiredArgsConstructor
-public class GroupService implements ILoadableService<Group> {
+public class GroupService implements IDBService<Group> {
 
     @Getter
     private final GroupRepository repo;
@@ -29,21 +28,17 @@ public class GroupService implements ILoadableService<Group> {
     }
 
     /**
-     * 根据id获取用户组
-     * @param gid 用户组id
-     * @return 用户组
-     */
-    public Optional<Group> groupWithId(Integer gid) {
-        return repo.findById(gid);
-    }
-
-    /**
      * 根据用户组名获取用户组
      * @param name 用户组名
      * @return 用户组
      */
     public Optional<Group> groupWithName(String name) {
         return repo.findByName(name);
+    }
+
+    @Override
+    public String getEntityName() {
+        return "group";
     }
 
 }

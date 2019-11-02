@@ -5,7 +5,7 @@ import org.springframework.web.server.ResponseStatusException;
 
 public class ResponseErrors {
     public static ResponseStatusException notFound(String field, String ...names) {
-        final var message = String.format("requested %s(s) [%s] not found", field, String.join(",", names));
+        var message = String.format("requested %s(s) [%s] not found", field, String.join(",", names));
         return new ResponseStatusException(HttpStatus.NOT_FOUND, message);
     }
 
@@ -14,7 +14,7 @@ public class ResponseErrors {
     }
 
     public static ResponseStatusException conflict(String field, String name) {
-        final var message = String.format("%s [%s] already exists", field, name);
+        var message = String.format("%s [%s] already exists", field, name);
         return new ResponseStatusException(HttpStatus.CONFLICT, message);
     }
 
@@ -23,7 +23,7 @@ public class ResponseErrors {
     }
 
     public static ResponseStatusException invalidArg(String field, String value) {
-        final var message = String.format("argument [%s] has invalid value [%s]", field, value);
+        var message = String.format("argument [%s] has invalid value [%s]", field, value);
         return invalidArg(message);
     }
 }

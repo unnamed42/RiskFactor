@@ -28,7 +28,7 @@ public class AppConfig {
      */
     @Bean
     public Module module() {
-        final var module = new Hibernate5Module();
+        var module = new Hibernate5Module();
         module.disable(Hibernate5Module.Feature.USE_TRANSIENT_ANNOTATION);
         return module;
     }

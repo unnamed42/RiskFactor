@@ -22,16 +22,16 @@ import static com.tjh.riskfactor.util.Utils.kvMap;
 public abstract class TestBase {
 
     protected static ResultActions login(MockMvc mvc, String username, String password) throws Exception {
-        final var json = kvMap("username", username).add("password", password).buildJson();
-        final var request = MockMvcRequestBuilders.post("/login").content(json.get())
+        var json = kvMap("username", username).add("password", password).buildJson();
+        var request = MockMvcRequestBuilders.post("/login").content(json.get())
                             .contentType(MediaType.APPLICATION_JSON);
         return mvc.perform(request);
     }
 
     protected static String token(MockMvc mvc, String username, String password) throws Exception {
-        final var response = login(mvc, username, password).andExpect(status().isOk())
+        var response = login(mvc, username, password).andExpect(status().isOk())
                              .andReturn().getResponse().getContentAsString();
-        final var json = fromJson(response);
+        var json = fromJson(response);
 
         assertThat(json).containsKeys("token");
         return (String)json.get("token");

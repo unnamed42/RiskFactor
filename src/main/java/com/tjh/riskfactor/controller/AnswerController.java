@@ -26,9 +26,9 @@ public class AnswerController {
      */
     @GetMapping("/answer/{id}/body")
     public Map<String, Map<String, Object>> answer(@PathVariable Integer id) {
-        final var ans = service.answer(id).orElseThrow(() -> notFound("answer", id.toString()));
-        final var map = new HashMap<String, Map<String, Object>>();
-        for(final var anssec : ans.getParts())
+        var ans = service.answer(id).orElseThrow(() -> notFound("answer", id.toString()));
+        var map = new HashMap<String, Map<String, Object>>();
+        for(var anssec : ans.getParts())
             map.put(anssec.getSectionPath(), anssec.getBody());
         return map;
     }
@@ -44,10 +44,10 @@ public class AnswerController {
 
 //    @GetMapping(value = "/answer/{id}/file")
 //    public HttpEntity<byte[]> answerFile(@PathVariable Integer id, HttpServletResponse response) throws IOException {
-//        final var value = answer(id);
-//        final var mapper = new ObjectMapper();
-//        final var headers = new HttpHeaders();
-//        final var str = mapper.writeValueAsString(value);
+//        var value = answer(id);
+//        var mapper = new ObjectMapper();
+//        var headers = new HttpHeaders();
+//        var str = mapper.writeValueAsString(value);
 //        headers.setContentType(MediaType.APPLICATION_OCTET_STREAM);
 //        response.setHeader("Content-Disposition", "attachment; filename=export.json");
 //        return new HttpEntity<>(str.getBytes(), headers);

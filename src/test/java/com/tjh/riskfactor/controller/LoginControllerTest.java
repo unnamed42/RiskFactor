@@ -16,9 +16,6 @@ import static com.tjh.riskfactor.util.Utils.fromJson;
 
 class LoginControllerTest extends TestBase {
 
-    @Value("${security.jwt.claimed-property}")
-    private String claimed;
-
     @Test
     void testLogin(@Autowired MockMvc mvc) throws Exception {
         // 不存在的用户

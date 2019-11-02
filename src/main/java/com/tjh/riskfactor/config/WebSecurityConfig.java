@@ -54,7 +54,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
      */
     @Bean
     protected AuthenticationProvider daoAuthenticationProvider() {
-        final var provider = new DaoAuthenticationProvider();
+        var provider = new DaoAuthenticationProvider();
         provider.setUserDetailsService(userDetailsService);
         provider.setPasswordEncoder(encoder);
         provider.setHideUserNotFoundExceptions(false);
@@ -67,14 +67,14 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
      */
     @Bean
     protected FilterRegistrationBean<CorsFilter> simpleCorsFilter() {
-        final var source = new UrlBasedCorsConfigurationSource();
-        final var config = new CorsConfiguration();
+        var source = new UrlBasedCorsConfigurationSource();
+        var config = new CorsConfiguration();
         config.setAllowCredentials(true);
         config.setAllowedOrigins(Arrays.asList("http://localhost:8080", "http://127.0.0.1:8080"));
         config.setAllowedMethods(Collections.singletonList("*"));
         config.setAllowedHeaders(Collections.singletonList("*"));
         source.registerCorsConfiguration("/**", config);
-        final var bean = new FilterRegistrationBean<>(new CorsFilter(source));
+        var bean = new FilterRegistrationBean<>(new CorsFilter(source));
         bean.setOrder(Ordered.HIGHEST_PRECEDENCE);
         return bean;
     }

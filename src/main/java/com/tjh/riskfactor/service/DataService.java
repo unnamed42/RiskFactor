@@ -55,24 +55,24 @@ public class DataService {
     }
 
     private void loadTasks() throws IOException {
-        final var type = new TypeReference<Task>() {};
-        try(final var is = TypeReference.class.getResourceAsStream("/data/task.yml")) {
-            final var task = mapper.readValue(is, type);
+        var type = new TypeReference<Task>() {};
+        try(var is = TypeReference.class.getResourceAsStream("/data/task.yml")) {
+            var task = mapper.readValue(is, type);
 
-            final var group = groups.groupWithName(task.getCenter())
+            var group = groups.groupWithName(task.getCenter())
                      .orElseThrow(() -> notFound("group", task.getCenter()));
-            final var sections = this.tasks.saveSections(task.getSections().stream().map(this::prepareSection));
+            var sections = this.tasks.saveSections(task.getSections().stream().map(this::prepareSection));
             this.tasks.save(task.setGroup(group).setSections(sections));
         }
     }
 
     private void loadUsers() throws IOException {
-        final var userListType = new TypeReference<List<User>>() {};
-        final var groupListType = new TypeReference<List<Group>>() {};
+        var userListType = new TypeReference<List<User>>() {};
+        var groupListType = new TypeReference<List<Group>>() {};
 
-        try(final var is = ObjectMapper.class.getResourceAsStream("/data/user.yml")) {
-            final var node = mapper.readTree(is); assert node.isObject();
-            final var root = (ObjectNode)node;
+        try(var is = ObjectMapper.class.getResourceAsStream("/data/user.yml")) {
+            var node = mapper.readTree(is); assert node.isObject();
+            var root = (ObjectNode)node;
 
             List<User> userList = readTreeAsType(mapper, root.get("users"), userListType);
             List<Group> groupList = readTreeAsType(mapper, root.get("groups"), groupListType);
@@ -80,7 +80,7 @@ public class DataService {
             var groups = this.groups.saveAll(groupList).stream()
                          .collect(toMap(Group::getName, g -> g));
 
-            this.users.saveAll(userList.stream().peek(
+            this.users.saveAll(userList.stream().map(
                 u -> users.encoded(u.setGroup(groups.get(u.getGroupName())))
             ));
         }
@@ -88,7 +88,7 @@ public class DataService {
 
     private Question prepareQuestion(Question q) {
         if(q.getList() != null) {
-            final var questions = this.tasks.saveQuestions(
+            var questions = this.tasks.saveQuestions(
                 q.getList().stream().peek(this::prepareQuestion));
             return q.setList(questions);
         }
@@ -97,12 +97,12 @@ public class DataService {
 
     private Section prepareSection(Section section) {
         if(section.getSections() != null) {
-            final var sections = this.tasks.saveSections(
+            var sections = this.tasks.saveSections(
                 section.getSections().stream().map(this::prepareSection));
             section.setSections(sections);
         }
         if(section.getQuestions() != null) {
-            final var questions = this.tasks.saveQuestions(
+            var questions = this.tasks.saveQuestions(
                 section.getQuestions().stream().map(this::prepareQuestion));
             section.setQuestions(questions);
         }

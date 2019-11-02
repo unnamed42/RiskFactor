@@ -75,7 +75,7 @@ public class Utils {
     public static String join(Collection<?> collection) {
         if(collection == null)
             return "[]";
-        final var sb = new StringBuilder("[");
+        var sb = new StringBuilder("[");
         collection.forEach(item -> sb.append(' ').append(item));
         return sb.append(" ]").toString();
     }
@@ -96,7 +96,7 @@ public class Utils {
     }
 
     public static boolean hasAnyAuthority(Authentication auth, String ...authorities) {
-        final var set = Arrays.stream(authorities).collect(toSet());
+        var set = Arrays.stream(authorities).collect(toSet());
         return auth.getAuthorities().stream().map(GrantedAuthority::getAuthority)
                 .anyMatch(set::contains);
     }

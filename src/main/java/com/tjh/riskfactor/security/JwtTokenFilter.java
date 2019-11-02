@@ -39,10 +39,7 @@ public class JwtTokenFilter extends OncePerRequestFilter {
             e.response(request, response, ex, HttpStatus.UNAUTHORIZED, "malformed token");
         } catch (ExpiredJwtException ex) {
             e.response(request, response, ex, HttpStatus.UNAUTHORIZED, "token expired");
-        } catch (SignatureException ex) {
-            e.response(request, response, ex, HttpStatus.UNAUTHORIZED, "token validation failed");
         }
-
     }
 
 }
