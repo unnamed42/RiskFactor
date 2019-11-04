@@ -848,6 +848,11 @@
     "@types/react" "*"
     hoist-non-react-statics "^3.3.0"
 
+"@types/jwt-decode@^2.2.1":
+  version "2.2.1"
+  resolved "https://registry.npm.taobao.org/@types/jwt-decode/download/@types/jwt-decode-2.2.1.tgz#afdf5c527fcfccbd4009b5fd02d1e18241f2d2f2"
+  integrity sha1-r99cUn/PzL1ACbX9AtHhgkHy0vI=
+
 "@types/lodash@^4.14.144":
   version "4.14.144"
   resolved "https://registry.npm.taobao.org/@types/lodash/download/@types/lodash-4.14.144.tgz#12e57fc99064bce45e5ab3c8bc4783feb75eab8e"

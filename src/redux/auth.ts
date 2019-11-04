@@ -1,21 +1,19 @@
 import { Action } from "redux";
 import { ThunkAction } from "redux-thunk";
 
-import { Error } from "@/api/http";
+import jwt_decode from "jwt-decode";
 import * as api from "@/api/login";
-import { auth } from "@/api/persist";
-
-const storageProps = () => ({
-  username: auth.username,
-  token: auth.token,
-  expiry: auth.expiry
-});
+import { local } from "@/api/persist";
+import { JWT } from "@/types/auth";
 
 ///
 /// types
 ///
+
+/**
+ * 标记reducer中动作
+ */
 enum AuthAction {
-  AUTH_INFO = "auth/info",
   LOGOUT = "auth/logout",
   // types for async loading
   LOGIN_POSTING = "auth/login-posting",
@@ -23,12 +21,14 @@ enum AuthAction {
   LOGIN_FAILURE = "auth/login-failure",
 }
 
-const initState = {
-  ...storageProps(),
-
-  posting: false,
-  error: null as string | null
-};
+/**
+ * reducer状态
+ */
+interface State {
+  username?: string;
+  userId?: number;
+  expiry?: number;
+}
 
 ///
 /// actions
@@ -38,23 +38,29 @@ interface LoginPayload {
   password: string;
   remember: boolean;
 }
+
 interface AuthActionType {
   type: AuthAction;
-  payload?: Readonly<{ token: string; username: string; expiry: number; }> | Readonly<{ error: string; }>;
+  payload?: State;
 }
 
-type AuthActionThunk = ThunkAction<void, typeof initState, null, Action<AuthAction>>;
+type AuthActionThunk = ThunkAction<void, State, null, Action<AuthAction>>;
+
+/**
+ * 解析jwt当中的数据
+ */
+const parseToken = (token: string): State => {
+  const jwt = jwt_decode<JWT>(token);
+  return { username: jwt.sub, userId: jwt.idt, expiry: jwt.exp };
+};
 
 export const login = (payload: LoginPayload, onLoginSuccess?: () => void): AuthActionThunk => async dispatch => {
   dispatch({ type: AuthAction.LOGIN_POSTING });
   try {
-    const { token } = await api.login(payload.username, payload.password);
+    const token = await api.login(payload.username, payload.password);
     // this is needed for http requests
-    auth.token = token;
-    const { username, expire_at } = await api.tokenInfo();
-    auth.username = username;
-    auth.expiry = Number(expire_at);
-    dispatch({ type: AuthAction.LOGIN_SUCCESS, payload: { token, username, expiry: expire_at } });
+    local.auth.token = token;
+    dispatch({ type: AuthAction.LOGIN_SUCCESS, payload: { token, ...parseToken(token) } });
     if (onLoginSuccess) onLoginSuccess();
   } catch (e) {
     const error = e as Error;
@@ -63,22 +69,28 @@ export const login = (payload: LoginPayload, onLoginSuccess?: () => void): AuthA
 };
 
 export const logout = (): AuthActionType => {
-  auth.clear();
-  return { type: AuthAction.LOGOUT, payload: { username: "", token: "", expiry: -1 } };
+  local.auth.token = null;
+  return { type: AuthAction.LOGOUT, payload: {} };
 };
 
 ///
 /// reducers
 ///
-export const reducer = (state = initState, action: AuthActionType) => {
+const initState = (() => {
+  const token = local.auth.token;
+  return token ? { token, ...parseToken(token) } : {};
+})();
+
+export const reducer = (state: State = initState, action: AuthActionType) => {
   switch (action.type) {
     case AuthAction.LOGOUT:
-      return { ...state, ...(action.payload) };
+      return { ...action.payload };
     case AuthAction.LOGIN_POSTING:
       return { ...state, posting: true };
     case AuthAction.LOGIN_SUCCESS: // fallthrough
     case AuthAction.LOGIN_FAILURE:
       return { ...state, posting: false, ...(action.payload) };
-    default: return state;
+    default:
+      return state;
   }
 };

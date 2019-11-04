@@ -1,48 +1,41 @@
-import React, { FC, useState, useEffect } from "react";
+import React, { FC } from "react";
 import { Link } from "react-router-dom";
 
-import {Button, PageHeader, message, Table, Upload} from "antd";
+import { Button, PageHeader, message, Table, Upload } from "antd";
 
 import {
-  taskSections, taskAnswers, task, deleteAnswer,
-  SectionBrief, AnswerBrief, TaskBrief, downloadAnswer
+   taskAnswers, task, deleteAnswer,
+  downloadAnswer, taskSectionNames
 } from "@/api/task";
+import { local } from "@/api/persist";
 
-import { Error } from "@/api/http";
+import { SectionBrief, AnswerBrief } from "@/types";
+import { usePromise } from "@/utils";
+import { PageLoading } from "@/components";
 
 interface P {
   taskId: string | number;
-}
-
-interface S {
-  info?: TaskBrief;
-  sections?: SectionBrief[];
-  answers?: AnswerBrief[];
 }
 
 type T = AnswerBrief;
 
 export const AnswerList: FC<P> = ({ taskId }) => {
 
-  const [state, setState] = useState<S>({});
+  const source = usePromise(
+    Promise.all([task(taskId), taskSectionNames(taskId), taskAnswers(taskId)])
+  );
 
-  useEffect(() => {
-    Promise.all([task(taskId), taskSections(taskId), taskAnswers(taskId)])
-      .then(([info, sections, answers]) => setState({ info, sections, answers }))
-      .catch((error: Error) => message.error(`加载表单时发生错误：${error.message}`));
-  }, []);
-
-  const { info, sections, answers } = state;
-
-  if (!info || !sections)
-    return <div />;
+  if(!source.loaded)
+    return <PageLoading />;
+  if(source.error)
+    return null;
 
   const sectionLink = (answer: T, section: SectionBrief) =>
     <Link to={`/task/${taskId}/form/${answer.id}/${section.id}`}>{section.title}</Link>;
 
   const delAnswer = (answer: T) =>
-    deleteAnswer(answer.id).then(() => { window.location.reload(); message.success("删除成功") })
-        .catch(err => message.error(err.message));
+    deleteAnswer(answer.id).then(() => { window.location.reload(); message.success("删除成功"); })
+      .catch(err => message.error(err.message));
 
   const actions = (text: any, answer: T) => {
     return <span>
@@ -54,6 +47,8 @@ export const AnswerList: FC<P> = ({ taskId }) => {
     </span>;
   };
 
+  const [info, sections, answers] = source.value!;
+
   return <div>
     <PageHeader title={info.name}
       extra={[
@@ -61,26 +56,25 @@ export const AnswerList: FC<P> = ({ taskId }) => {
           <Link to={`/task/${taskId}/form`}>添加受试者</Link>
         </Button>,
         <Upload key="_2" action={`http://localhost:8090/task/${taskId}/answer/file`}
-          headers={{authorization: `Bearer ${localStorage.getItem("auth.token")}`}}
-          onChange={(info) => {
-            if(info.file.status !== "uploading")
-              console.log(info.file, info.fileList);
-            if(info.file.status === "done")
-              message.success(`${info.file.name} 上传成功`)
+          headers={{ authorization: `Bearer ${local.auth.token}` }}
+          onChange={({ file, fileList }) => {
+            if (file.status !== "uploading")
+              console.log(file, fileList);
+            if (file.status === "done")
+              message.success(`${file.name} 上传成功`);
             else
-              message.error(`${info.file.name} 上传失败`)
+              message.error(`${file.name} 上传失败`);
           }}
         >
           <Button key="2" type="link" icon="import">批量导入</Button>
         </Upload>
-
       ]}
     />
     <Table<T> dataSource={answers} rowKey="id">
       <Table.Column<T> key="id" dataIndex="id" title="受试者编号" />
       <Table.Column<T> key="creator" dataIndex="creator" title="创建人" />
       <Table.Column<T> key="mtime" dataIndex="mtime" title="修改时间" />
-      <Table.Column key="status" dataIndex="" title="患者入组" render={() => <span>患者入组</span>} />
+      <Table.Column<T> key="status" dataIndex="" title="患者入组" render={() => <span>患者入组</span>} />
       {
         sections.map(section =>
           <Table.Column<T> key={section.title} dataIndex="" title={section.title}
