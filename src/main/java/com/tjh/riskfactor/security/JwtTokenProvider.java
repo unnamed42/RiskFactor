@@ -12,6 +12,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 
+import javax.crypto.SecretKey;
 import javax.servlet.http.HttpServletRequest;
 
 import java.util.Date;
@@ -41,14 +42,13 @@ public class JwtTokenProvider {
         var now = new Date();
         var expiry = new Date(now.getTime() + expiryMs);
         return Jwts.builder().setSubject(auth.getName())
-                .signWith(Keys.hmacShaKeyFor(signingKey.getBytes()), SignatureAlgorithm.HS256)
+                .signWith(key(), SignatureAlgorithm.HS256)
                 .setIssuedAt(now).setExpiration(expiry)
-                .claim("idt", id)
-                .setNotBefore(expiry).compact();
+                .claim("idt", id).compact();
     }
 
     private Claims parseClaims(String token) throws ExpiredJwtException, UnsupportedJwtException, MalformedJwtException, SignatureException, IllegalArgumentException {
-        return Jwts.parser().setSigningKey(signingKey).parseClaimsJws(token).getBody();
+        return Jwts.parser().setSigningKey(key()).parseClaimsJws(token).getBody();
     }
 
     Authentication getAuthentication(String token) {
@@ -65,6 +65,10 @@ public class JwtTokenProvider {
 
     boolean validateToken(String token) throws ExpiredJwtException, UnsupportedJwtException, MalformedJwtException, SignatureException, IllegalArgumentException {
         return parseClaims(token).getExpiration().after(new Date());
+    }
+
+    private SecretKey key() {
+        return Keys.hmacShaKeyFor(signingKey.getBytes());
     }
 
 }

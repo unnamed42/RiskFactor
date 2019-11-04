@@ -14,7 +14,7 @@ import java.util.Optional;
 @Repository
 public interface TaskRepository extends JpaRepository<Task, Integer> {
 
-    static String TASK_BRIEF_ALL = "select t.id as id, t.name as name, t.mtime as mtime, g.name as center from Task t join t.group g ";
+    static String TASK_BRIEF_ALL = "select t.id as id, t.name as name, t.mtime as mtime, g.displayName as center from Task t join t.group g ";
 
     @Query(TASK_BRIEF_ALL + "on t.id = :id")
     Optional<TaskBrief> findTaskInfoById(Integer id);

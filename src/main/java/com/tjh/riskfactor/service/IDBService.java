@@ -39,6 +39,14 @@ interface IDBService<T> {
         return getRepo().save(t);
     }
 
+    default boolean has(Integer id) {
+        return getRepo().existsById(id);
+    }
+
+    default void remove(Integer id) {
+        getRepo().deleteById(id);
+    }
+
     default Optional<T> find(Integer id) {
         return getRepo().findById(id);
     }

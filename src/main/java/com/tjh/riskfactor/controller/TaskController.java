@@ -35,7 +35,7 @@ public class TaskController {
      * 获取全部项目的基础信息
      * @return 全部项目的基础信息
      */
-    @GetMapping("/task")
+    @GetMapping("/tasks")
     public List<TaskBrief> tasks() {
         return service.tasks();
     }
@@ -45,23 +45,23 @@ public class TaskController {
      * @param id 项目id
      * @return 基础信息
      */
-    @GetMapping("/task/{id}")
+    @GetMapping("/tasks/{id}")
     public TaskBrief task(@PathVariable Integer id) {
         return service.taskBrief(id)
                .orElseThrow(() -> notFound("task", id.toString()));
     }
 
-    @GetMapping("/task/{id}/sections")
+    @GetMapping("/tasks/{id}/sections")
     public List<Section> sections(@PathVariable Integer id) {
         return service.checkedFind(id).getSections();
     }
 
-    @GetMapping("/task/{id}/sections/name")
+    @GetMapping("/tasks/{id}/sections/name")
     public List<SectionBrief> sectionNames(@PathVariable Integer id) {
         return service.taskSectionsInfo(id);
     }
 
-    @GetMapping("/task/{id}/answers")
+    @GetMapping("/tasks/{id}/answers")
     public List<AnswerBrief> answers(@PathVariable Integer id, @AuthenticationPrincipal JwtUserDetails userDetails) {
         // 是root组，返回所有内容
         if(userDetails.isRoot())
@@ -72,7 +72,7 @@ public class TaskController {
             .orElseGet(() -> service.userAnswers(id, userDetails.getId()));
     }
 
-    @PostMapping("/task/{id}/answer")
+    @PostMapping("/tasks/{id}/answer")
     public String postAnswer(@PathVariable Integer id, Authentication auth, @RequestBody Map<String, Map<String, Object>> body) {
         List<AnswerSection> parts = body.entrySet().stream().map(e -> {
             var ans = new AnswerSection().setSectionPath(e.getKey()).setBody(e.getValue());
@@ -82,7 +82,7 @@ public class TaskController {
         return kvMap("id", ans.getId()).buildJson().get();
     }
 
-    @PostMapping("/task/{id}/answer/file")
+    @PostMapping("/tasks/{id}/answer/file")
     public String postAnswer(@PathVariable Integer id, Authentication auth, @RequestParam("file")MultipartFile file) throws IOException {
         var mapper = new ObjectMapper();
         var type = new TypeReference<Map<String, Map<String, Object>>>(){};

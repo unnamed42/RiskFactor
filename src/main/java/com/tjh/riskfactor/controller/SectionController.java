@@ -14,7 +14,7 @@ public class SectionController {
 
     private final SectionService service;
 
-    @GetMapping("/section/{sid}")
+    @GetMapping("/sections/{sid}")
     Section section(@PathVariable Integer sid) {
         return service.section(sid).orElseThrow(() -> notFound("section", sid.toString()));
     }

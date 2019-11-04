@@ -24,7 +24,7 @@ public class AnswerController {
      * @param id 回答id
      * @return 回答的内容
      */
-    @GetMapping("/answer/{id}/body")
+    @GetMapping("/answers/{id}/body")
     public Map<String, Map<String, Object>> answer(@PathVariable Integer id) {
         var ans = service.answer(id).orElseThrow(() -> notFound("answer", id.toString()));
         var map = new HashMap<String, Map<String, Object>>();
@@ -37,7 +37,7 @@ public class AnswerController {
      * 删除回答
      * @param id 回答id
      */
-    @DeleteMapping("/answer/{id}")
+    @DeleteMapping("/answers/{id}")
     public void deleteAnswer(@PathVariable Integer id) {
         service.delete(id);
     }

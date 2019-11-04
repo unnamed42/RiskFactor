@@ -15,6 +15,12 @@ public interface UserRepository extends JpaRepository<User, Integer> {
 
     boolean existsByUsername(String username);
 
+    @Query(nativeQuery = true, value =
+        "select count(*) from users a, users u where " +
+        "a.id = :adminId and u.id = :userId and a.group_id = u.group_id and a.is_admin = true"
+    )
+    boolean isManaging(Integer adminId, Integer userId);
+
     @Query("select u.id from User u where u.username = :username")
     Optional<Integer> findIdByUsername(String username);
 
@@ -22,7 +28,7 @@ public interface UserRepository extends JpaRepository<User, Integer> {
     Optional<String> findGroupName(Integer uid);
 
     @Query(nativeQuery = true, value =
-        "select u.group_id from users u where u.id = :uid"
+        "select u.group_id from users u where u.id = :uid and u.is_admin = true"
     )
     Optional<Integer> findManagedGroupId(Integer uid);
 
