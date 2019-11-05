@@ -16,4 +16,3 @@ ARG BUILD=/app/target
 ARG PKGNAME=riskfactor-0.0.1-SNAPSHOT
 
 COPY --from=build ${BUILD}/${PKGNAME}.jar /app.jar
-# COPY ./wait-for /app/wait-for

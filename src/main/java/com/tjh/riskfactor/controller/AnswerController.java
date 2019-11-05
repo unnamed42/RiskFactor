@@ -13,6 +13,7 @@ import java.util.Map;
 /**
  * 负责处理问题回答的Controller
  */
+@CrossOrigin
 @RestController
 @RequiredArgsConstructor
 public class AnswerController {

@@ -15,6 +15,7 @@ import java.util.Map;
 /**
  * 用户相关操作，比如设置用户信息，检查用户名重名等
  */
+@CrossOrigin
 @RestController
 @RequiredArgsConstructor
 public class UserController {

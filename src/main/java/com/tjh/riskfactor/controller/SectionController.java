@@ -8,6 +8,7 @@ import com.tjh.riskfactor.entity.form.Section;
 import com.tjh.riskfactor.service.SectionService;
 import static com.tjh.riskfactor.error.ResponseErrors.notFound;
 
+@CrossOrigin
 @RestController
 @RequiredArgsConstructor
 public class SectionController {

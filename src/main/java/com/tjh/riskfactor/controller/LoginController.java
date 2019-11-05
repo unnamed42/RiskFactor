@@ -18,6 +18,7 @@ import java.util.Map;
 /**
  * 负责用户登录信息的Controller
  */
+@CrossOrigin
 @RestController
 @RequiredArgsConstructor
 public class LoginController {

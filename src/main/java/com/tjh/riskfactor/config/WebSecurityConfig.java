@@ -61,23 +61,23 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         return provider;
     }
 
-    /**
-     * 开启跨域请求支持，开放给本机，目前只能作为debug使用
-     * TODO: 开放给前端实际IP，用于生产环境
-     */
-    @Bean
-    protected FilterRegistrationBean<CorsFilter> simpleCorsFilter() {
-        var source = new UrlBasedCorsConfigurationSource();
-        var config = new CorsConfiguration();
-        config.setAllowCredentials(true);
-        config.setAllowedOrigins(Arrays.asList("http://localhost:8080", "http://127.0.0.1:8080"));
-        config.setAllowedMethods(Collections.singletonList("*"));
-        config.setAllowedHeaders(Collections.singletonList("*"));
-        source.registerCorsConfiguration("/**", config);
-        var bean = new FilterRegistrationBean<>(new CorsFilter(source));
-        bean.setOrder(Ordered.HIGHEST_PRECEDENCE);
-        return bean;
-    }
+//    /**
+//     * 开启跨域请求支持，开放给本机，目前只能作为debug使用
+//     * TODO: 开放给前端实际IP，用于生产环境
+//     */
+//    @Bean
+//    protected FilterRegistrationBean<CorsFilter> simpleCorsFilter() {
+//        var source = new UrlBasedCorsConfigurationSource();
+//        var config = new CorsConfiguration();
+//        config.setAllowCredentials(true);
+//        config.setAllowedOrigins(Arrays.asList("http://localhost:8080", "http://127.0.0.1:8080"));
+//        config.setAllowedMethods(Collections.singletonList("*"));
+//        config.setAllowedHeaders(Collections.singletonList("*"));
+//        source.registerCorsConfiguration("/**", config);
+//        var bean = new FilterRegistrationBean<>(new CorsFilter(source));
+//        bean.setOrder(Ordered.HIGHEST_PRECEDENCE);
+//        return bean;
+//    }
 
     @Override
     protected void configure(AuthenticationManagerBuilder builder) throws Exception {
