@@ -12,6 +12,6 @@ module.exports = merge(common, {
     //     path: "cjs/react-dom.production.min.js"
     //   }]
     // }),
-    new BundleAnalyzerPlugin()
+    // new BundleAnalyzerPlugin()
   ]
 });
