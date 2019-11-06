@@ -1,8 +1,12 @@
 package com.tjh.riskfactor.service;
 
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
+import org.apache.poi.ss.usermodel.WorkbookFactory;
+
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.tjh.riskfactor.entity.form.Answer;
 import com.tjh.riskfactor.entity.form.AnswerSection;
@@ -10,27 +14,21 @@ import com.tjh.riskfactor.repo.AnswerRepository;
 import com.tjh.riskfactor.repo.AnswerSectionRepository;
 import static com.tjh.riskfactor.error.ResponseErrors.notFound;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.Date;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
-public class AnswerService {
+public class AnswerService implements IDBService<Answer> {
 
     private final TaskService tasks;
     private final UserService users;
 
-    private final AnswerRepository answers;
+    @Getter
+    private final AnswerRepository repo;
     private final AnswerSectionRepository answerSections;
-
-    public Optional<Answer> answer(Integer id) {
-        return answers.findById(id);
-    }
-
-    public void delete(Integer id) {
-        answers.deleteById(id);
-    }
 
     public AnswerSection saveAnswerSection(AnswerSection ans) {
         return answerSections.save(ans);
@@ -41,7 +39,24 @@ public class AnswerService {
                 .setCreator(users.find(username).orElseThrow(() -> notFound("user", username)))
                 .setTask(tasks.checkedFind(taskId))
                 .setMtime(new Date());
-        return answers.save(ans);
+        return repo.save(ans);
+    }
+
+    @Transactional
+    public Answer importFromExcel(Integer taskId, Integer userId, InputStream is) throws IOException {
+        var ownerTask = tasks.checkedFind(taskId);
+        var creator = users.checkedFind(userId);
+        try (var document = WorkbookFactory.create(is)) {
+            var sheet = document.getSheetAt(0);
+            var parentHeader = sheet.getRow(0);
+            var childHeader = sheet.getRow(1);
+        }
+        return null;
+    }
+
+    @Override
+    public String getEntityName() {
+        return "answer";
     }
 
 }

@@ -72,19 +72,6 @@ public class TaskService implements IDBService<Task> {
         return answers.findAllByTaskIdCreatedBy(taskId, names);
     }
 
-    public void deleteTaskAnswer(Integer answerId) {
-        answers.deleteById(answerId);
-    }
-
-    /**
-     * 获取分节
-     * @param sid 分节id
-     * @return 分节的全部信息
-     */
-    public Optional<Section> section(Integer sid) {
-        return sections.findById(sid);
-    }
-
     List<Section> saveSections(Stream<Section> sections) {
         return this.sections.saveAll(sections::iterator);
     }

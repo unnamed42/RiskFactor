@@ -15,11 +15,19 @@ public class AnswerSection {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @Column(nullable = false)
-    private String sectionPath;
+    @JoinColumn(table = "section", referencedColumnName = "id", nullable = false)
+    private Integer parentId;
+
+    @JoinColumn(table = "section", referencedColumnName = "id", nullable = false)
+    private Integer childId;
 
     @Convert(converter = MapConverter.class)
     @Column(length = 10240, nullable = false)
     private Map<String, Object> body;
+
+    @Transient public AnswerSection setSection(Integer parent, Integer child) {
+        parentId = parent; childId = child;
+        return this;
+    }
 
 }

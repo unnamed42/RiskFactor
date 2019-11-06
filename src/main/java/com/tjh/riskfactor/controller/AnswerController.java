@@ -27,7 +27,7 @@ public class AnswerController {
      */
     @GetMapping("/answers/{id}/body")
     public Map<String, Map<String, Object>> answer(@PathVariable Integer id) {
-        var ans = service.answer(id).orElseThrow(() -> notFound("answer", id.toString()));
+        var ans = service.find(id).orElseThrow(() -> notFound("answer", id.toString()));
         var map = new HashMap<String, Map<String, Object>>();
         for(var anssec : ans.getParts())
             map.put(anssec.getSectionPath(), anssec.getBody());
@@ -40,7 +40,7 @@ public class AnswerController {
      */
     @DeleteMapping("/answers/{id}")
     public void deleteAnswer(@PathVariable Integer id) {
-        service.delete(id);
+        service.remove(id);
     }
 
 //    @GetMapping(value = "/answer/{id}/file")

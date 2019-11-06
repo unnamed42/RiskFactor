@@ -27,6 +27,8 @@ public class Question {
 
     private QuestionType type;
 
+    private String label;
+
     @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.REMOVE)
     @JoinTable(name = "question_list",
         joinColumns = @JoinColumn(name = "head", referencedColumnName = "id"),
@@ -41,8 +43,6 @@ public class Question {
     // 指定该问题的输入能否控制后续问题的显示
     // 用于指定联动问题，即只有这个问题输入之后才能显示后续问题
     @Transient private Boolean isEnabler;
-    // 问题标签
-    @Transient private String label;
     // 问题标签位置，仅供输入类组件使用，表示标签的位置
     // 值的含义同addonPosition
     @Transient private String labelPosition;

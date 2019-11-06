@@ -184,11 +184,11 @@ sections:
             - label: 县
               type: text
               required: true
-        - label: 身高（米）
+        - label: 身高（m）
           type: number
           required: true
           placeholder: 身高
-        - label: 体重（千克）
+        - label: 体重（Kg）
           type: number
           required: true
           placeholder: 体重

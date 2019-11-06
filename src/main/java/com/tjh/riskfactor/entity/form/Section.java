@@ -15,6 +15,7 @@ import java.util.List;
  */
 
 @Data @Entity
+@Table(name = "section")
 @Accessors(chain = true)
 @EqualsAndHashCode(of = "id")
 public class Section {

@@ -2,25 +2,18 @@ package com.tjh.riskfactor.controller;
 
 import lombok.RequiredArgsConstructor;
 
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 
 import com.tjh.riskfactor.entity.form.*;
 import com.tjh.riskfactor.entity.view.*;
 import com.tjh.riskfactor.service.*;
 import com.tjh.riskfactor.security.JwtUserDetails;
 import static com.tjh.riskfactor.error.ResponseErrors.notFound;
-import static com.tjh.riskfactor.util.Utils.kvMap;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.Map;
-import static java.util.stream.Collectors.toList;
 
 @CrossOrigin
 @RestController
@@ -73,21 +66,10 @@ public class TaskController {
             .orElseGet(() -> service.userAnswers(id, userDetails.getId()));
     }
 
-    @PostMapping("/tasks/{id}/answer")
-    public String postAnswer(@PathVariable Integer id, Authentication auth, @RequestBody Map<String, Map<String, Object>> body) {
-        List<AnswerSection> parts = body.entrySet().stream().map(e -> {
-            var ans = new AnswerSection().setSectionPath(e.getKey()).setBody(e.getValue());
-            return answers.saveAnswerSection(ans);
-        }).collect(toList());
-        Answer ans = answers.saveAnswer(id, auth.getName(), parts);
-        return kvMap("id", ans.getId()).buildJson().get();
-    }
-
     @PostMapping("/tasks/{id}/answer/file")
-    public String postAnswer(@PathVariable Integer id, Authentication auth, @RequestParam("file")MultipartFile file) throws IOException {
-        var mapper = new ObjectMapper();
-        var type = new TypeReference<Map<String, Map<String, Object>>>(){};
-        return postAnswer(id, auth, mapper.readValue(file.getInputStream(), type));
+    public void importAnswer(@PathVariable Integer id, @AuthenticationPrincipal JwtUserDetails details,
+                             @RequestParam("file") MultipartFile file) throws IOException {
+        answers.importFromExcel(id, details.getId(), file.getInputStream());
     }
 
 }
