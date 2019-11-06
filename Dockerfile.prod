@@ -7,9 +7,6 @@ RUN yarn install
 
 COPY . ./
 
-ARG BASE_URL
-ENV BASE_URL=${BASE_URL}
-
 RUN yarn run build
 
 FROM nginx:1.17.0-alpine
