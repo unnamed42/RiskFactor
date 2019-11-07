@@ -66,7 +66,7 @@ public class TaskController {
             .orElseGet(() -> service.userAnswers(id, userDetails.getId()));
     }
 
-    @PostMapping("/tasks/{id}/answer/file")
+    @PostMapping(value = "/tasks/{id}/answers/file", consumes = {"application/vnd.ms-excel", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"})
     public void importAnswer(@PathVariable Integer id, @AuthenticationPrincipal JwtUserDetails details,
                              @RequestParam("file") MultipartFile file) throws IOException {
         answers.importFromExcel(id, details.getId(), file.getInputStream());

@@ -43,7 +43,7 @@ public class Task {
     @JsonFormat(shape = Shape.STRING, pattern = "yyyy-MM-dd")
     private Date mtime;
 
-    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.REMOVE)
+    @OneToMany(cascade = CascadeType.REMOVE)
     @JoinTable(name = "task_sections",
         joinColumns = @JoinColumn(name = "tid"),
         inverseJoinColumns = @JoinColumn(name = "sid")

@@ -27,10 +27,11 @@ public class AnswerController {
      */
     @GetMapping("/answers/{id}/body")
     public Map<String, Map<String, Object>> answer(@PathVariable Integer id) {
-        var ans = service.find(id).orElseThrow(() -> notFound("answer", id.toString()));
+        var ans = service.checkedFind(id);
         var map = new HashMap<String, Map<String, Object>>();
-        for(var anssec : ans.getParts())
-            map.put(anssec.getSectionPath(), anssec.getBody());
+//        for(var anssec : ans.getParts())
+//            // TODO: fix
+//            map.put(anssec.getId().toString(), anssec.getBody());
         return map;
     }
 

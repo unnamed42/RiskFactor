@@ -15,6 +15,8 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.util.*;
 import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
+
 import static java.util.stream.Collectors.toSet;
 
 public class Utils {
@@ -99,6 +101,10 @@ public class Utils {
         var set = Arrays.stream(authorities).collect(toSet());
         return auth.getAuthorities().stream().map(GrantedAuthority::getAuthority)
                 .anyMatch(set::contains);
+    }
+
+    public static <T> Stream<T> fromIterable(Iterable<T> iterable) {
+        return StreamSupport.stream(iterable.spliterator(), false);
     }
 
 }

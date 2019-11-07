@@ -96,11 +96,6 @@ public class DataService {
     }
 
     private Section prepareSection(Section section) {
-        if(section.getSections() != null) {
-            var sections = this.tasks.saveSections(
-                section.getSections().stream().map(this::prepareSection));
-            section.setSections(sections);
-        }
         if(section.getQuestions() != null) {
             var questions = this.tasks.saveQuestions(
                 section.getQuestions().stream().map(this::prepareQuestion));

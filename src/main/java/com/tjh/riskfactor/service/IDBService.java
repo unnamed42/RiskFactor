@@ -60,4 +60,13 @@ interface IDBService<T> {
         return getRepo().findById(id).orElseThrow(() -> notFound(getEntityName(), id.toString()));
     }
 
+    /**
+     * 确保实体存在，不存在时抛异常
+     * @param id 实体id
+     */
+    default void ensureHas(Integer id) throws ResponseStatusException {
+        if(!has(id))
+            throw notFound(getEntityName(), id.toString());
+    }
+
 }

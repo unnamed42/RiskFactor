@@ -29,7 +29,7 @@ public class Question {
 
     private String label;
 
-    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.REMOVE)
+    @ManyToMany(cascade = CascadeType.REMOVE)
     @JoinTable(name = "question_list",
         joinColumns = @JoinColumn(name = "head", referencedColumnName = "id"),
         inverseJoinColumns = @JoinColumn(name = "qid", referencedColumnName = "id")

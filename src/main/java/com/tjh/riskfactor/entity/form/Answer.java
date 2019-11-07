@@ -11,6 +11,7 @@ import com.tjh.riskfactor.entity.User;
 import javax.persistence.*;
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 
 @Data @Entity
 @Table(name = "answer")
@@ -32,11 +33,7 @@ public class Answer {
     @JsonFormat(shape = Shape.STRING, pattern = "yyyy-MM-dd")
     private Date mtime;
 
-    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.REMOVE)
-    @JoinTable(name = "answer_parts",
-        joinColumns = @JoinColumn(name = "aid"),
-        inverseJoinColumns = @JoinColumn(name = "part_id")
-    )
-    private List<AnswerSection> parts;
+    @OneToMany(mappedBy = "answer", cascade = CascadeType.REMOVE)
+    private Set<AnswerEntry> answers;
 
 }
