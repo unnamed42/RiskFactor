@@ -1,0 +1,26 @@
+groups:
+  - name: root
+    displayName: 全部分中心
+  - name: users
+    displayName: 华中科技大学
+  - name: nobody
+    displayName: 无
+users:
+  - username: admin
+    password: admin
+    email: admin@example.com
+    group: root
+    isAdmin: true
+  - username: user
+    password: user
+    email: user@example.com
+    group: users
+    isAdmin: true
+  - username: user2
+    password: user2
+    email: user2@example.com
+    group: users
+  - username: banned
+    password: banned
+    email: banned@example.com
+    group: nobody

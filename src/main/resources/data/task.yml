@@ -1,0 +1,600 @@
+# 编写规则：
+# type === list
+# type === null
+#    该类为多选/单选类问题的选项
+#    可携带list，意为被选中时激活的问题
+#    isEnabler不需要设置，当有list的时候自动视为true
+# type === number | text
+#    可携带list，其下所有问题均需设置addonPosition
+#    labelPosition
+name: 胆胰危险因素采集
+center: users
+mtime: 2019-10-29
+sections:
+  - title: 基本信息/一般资料
+    questions:
+      - label: 中心编号
+        type: disabled
+      - label: 研究编号
+        type: disabled
+      - label: 出生日期
+        type: date
+        required: true
+      - label: 性别
+        type: select
+        required: true
+        placeholder: 性别
+        list:
+          - label: 男
+          - label: 女
+      - label: 民族
+        type: select
+        required: true
+        placeholder: 输入拼音可筛选
+        filterKey: key
+        list:
+          - label: 汉族
+            filterKey: han
+          - label: 满族
+            filterKey: man
+          - label: 蒙古族
+            filterKey: menggu
+          - label: 回族
+            filterKey: hui
+          - label: 藏族
+            filterKey: zang
+          - label: 维吾尔族
+            filterKey: weiwuer
+          - label: 苗族
+            filterKey: miao
+          - label: 彝族
+            filterKey: yi
+          - label: 壮族
+            filterKey: zhuang
+          - label: 布依族
+            filterKey: buyi
+          - label: 侗族
+            filterKey: dong
+          - label: 瑶族
+            filterKey: yao
+          - label: 白族
+            filterKey: bai
+          - label: 土家族
+            filterKey: tujia
+          - label: 哈尼族
+            filterKey: hani
+          - label: 哈萨克族
+            filterKey: hasake
+          - label: 傣族
+            filterKey: dai
+          - label: 黎族
+            filterKey: li
+          - label: 傈僳族
+            filterKey: lisu
+          - label: 佤族
+            filterKey: wa
+          - label: 畲族
+            filterKey: she
+          - label: 高山族
+            filterKey: gaoshan
+          - label: 拉祜族
+            filterKey: lahu
+          - label: 水族
+            filterKey: shui
+          - label: 东乡族
+            filterKey: dongxiang
+          - label: 纳西族
+            filterKey: naxi
+          - label: 景颇族
+            filterKey: jingpo
+          - label: 柯尔克孜族
+            filterKey: keerkezi
+          - label: 土族
+            filterKey: tu
+          - label: 达斡尔族
+            filterKey: dawoer
+          - label: 仫佬族
+            filterKey: mulao
+          - label: 羌族
+            filterKey: qiang
+          - label: 布朗族
+            filterKey: bulang
+          - label: 撒拉族
+            filterKey: sala
+          - label: 毛南族
+            filterKey: maonan
+          - label: 仡佬族
+            filterKey: gelao
+          - label: 锡伯族
+            filterKey: xibo
+          - label: 阿昌族
+            filterKey: achang
+          - label: 普米族
+            filterKey: pumi
+          - label: 朝鲜族
+            filterKey: chaoxian
+          - label: 塔吉克族
+            filterKey: tajike
+          - label: 怒族
+            filterKey: nu
+          - label: 乌孜别克族
+            filterKey: wuzibieke
+          - label: 俄罗斯族
+            filterKey: eluosi
+          - label: 鄂温克族
+            filterKey: ewenke
+          - label: 德昂族
+            filterKey: deang
+          - label: 保安族
+            filterKey: baoan
+          - label: 裕固族
+            filterKey: yugu
+          - label: 京族
+            filterKey: jing
+          - label: 塔塔尔族
+            filterKey: tataer
+          - label: 独龙族
+            filterKey: dulong
+          - label: 鄂伦春族
+            filterKey: elunchun
+          - label: 赫哲族
+            filterKey: hezhe
+          - label: 门巴族
+            filterKey: menba
+          - label: 珞巴族
+            filterKey: luoba
+          - label: 基诺族
+            filterKey: jinuo
+      - label: 籍贯
+        type: list
+        list:
+          - label: 省
+            type: text
+            required: true
+          - label: 市
+            type: text
+            required: true
+      - label: 职业
+        type: select
+        required: true
+        list:
+          - label: 退（离）休人员
+          - label: 国家公务员
+          - label: 专业技术人员
+          - label: 职员
+          - label: 企业管理人员
+          - label: 工人
+          - label: 农民
+          - label: 学生
+          - label: 现役军人
+          - label: 自由职业者
+          - label: 无业人员
+          - label: 其他
+      - label: 通讯地址
+        type: list
+        list:
+          - label: 省
+            type: text
+            required: true
+          - label: 市
+            type: text
+            required: true
+          - label: 县
+            type: text
+            required: true
+      - label: 身高（m）
+        type: number
+        required: true
+        placeholder: 身高
+      - label: 体重（Kg）
+        type: number
+        required: true
+        placeholder: 体重
+  - title: 基本信息/现病史
+    questions:
+      - label: 就诊或入院日期
+        type: date
+        required: true
+      - label: 发病时间
+        type: date
+        required: true
+        description: 精确到年，月份或日期未知用1月1日代替
+      - label: 就诊症状
+        type: choice-multi
+        list:
+          - label: 腹痛
+            list:
+              - label: 持续时间
+                type: number
+                required: true
+                list:
+                  - type: select
+                    addonPosition: postfix
+                    selected: 天
+                    list:
+                      - label: 天
+                      - label: 月
+                      - label: 年
+          - label: 腹胀
+            list:
+              - label: 持续时间
+                type: number
+                required: true
+                list:
+                  - type: select
+                    addonPosition: postfix
+                    selected: 天
+                    list:
+                      - label: 天
+                      - label: 月
+                      - label: 年
+          - label: 黄疸
+            list:
+              - label: 持续时间
+                type: number
+                required: true
+                list:
+                  - type: select
+                    addonPosition: postfix
+                    selected: 天
+                    list:
+                      - label: 天
+                      - label: 月
+                      - label: 年
+          - label: 恶心呕吐
+            list:
+              - label: 持续时间
+                type: number
+                required: true
+                list:
+                  - type: select
+                    addonPosition: postfix
+                    selected: 天
+                    list:
+                      - label: 天
+                      - label: 月
+                      - label: 年
+          - label: 乏力纳差
+            list:
+              - label: 持续时间
+                type: number
+                required: true
+                list:
+                  - type: select
+                    addonPosition: postfix
+                    selected: 天
+                    list:
+                      - label: 天
+                      - label: 月
+                      - label: 年
+          - label: 消瘦
+            list:
+              - label: 持续时间
+                type: number
+                required: true
+                list:
+                  - type: select
+                    addonPosition: postfix
+                    selected: 天
+                    list:
+                      - label: 天
+                      - label: 月
+                      - label: 年
+          - label: 发热
+            list:
+              - label: 持续时间
+                type: number
+                required: true
+                list:
+                  - type: select
+                    addonPosition: postfix
+                    selected: 天
+                    list:
+                      - label: 天
+                      - label: 月
+                      - label: 年
+          - label: 其他
+            list:
+              - type: text
+                required: true
+                placeholder: 症状名称
+              - label: 持续时间
+                type: number
+                required: true
+                list:
+                  - type: select
+                    addonPosition: postfix
+                    selected: 天
+                    list:
+                      - label: 天
+                      - label: 月
+                      - label: 年
+      - label: 入院体征
+        type: choice-multi
+        list:
+          - label: 腹部包块
+          - label: 黄疸
+          - label: Murphy征
+          - label: 肝大
+          - label: 上腹压痛
+          - label: 腹水
+          - label: 心率不齐
+          - label: 发热
+          - label: 其他
+            list:
+              - type: text
+                required: true
+                placeholder: 症状名称
+  - title: 基本信息/既往病史
+    questions:
+      - label: 胆囊炎
+        type: either
+        yesno: 有/无
+        list:
+          - type: choice
+            required: true
+            list:
+              - label: 急性
+              - label: 慢性
+      - label: 胆囊结石
+        type: either
+        yesno: 有/无
+        list:
+          - type: either
+            required: true
+            placeholder: 急性/慢性
+            yesno: 急性/慢性
+          - label: 大小
+            type: number
+            required: true
+            yesno: 大小请填写二维值，单位：毫米
+      - label: 胆囊息肉
+        type: either
+        yesno: 有/无
+        list:
+          - type: either
+            required: true
+            placeholder: 急性/慢性
+            yesno: 急性/慢性
+          - label: 大小
+            type: number
+            required: true
+            yesno: 大小请填写二维值，单位：毫米
+      - label: 胆管结石
+        type: either
+        yesno: 有/无
+        list:
+          - type: either
+            required: true
+            yesno: 肝内胆管结石/肝外胆管结石
+      - label: Mirrizi综合征
+        type: either
+        yesno: 有/无
+      - label: 胆道系统感染
+        type: either
+        yesno: 有/无
+      - label: 寄生虫病
+        type: either
+        yesno: 有/无
+        list:
+          - type: choice-multi
+            required: true
+            list:
+              - label: 胆道蛔虫
+              - label: 华支睾吸虫
+      - label: 胆胰管汇合异常
+        type: either
+        yesno: 有/无
+      - label: 心脑血管疾病
+        type: either
+        yesno: 有/无
+        list:
+          - type: choice-multi
+            required: true
+            list:
+              - label: 高血压
+              - label: 糖尿病
+              - label: 其他
+                list:
+                - type: text
+                  required: true
+      - label: 手术史
+        type: template
+        list:
+          - label: 手术时间
+            type: date
+            required: true
+            description: 精确到年，如月份和日期未知，用1月或1日代替
+          - label: 手术名称
+            type: text
+            required: true
+      - label: 其他
+        type: template
+        list:
+          - label: 病症名称
+            type: text
+            required: true
+  - title: 基本信息/个人史
+    questions:
+      - label: 吸烟
+        type: either
+        list:
+          - label: 支/天
+            type: number
+            required: true
+            labelPosition: postfix
+          - label: 年
+            type: number
+            required: true
+            labelPosition: postfix
+      - label: 饮酒
+        type: either
+        list:
+          - label: 两/天
+            type: number
+            required: true
+            labelPosition: postfix
+          - label: 年
+            type: number
+            required: true
+            labelPosition: postfix
+      - label: 饮水
+        type: choice-multi
+        list:
+          - label: 自来水
+          - label: 井水
+          - label: 河水
+      - label: 饮食
+        type: choice-multi
+        list:
+          - label: 高脂
+          - label: 普通
+          - label: 素食
+      - label: BMI（体重/身高²）
+        type: disabled
+  - title: 基本信息/家族史
+    questions:
+      - label: 肿瘤
+        type: either
+        yesno: 有/无
+        list:
+          - type: choice-multi
+            list:
+              - label: 胆囊癌
+              - label: 其他
+                type: text
+      - label: 胆道疾病
+        type: either
+        yesno: 有/无
+        list:
+          - type: choice-multi
+            list:
+              - label: 胆囊结石
+              - label: 胆囊息肉
+              - label: 其他
+                type: text
+      - label: 心血管疾病
+        type: either
+        yesno: 有/无
+  - title: 术前情况/影像学检查
+    questions:
+      - label: B超
+        type: either
+        yesno: 有/无
+        list:
+          - label: 检查日期
+            type: date
+            required: true
+          - type: template
+            list:
+              - label: 检查结果
+                type: text
+                required: true
+      - label: CT
+        type: either
+        yesno: 有/无
+        list:
+          - label: 检查日期
+            type: date
+            required: true
+          - type: template
+            list:
+              - label: 检查结果
+                type: text
+                required: true
+      - label: MRI
+        type: either
+        yesno: 有/无
+        list:
+          - label: 检查日期
+            type: date
+            required: true
+          - type: template
+            list:
+              - label: 检查结果
+                type: text
+                required: true
+      - label: 经皮肝穿刺胆管造影（PTC）
+        type: either
+        yesno: 有/无
+        list:
+          - label: 检查日期
+            type: date
+            required: true
+          - type: template
+            list:
+              - label: 检查结果
+                type: text
+                required: true
+      - label: 超声内镜（EUS）
+        type: either
+        yesno: 有/无
+        list:
+          - label: 检查日期
+            type: date
+            required: true
+          - type: template
+            list:
+              - label: 检查结果
+                type: text
+                required: true
+      - label: PET/CT
+        type: either
+        yesno: 有/无
+        list:
+          - label: 检查日期
+            type: date
+            required: true
+          - type: template
+            list:
+              - label: 检查结果
+                type: text
+                required: true
+  - title: 术前情况/术前诊断
+    questions:
+      - type: list
+        list:
+          - label: 术前诊断
+            type: text
+          - label: 确诊方法
+            type: choice-multi
+            list:
+              - label: 细胞学诊断
+              - label: 基因学诊断
+              - label: 其他
+                list:
+                  - type: text
+                    required: true
+      - label: 术前减黄
+        type: either
+        list:
+          - label: 减黄方式
+            type: choice-multi
+            list:
+              - label: 经皮肝穿刺胆道引流（PTCD）
+              - label: 经内镜鼻胆管引流（ENBD）
+              - label: 胆道支架
+              - label: 胆囊造瘘
+      - label: 合并症
+        type: either
+        yesno: 有/无
+        list:
+          - type: choice-multi
+            list:
+              - label: 肺心病
+              - label: 高血压
+              - label: 心绞痛
+              - label: 糖尿病
+              - label: 肝癌
+              - label: 胰腺癌
+              - label: 胆管癌
+              - label: 其他
+                list:
+                  - type: text
+  - title: /随访情况
+    questions:
+      - label: 就诊号/住院号
+        type: text
+      - label: 随访时间
+        type: date
+        isEnabler: true
