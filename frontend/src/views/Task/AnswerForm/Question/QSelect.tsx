@@ -8,7 +8,7 @@ export const QSelect = forwardRef<Select, QProps<any | any[]>>(({ schema, onChan
   const { type, list, id, filterKey, placeholder } = schema;
 
   if (!list)
-    throw new Error(`QSelect ${id} has no list`);
+    throw new Error(`select ${id} has no list`);
 
   const [selected, setSelected] = useState(value);
 
@@ -17,8 +17,7 @@ export const QSelect = forwardRef<Select, QProps<any | any[]>>(({ schema, onChan
 
   const changed = (value: any) => {
     setSelected(value);
-    if (onChange)
-      onChange(value);
+    onChange?.(value);
   };
 
   return <Select ref={ref}

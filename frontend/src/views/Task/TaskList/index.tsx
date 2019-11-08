@@ -12,11 +12,11 @@ import "./index.less";
 
 export const TaskList: FC = () => {
 
-  const source = usePromise(tasks());
+  const source = usePromise(() => tasks());
 
   if (!source.loaded)
     return <PageLoading/>;
-  if (source.error)
+  if ("error" in source)
     return null;
 
   const description = (item: TaskBrief) => <span>

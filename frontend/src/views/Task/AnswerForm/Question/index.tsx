@@ -13,6 +13,7 @@ import { QChoice } from "./QChoice";
 import { QCheckbox } from "./QCheckbox";
 import { QDynamic } from "./QDynamic";
 import { QImmutable } from "./QImmutable";
+import { QTable } from "./QTable";
 
 import { validationRules } from "./util";
 
@@ -32,11 +33,14 @@ const renderer = (type: QSchema["type"]) => {
     case "choice-multi": return QCheckbox;
     case "either": return QYesNo;
     case "template": return QDynamic;
+    case "table": return QTable;
     default: return forwardRef(() => <div />);
   }
 };
 
 export const FormContext = createContext(null as WrappedFormUtils | null);
+
+export { QSchema };
 
 export interface QProps<T = any> {
   schema: QSchema;

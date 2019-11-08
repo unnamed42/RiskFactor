@@ -32,15 +32,15 @@ export class QFormD extends Component<P> {
     return <Form layout="horizontal">
       <FormContext.Provider value={form}>
         {
-          questions && questions.map(q =>
+          questions?.map(q =>
             <Question schema={q} key={q.id}
               formItemProps={style}
             />
           )
         }
         <Form.Item wrapperCol={{ span: 14, offset: 4 }}>
-          <Button type="primary" onClick={() => onSubmit && onSubmit()}>提交本节</Button>
-          <Button onClick={() => onSave && onSave()} style={{marginLeft: 5}}>本地暂存</Button>
+          <Button type="primary" onClick={() => onSubmit?.()}>提交本节</Button>
+          <Button onClick={() => onSave?.()} style={{marginLeft: 5}}>本地暂存</Button>
         </Form.Item>
       </FormContext.Provider>
     </Form>;
@@ -50,8 +50,10 @@ export class QFormD extends Component<P> {
 
 export const QForm = Form.create<P>({
   mapPropsToFields({ answer }) {
-    return Object.keys(answer || {}).reduce((prev, k) =>
-      ({ ...prev, [k]: Form.createFormField({ value: answer[k] }) })
-    , {});
+    if(!answer)
+      return {};
+    return Object.assign({}, Object.keys(answer).map(k => ({
+      [k]: Form.createFormField({ value: answer[k] })
+    })));
   }
 })(QFormD);

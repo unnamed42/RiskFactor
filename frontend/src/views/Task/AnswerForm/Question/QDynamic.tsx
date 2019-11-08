@@ -23,31 +23,26 @@ export class QDynamic extends Component<P, S> {
 
   constructor(props: P) {
     super(props);
-    const indexes = (props.value &&
-      props.value.split(",").map(s => parseInt(s, 10))) || [];
+    const indexes = props.value?.split(",").map(s => Number(s)) ?? [];
     const id = indexes.length ? Math.max(...indexes) + 1 : 0;
     this.state = { indexes, id };
   }
 
   remove(idx: number) {
     const { indexes } = this.state;
-    const { onChange } = this.props;
     const newIdx = indexes.filter(i => i !== idx);
     this.setState({ indexes: newIdx });
-    if (onChange)
-      onChange(newIdx.join(","));
+    this.props.onChange?.(newIdx.join(","));
   }
 
   add() {
     const { indexes, id } = this.state;
-    const { onChange } = this.props;
     const newIdx = [...indexes, id + 1];
     this.setState({
       indexes: newIdx,
       id: id + 1
     });
-    if (onChange)
-      onChange(newIdx.join(","));
+    this.props.onChange?.(newIdx.join(","));
   }
 
   render() {

@@ -1,6 +1,6 @@
 export type QType =
   "text" | "number" | "date" | "disabled" | "either" |
-  "list" | "template" |
+  "list" | "template" | "table" |
   "choice" | "choice-multi" | "select" | "select-multi";
 
 export interface Question {
@@ -25,7 +25,6 @@ export interface SectionBrief {
 }
 
 export interface Section extends SectionBrief {
-  sections?: Section[];
   questions?: Question[];
 }
 

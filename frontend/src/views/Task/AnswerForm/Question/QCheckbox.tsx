@@ -8,23 +8,25 @@ import { QList } from "./QList";
 
 export const QCheckbox = forwardRef<any, QProps<string[]>>(({ schema, onChange, value }, ref) => {
 
-  const { selected, list } = schema;
-  const defaultValue = value || (selected || "").split(",");
+  const { selected, list, id } = schema;
+  const defaultValue = value || (selected ?? "").split(",");
+
+  if(list === undefined)
+    throw new Error(`choice ${id} is incorrectly configured - no list`);
 
   const [chosen, setChosen] = useState(defaultValue);
 
   const changed = (values: CheckboxValueType[]) => {
     const strValues = values as string[];
     setChosen(strValues);
-    if (onChange)
-      onChange(strValues);
+    onChange?.(strValues);
   };
 
   return <Checkbox.Group ref={ref} value={chosen} onChange={changed}>
     {
-      list!.map(({ label, list }, idx) => {
+      list.map(({ label, list, id }, idx) => {
         if (!label)
-          throw new Error(`CHOICE has no label`);
+          throw new Error(`choice item ${id} has no label`);
         return <div key={`d-${idx}`}>
           <Checkbox key={idx} value={label}>
             {label}

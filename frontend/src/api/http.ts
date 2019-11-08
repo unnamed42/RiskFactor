@@ -39,5 +39,3 @@ export const downloadAsFile = (data: BlobPart, filename: string) => {
   document.body.appendChild(link);
   link.click();
 };
-
-export default http;

@@ -4,19 +4,17 @@ import { DatePicker } from "antd";
 import moment, { Moment } from "moment";
 
 import { QProps } from ".";
-
-const format = "YYYY-MM-DD";
+import { datePattern } from "@/config";
 
 export const QDate = forwardRef<any, QProps<string>>(({ schema, onChange, value }, ref) => {
 
-  const [date, setDate] = useState((value && moment(value, format)) || undefined);
+  const [date, setDate] = useState((value && moment(value, datePattern)) || undefined);
 
   const changed = (date: Moment | null) => {
     if (date === null)
       return;
     setDate(date);
-    if (onChange)
-      onChange(date.format(format));
+    onChange?.(date.format(datePattern));
   };
 
   return <DatePicker ref={ref} value={date} onChange={changed}

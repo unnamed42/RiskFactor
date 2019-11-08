@@ -11,23 +11,14 @@ export const QYesNo = forwardRef<any, QProps<string>>(({ schema, value, onChange
 
   const { list, yesno } = schema;
 
-  const [yes, no] = (yesno || "是/否").split("/");
+  const [yes, no] = (yesno ?? "是/否").split("/");
 
   const parentChanged = (e: RadioChangeEvent) => {
     const { value } = e.target;
     if (value === choice)
       return;
     setChoice(value);
-    if (onChange)
-      onChange(value);
-  };
-
-  const renderChild = () => {
-    if (choice !== yes || !list)
-      return null;
-    return list.map(q =>
-      <Question key={q.id} schema={q} />
-    );
+    onChange?.(value);
   };
 
   return <Radio.Group ref={ref} value={choice} onChange={parentChanged}>
@@ -35,7 +26,7 @@ export const QYesNo = forwardRef<any, QProps<string>>(({ schema, value, onChange
     <Radio value={no}>{no}</Radio>
     {
       list && choice === yes ?
-        renderChild() :
+        list.map(q => <Question key={q.id} schema={q} />) :
         null
     }
   </Radio.Group>;

@@ -9,7 +9,7 @@ import {
 } from "@/api/task";
 import { local } from "@/api/persist";
 
-import { SectionBrief, AnswerBrief } from "@/types";
+import { AnswerBrief } from "@/types";
 import { usePromise } from "@/utils";
 import { PageLoading } from "@/components";
 
@@ -21,17 +21,17 @@ type T = AnswerBrief;
 
 export const AnswerList: FC<P> = ({ taskId }) => {
 
-  const source = usePromise(
+  const source = usePromise(() =>
     Promise.all([task(taskId), taskSectionNames(taskId), taskAnswers(taskId)])
   );
 
   if(!source.loaded)
     return <PageLoading />;
-  if(source.error)
+  if("error" in source)
     return null;
 
-  const sectionLink = (answer: T, section: SectionBrief) =>
-    <Link to={`/task/${taskId}/form/${answer.id}/${section.id}`}>{section.title}</Link>;
+  // const sectionLink = (answer: T, section: SectionBrief) =>
+  //   <Link to={`/task/${taskId}/form/${answer.id}/${section.id}`}>{section.title}</Link>;
 
   const delAnswer = (answer: T) =>
     deleteAnswer(answer.id).then(() => { window.location.reload(); message.success("删除成功"); })
@@ -47,7 +47,14 @@ export const AnswerList: FC<P> = ({ taskId }) => {
     </span>;
   };
 
-  const [info, sections, answers] = source.value!;
+  const [info, sections, answers] = source.value;
+
+  const names = sections.reduce((reduced, curr) => {
+    const [h1] = curr.title.split("/");
+    if(!reduced.includes(h1))
+      reduced.push(h1);
+    return reduced;
+  }, [] as string[]);
 
   return <div>
     <PageHeader title={info.name}
@@ -76,9 +83,9 @@ export const AnswerList: FC<P> = ({ taskId }) => {
       <Table.Column<T> key="mtime" dataIndex="mtime" title="修改时间" />
       <Table.Column<T> key="status" dataIndex="" title="患者入组" render={() => <span>患者入组</span>} />
       {
-        sections.map(section =>
-          <Table.Column<T> key={section.title} dataIndex="" title={section.title}
-            render={(_, answer) => sectionLink(answer, section)} />
+        names.map(name =>
+          <Table.Column<T> key={name} dataIndex="" title={name}
+            render={() => <Link to="#" />} />
         )
       }
       <Table.Column<T> key="action" dataIndex="" title="动作" render={actions} />

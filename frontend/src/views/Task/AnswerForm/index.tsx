@@ -6,7 +6,8 @@ import { PageLoading } from "@/components";
 import { QForm, QFormD } from "./QForm";
 
 import { answer, postAnswer, taskSections } from "@/api/task";
-import { usePromise } from "@/utils";
+import { firstKey, usePromise } from "@/utils";
+import { Section } from "@/types";
 
 interface P {
   taskId: number | string;
@@ -14,90 +15,75 @@ interface P {
   sectionId?: number | string;
 }
 
+interface QLayout {
+  [key: string]: {
+    [key: string]: Section;
+  };
+}
+
 interface S {
-  parent: number;
-  child: number;
-  opened: string[];
+  h1: string;
+  h2: string;
   answers: any;
+  layout: QLayout;
 }
 
 export const AnswerForm: FC<P> = ({ taskId, answerId, sectionId }) => {
 
   const form = useRef<QFormD>(null);
 
-  const source = usePromise(
-    Promise.all([taskSections(taskId), answerId ? answer(answerId) : Promise.resolve({})])
+  const source = usePromise(() =>
+    // 推断不出类型？？你又bug了？
+    Promise.all<Section[], any>([
+      taskSections(taskId),
+      (answerId !== undefined ? answer(answerId) : Promise.resolve({}))
+    ])
   );
 
-  const [state, setState] = useState<S>({
-    parent: Number(sectionId || 0), child: 0, answers: {}, opened: ["0"]
-  });
+  const [state, setState] = useState<S>();
 
   // 将state中的answer与获取到的answer数据同步
   useEffect(() => {
-    if (!source.loaded || source.error)
+    if (!source.loaded || "error" in source)
       return;
-    setState({ ...state, answers: source.value![1] });
+    const [sections, ans] = source.value;
+    const layout = sections.reduce((obj, sec) => {
+      const [h1, h2] = sec.title.split("/");
+      if(!(h1 in obj))
+        obj[h1] = {};
+      obj[h1][h2] = sec;
+      return obj;
+    }, {} as QLayout);
+    const h1 = firstKey(layout);
+    const h2 = h1 !== null ? firstKey(layout[h1]) : null;
+    setState({ h1: h1 ?? "", h2: h2 ?? "", layout, answers: ans });
   }, [source]);
 
-  // 选中其他问题页的时候更新index状态
-  const select = (parent: number, child: number) => {
-    const nextState: S = { ...state, parent, child };
-    if (!opened.includes(parent.toString()))
-      nextState.opened.push(parent.toString());
-    setState(nextState);
-  };
-
-  // parent和child存储的是section从0开始的index而非问题的id，做从index到[一级section id]/[二级section id]的转化
-  const selectedAnswerId = (parent: number, child: number) =>
-    `${layout[parent].id}/${layout[parent].sections![child].id}`;
-
-  // 本地暂存回答内容
-  const saveLocal = () => {
-    if (!form.current)
-      return null;
-    return form.current.submit().then(values => {
-      let pIdx = Number(parent), cIdx = Number(child);
-      answers[selectedAnswerId(parent, child)] = values;
-      if (cIdx + 1 !== layout[pIdx].sections!.length)
-        ++cIdx;
-      else if (pIdx + 1 !== layout.length) {
-        ++pIdx;
-        cIdx = 0;
-      }
-      select(pIdx, cIdx);
-      return values;
-    });
-  };
-
-  // 内容推送至服务器
-  const saveRemote = () => {
-    const promise = saveLocal();
-    if (!promise)
-      return;
-    promise.then(() => postAnswer(taskId, answers), err => message.error(err.message))
-      .then(() => message.success("表单数据提交成功"));
-  };
-
-  if (!source.loaded)
+  if (!source.loaded || !state)
     return <PageLoading/>;
-  if (source.error)
+  if ("error" in source)
     return null;
 
-  const { parent, child, opened, answers } = state;
-  const layout = source.value![0];
+  const { h1, h2, answers, layout } = state;
+
+  const saveCurrent = () =>
+    form.current?.submit().then(ans =>
+      setState({ h1, h2, layout, answers: { ...answers, [`${h1}/${h2}`]: ans } })
+    );
 
   return <Layout>
     <Layout.Sider style={{ width: 200, background: "#fff" }}>
-      <Menu mode="inline" selectedKeys={[`${parent}/${child}`]} defaultOpenKeys={opened}
+      <Menu mode="inline" selectedKeys={[`${h1}/${h2}`]} defaultOpenKeys={[h1]}
             style={{ height: "100%", borderRight: 0 }}
       >
         {
-          layout.map(({ id, sections, title }, idx) =>
-            <Menu.SubMenu key={idx} title={<span><Icon type="bars"/>{title}</span>}>
+          Object.keys(layout).map(h1 =>
+            <Menu.SubMenu key={h1} title={<span><Icon type="bars"/>{h1}</span>}>
               {
-                sections && sections.map((sec, ndx) =>
-                  <Menu.Item key={`${idx}/${ndx}`} onClick={() => select(idx, ndx)}>{sec.title}</Menu.Item>
+                Object.keys(layout[h1]).map(h2 =>
+                  <Menu.Item key={`${h1}/${h2}`} onClick={() => setState({ ...state, h1, h2 })}>
+                    {h2}
+                  </Menu.Item>
                 )
               }
             </Menu.SubMenu>
@@ -108,9 +94,9 @@ export const AnswerForm: FC<P> = ({ taskId, answerId, sectionId }) => {
     <Layout>
       <Layout.Content style={{ padding: "20px 24px", minHeight: 280 }}>
         <PageHeader title=" " onBack={() => window.location.hash = `/task/${taskId}/answers`}/>
-        <QForm source={layout[parent].sections![child]}
-               answer={answers[selectedAnswerId(parent, child)]}
-               wrappedComponentRef={form} onSave={saveLocal} onSubmit={saveRemote}
+        <QForm source={layout[h1][h2]}
+               answer={answers[`${h1}/${h2}`]}
+               wrappedComponentRef={form} onSave={saveCurrent}
         />
       </Layout.Content>
     </Layout>
