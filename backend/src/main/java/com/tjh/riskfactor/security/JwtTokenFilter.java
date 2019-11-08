@@ -31,8 +31,7 @@ public class JwtTokenFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
                                     FilterChain filterChain) throws ServletException, IOException {
         try {
-            provider.resolveToken(request).filter(provider::validateToken)
-                    .map(provider::getAuthentication)
+            provider.resolveToken(request).map(provider::getAuthentication)
                     .ifPresent(auth -> SecurityContextHolder.getContext().setAuthentication(auth));
             filterChain.doFilter(request, response);
         } catch (IllegalArgumentException | MalformedJwtException ex) {

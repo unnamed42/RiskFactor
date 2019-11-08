@@ -16,7 +16,7 @@ sections:
       - label: 中心编号
         type: disabled
       - label: 研究编号
-        type: disabled
+        type: text
       - label: 出生日期
         type: date
         required: true
@@ -476,6 +476,372 @@ sections:
       - label: 心血管疾病
         type: either
         yesno: 有/无
+  - title: 术前情况/实验室检查
+    questions:
+      - label: 血常规
+        type: list
+        list:
+          - label: 检查日期
+            type: date
+            description: 请填写入院第一次检查结果
+          - type: table
+            list:
+              - type: list
+                list:
+                  - label: 检测项
+                  - label: 检测值
+                  - label: 单位
+                  - label: 临床意义判定
+              - type: list
+                list:
+                  - label: 白细胞WBC
+                  - type: number
+                  - label: 10⁹/L
+                  - type: choice
+                    list:
+                      - label: 1
+                      - label: 2
+                      - label: 3
+                      - label: 4
+              - type: list
+                list:
+                  - label: 中性粒细胞计数N
+                  - type: number
+                  - label: 10⁹/L
+                  - type: choice
+                    list:
+                      - label: 1
+                      - label: 2
+                      - label: 3
+                      - label: 4
+              - type: list
+                list:
+                  - label: 中性粒细胞百分比N%
+                  - type: number
+                  - label: "%"
+                  - type: choice
+                    list:
+                      - label: 1
+                      - label: 2
+                      - label: 3
+                      - label: 4
+              - type: list
+                list:
+                  - label: 淋巴细胞计数L
+                  - type: number
+                  - label: 10⁹/L
+                  - type: choice
+                    list:
+                      - label: 1
+                      - label: 2
+                      - label: 3
+                      - label: 4
+              - type: list
+                list:
+                  - label: 淋巴细胞百分比L%
+                  - type: number
+                  - label: "%"
+                  - type: choice
+                    list:
+                      - label: 1
+                      - label: 2
+                      - label: 3
+                      - label: 4
+              - type: list
+                list:
+                  - label: 单核细胞M
+                  - type: number
+                  - label: 10⁹/L
+                  - type: choice
+                    list:
+                      - label: 1
+                      - label: 2
+                      - label: 3
+                      - label: 4
+              - type: list
+                list:
+                  - label: 红细胞RBC
+                  - type: number
+                  - label: 10¹²/L
+                  - type: choice
+                    list:
+                      - label: 1
+                      - label: 2
+                      - label: 3
+                      - label: 4
+              - type: list
+                list:
+                  - label: 血红蛋白Hb
+                  - type: number
+                  - label: g/L
+                  - type: choice
+                    list:
+                      - label: 1
+                      - label: 2
+                      - label: 3
+                      - label: 4
+              - type: list
+                list:
+                  - label: 血小板PLT
+                  - type: number
+                  - label: 10⁹/L
+                  - type: choice
+                    list:
+                      - label: 1
+                      - label: 2
+                      - label: 3
+                      - label: 4
+      - label: 肝功能
+        type: list
+        list:
+          - label: 检查日期
+            type: date
+            description: 请填写入院第一次检查结果
+          - type: table
+            list:
+              - type: list
+                list:
+                  - label: 检测项
+                  - label: 检测值
+                  - label: 单位
+                  - label: 临床意义判定
+              - type: list
+                list:
+                  - label: 谷丙转氨酶ALT
+                  - type: number
+                  - label: U/L
+                  - type: choice
+                    list:
+                      - label: 1
+                      - label: 2
+                      - label: 3
+                      - label: 4
+              - type: list
+                list:
+                  - label: 谷草转氨酶AST
+                  - type: number
+                  - label: U/L
+                  - type: choice
+                    list:
+                      - label: 1
+                      - label: 2
+                      - label: 3
+                      - label: 4
+              - type: list
+                list:
+                  - label: 碱性磷酸酶ALP
+                  - type: number
+                  - label: U/L
+                  - type: choice
+                    list:
+                      - label: 1
+                      - label: 2
+                      - label: 3
+                      - label: 4
+              - type: list
+                list:
+                  - label: 总蛋白TP
+                  - type: number
+                  - label: g/L
+                  - type: choice
+                    list:
+                      - label: 1
+                      - label: 2
+                      - label: 3
+                      - label: 4
+              - type: list
+                list:
+                  - label: 白蛋白ALB
+                  - type: number
+                  - label: g/L
+                  - type: choice
+                    list:
+                      - label: 1
+                      - label: 2
+                      - label: 3
+                      - label: 4
+              - type: list
+                list:
+                  - label: 球蛋白GLO
+                  - type: number
+                  - label: g/L
+                  - type: choice
+                    list:
+                      - label: 1
+                      - label: 2
+                      - label: 3
+                      - label: 4
+              - type: list
+                list:
+                  - label: 总胆红素TB
+                  - type: number
+                  - label: μmol/L
+                  - type: choice
+                    list:
+                      - label: 1
+                      - label: 2
+                      - label: 3
+                      - label: 4
+              - type: list
+                list:
+                  - label: 直接胆红素DB
+                  - type: number
+                  - label: μmol/L
+                  - type: choice
+                    list:
+                      - label: 1
+                      - label: 2
+                      - label: 3
+                      - label: 4
+              - type: list
+                list:
+                  - label: γ-谷氨酰转肽酶GGT
+                  - type: number
+                  - label: μmol/L
+                  - type: choice
+                    list:
+                      - label: 1
+                      - label: 2
+                      - label: 3
+                      - label: 4
+      - label: 肿瘤标志物
+        type: list
+        list:
+          - label: 检查日期
+            type: date
+            description: 请填写入院第一次检查结果
+          - type: table
+            list:
+              - type: list
+                list:
+                  - label: 检测项
+                  - label: 检测值
+                  - label: 单位
+                  - label: 临床意义判定
+              - type: list
+                list:
+                  - label: 癌胚抗原CEA
+                  - type: number
+                  - label: μg/L
+                  - type: choice
+                    list:
+                      - label: 1
+                      - label: 2
+                      - label: 3
+                      - label: 4
+              - type: list
+                list:
+                  - label: 甲胎蛋白AFP
+                  - type: number
+                  - label: I U/mL
+                  - type: choice
+                    list:
+                      - label: 1
+                      - label: 2
+                      - label: 3
+                      - label: 4
+              - type: list
+                list:
+                  - label: 癌胚抗原125
+                  - type: number
+                  - label: U/ml
+                  - type: choice
+                    list:
+                      - label: 1
+                      - label: 2
+                      - label: 3
+                      - label: 4
+              - type: list
+                list:
+                  - label: 癌胚抗原19-9
+                  - type: number
+                  - label: U/ml
+                  - type: choice
+                    list:
+                      - label: 1
+                      - label: 2
+                      - label: 3
+                      - label: 4
+      - label: 免疫学
+        type: list
+        list:
+          - label: 检查日期
+            type: date
+            description: 请填写入院第一次检查结果
+          - type: table
+            list:
+              - type: list
+                list:
+                  - label: 检测项
+                  - label: 检测值
+                  - label: 单位
+                  - label: 临床意义判定
+              - type: list
+                list:
+                  - label: 乙肝表面抗原HBsAg
+                  - type: number
+                  - label: /
+                  - type: choice
+                    list:
+                      - label: 1
+                      - label: 2
+                      - label: 3
+                      - label: 4
+              - type: list
+                list:
+                  - label: 乙肝表面抗体HBsAb
+                  - type: number
+                  - label: /
+                  - type: choice
+                    list:
+                      - label: 1
+                      - label: 2
+                      - label: 3
+                      - label: 4
+              - type: list
+                list:
+                  - label: 乙肝e抗原HBeAg
+                  - type: number
+                  - label: /
+                  - type: choice
+                    list:
+                      - label: 1
+                      - label: 2
+                      - label: 3
+                      - label: 4
+              - type: list
+                list:
+                  - label: 乙肝e抗体HbeAb
+                  - type: number
+                  - label: /
+                  - type: choice
+                    list:
+                      - label: 1
+                      - label: 2
+                      - label: 3
+                      - label: 4
+              - type: list
+                list:
+                  - label: 乙肝核心抗原HBcAg
+                  - type: number
+                  - label: /
+                  - type: choice
+                    list:
+                      - label: 1
+                      - label: 2
+                      - label: 3
+                      - label: 4
+              - type: list
+                list:
+                  - label: 丙肝抗体HCVAb
+                  - type: number
+                  - label: /
+                  - type: choice
+                    list:
+                      - label: 1
+                      - label: 2
+                      - label: 3
+                      - label: 4
   - title: 术前情况/影像学检查
     questions:
       - label: B超
@@ -598,3 +964,5 @@ sections:
       - label: 随访时间
         type: date
         isEnabler: true
+        list:
+          - label: 随访结果

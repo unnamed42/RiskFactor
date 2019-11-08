@@ -24,6 +24,7 @@ public class TaskController {
     private final GroupService groups;
     private final UserService users;
     private final AnswerService answers;
+    private final SectionService sections;
 
     /**
      * 获取全部项目的基础信息
@@ -47,7 +48,7 @@ public class TaskController {
 
     @GetMapping("/tasks/{id}/sections")
     public List<Section> sections(@PathVariable Integer id) {
-        return service.checkedFind(id).getSections();
+        return sections.sectionsOfTask(id);
     }
 
     @GetMapping("/tasks/{id}/sections/name")

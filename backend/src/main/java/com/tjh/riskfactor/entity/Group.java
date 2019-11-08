@@ -32,7 +32,7 @@ public class Group {
     @Column(nullable = false)
     private String displayName;
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "group")
+    @OneToMany(mappedBy = "group")
     @JsonIgnore
     private Set<User> members;
 

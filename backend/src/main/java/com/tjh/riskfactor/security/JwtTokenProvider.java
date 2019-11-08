@@ -63,10 +63,6 @@ public class JwtTokenProvider {
                 .map(token -> token.substring(BEARER.length()));
     }
 
-    boolean validateToken(String token) throws ExpiredJwtException, UnsupportedJwtException, MalformedJwtException, SignatureException, IllegalArgumentException {
-        return parseClaims(token).getExpiration().after(new Date());
-    }
-
     private SecretKey key() {
         return Keys.hmacShaKeyFor(signingKey.getBytes());
     }

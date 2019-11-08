@@ -21,7 +21,10 @@ public enum QuestionType {
     MULTI_CHOICE("choice-multi"), // 多选，一般是Checkbox实现
     SINGLE_CHOICE("choice"), // 单选，一般是RadioButton实现
     SINGLE_SELECT("select"), // 单项下拉选择
-    MULTI_SELECT("select-multi"); // 多项下拉选择
+    MULTI_SELECT("select-multi"), // 多项下拉选择
+
+    TABLE("table"),
+    TABLE_HEADER("table-header");
 
     private final String value;
 
