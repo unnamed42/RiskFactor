@@ -135,6 +135,20 @@
       <artifactId>mockito-junit-jupiter</artifactId>
       <scope>test</scope>
     </dependency>
+
+    <!-- kotlin compatible -->
+    <dependency>
+      <groupId>com.fasterxml.jackson.module</groupId>
+      <artifactId>jackson-module-kotlin</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.jetbrains.kotlin</groupId>
+      <artifactId>kotlin-reflect</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.jetbrains.kotlin</groupId>
+      <artifactId>kotlin-stdlib-jdk8</artifactId>
+    </dependency>
   </dependencies>
 
   <build>
@@ -153,18 +167,25 @@
           <target>${java.version}</target>
         </configuration>
       </plugin>
-      <!-- enable column lazy fetch support in hibernate -->
+      <!-- kotlin compatible -->
       <plugin>
-        <groupId>org.hibernate.orm.tooling</groupId>
-        <artifactId>hibernate-enhance-maven-plugin</artifactId>
-        <version>${hibernate.version}</version>
-        <executions>
-          <execution>
-            <configuration>
-              <enableLazyInitialization>true</enableLazyInitialization>
-            </configuration>
-          </execution>
-        </executions>
+        <groupId>org.jetbrains.kotlin</groupId>
+        <artifactId>kotlin-maven-plugin</artifactId>
+        <configuration>
+          <args>
+            <arg>-Xjsr305=strict</arg>
+          </args>
+          <compilerPlugins>
+            <plugin>spring</plugin>
+          </compilerPlugins>
+        </configuration>
+        <dependencies>
+          <dependency>
+            <groupId>org.jetbrains.kotlin</groupId>
+            <artifactId>kotlin-maven-allopen</artifactId>
+            <version>${kotlin.version}</version>
+          </dependency>
+        </dependencies>
       </plugin>
     </plugins>
   </build>
