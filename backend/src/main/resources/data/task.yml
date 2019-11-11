@@ -957,7 +957,7 @@ sections:
               - label: 其他
                 list:
                   - type: text
-  - title: /随访情况
+  - title: 随访情况/
     questions:
       - label: 就诊号/住院号
         type: text
