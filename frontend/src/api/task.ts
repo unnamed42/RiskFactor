@@ -47,7 +47,7 @@ export const section = (sectionId: number | string) =>
   request<Section>({ url: `/sections/${sectionId}` });
 
 export const answer = (answerId: number | string) =>
-  request<any>({ url: `/answers/${answerId}` });
+  request<any>({ url: `/answers/${answerId}/body` });
 
 export const deleteAnswer = (answerId: number | string) =>
   request<void>({ url: `/tasks/0/answers/${answerId}`, method: "DELETE" });
@@ -60,4 +60,7 @@ export const postAnswerSection = (sectionId: number | string, value: any) =>
   request<IdResponse>({ url: `/answers/section/${sectionId}`, data: value, method: "POST" });
 
 export const postAnswer = (taskId: number | string, value: any) =>
-  request<IdResponse>({ url: `/tasks/${taskId}/answer`, data: value, method: "POST" });
+  request<IdResponse>({ url: `/tasks/${taskId}/answers`, data: value, method: "POST" });
+
+export const updateAnswer = (answerId: number | string, patches: any) =>
+  request<IdResponse>({ url: `/answers/${answerId}/body`, data: patches, method: "PUT" });

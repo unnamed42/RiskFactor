@@ -20,7 +20,9 @@ users:
     password: user2
     email: user2@example.com
     group: users
-  - username: banned
-    password: banned
-    email: banned@example.com
-    group: nobody
+  - username: user3
+    password: user3
+    group: users
+  - username: user4
+    password: user4
+    group: users

@@ -7,6 +7,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal
 
 import com.tjh.riskfactor.service.*
 import com.tjh.riskfactor.entity.view.*
+import com.tjh.riskfactor.entity.form.*
 import com.tjh.riskfactor.error.notFound
 import com.tjh.riskfactor.security.JwtUserDetails
 
@@ -49,6 +50,12 @@ class TaskController {
         // 根据是否是组管理员，返回所有内容
         val gid = users.managedGroupId(details.id)
         return if(gid == null) service.userAnswers(id, details.id) else service.centerAnswers(id, gid)
+    }
+
+    @PostMapping("/tasks/{id}/answers")
+    fun postAnswer(@PathVariable id: Int, @AuthenticationPrincipal details: JwtUserDetails,
+                   @RequestBody body: Map<String, Any>) {
+        service.createAnswer(id, details.user, body)
     }
 
     @PostMapping(value = ["/tasks/{id}/answers/file"], consumes = ["application/vnd.ms-excel", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"])

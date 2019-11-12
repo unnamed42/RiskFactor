@@ -25,6 +25,30 @@ class AnswerService: IDBService<Answer>("answer") {
     @Autowired override lateinit var repo: AnswerRepository
 
     /**
+     * 获取回答的内容（不包含信息）
+     * @param id 回答id
+     * @return 回答的内容
+     */
+    fun answerBody(id: Int) = ansEntries.valuesOf(id).map {
+        it.getQid().toString() to it.getValue()
+    }.toMap()
+
+    /**
+     * 更新回答内容
+     * @param id 回答id
+     * @param body 有更新的内容
+     */
+    fun updateAnswer(id: Int, body: Map<String, String>) {
+        if(body.isEmpty())
+            return
+        val questionIds = body.keys.map { it.toInt() }
+        val entries = ansEntries.entriesOf(id, questionIds).map {
+            it.value = body[it.question.id.toString()]; it
+        }
+        ansEntries.saveAll(entries)
+    }
+
+    /**
      * 自Excel（xls，xlsx）格式导入回答（多个）
      * @param taskId 问题所属项目id
      * @param userId 导入动作执行者id

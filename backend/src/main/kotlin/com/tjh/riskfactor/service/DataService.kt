@@ -51,15 +51,15 @@ class DataService {
 
     @Transactional
     fun loadTasks() {
-        val type = object: TypeReference<Task>() {}
+        val type = object: TypeReference<List<Task>>() {}
         TypeReference::class.java.getResourceAsStream("/data/task.yml").use { stream ->
-            val task = mapper.readValue(stream, type)
-            val group = groups.find(task.center) ?: throw notFound("group", task.center)
-            val sections = task.sections?.let { tasks.saveSections(it.map { s -> prepareSection(s) }) }
-
-            tasks.save(task.apply {
-                this.group = group; this.sections = sections
-            })
+            mapper.readValue(stream, type).forEach{ task ->
+                val group = groups.find(task.center) ?: throw notFound("group", task.center)
+                val sections = task.sections?.let { tasks.saveSections(it.map { s -> prepareSection(s) }) }
+                tasks.save(task.apply {
+                    this.group = group; this.sections = sections
+                })
+            }
         }
     }
 

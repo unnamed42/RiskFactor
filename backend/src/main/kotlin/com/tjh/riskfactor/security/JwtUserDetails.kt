@@ -5,7 +5,7 @@ import org.springframework.security.core.userdetails.UserDetails
 
 import com.tjh.riskfactor.entity.User
 
-class JwtUserDetails(private val user: User, group: String): UserDetails {
+class JwtUserDetails(val user: User, group: String): UserDetails {
 
     private val authorities: List<SimpleGrantedAuthority> = listOf(SimpleGrantedAuthority(group))
 

@@ -11,20 +11,11 @@ class AnswerController {
 
     @Autowired private lateinit var service: AnswerService;
 
-    /**
-     * 获取回答的内容（不包含信息）
-     * @param id 回答id
-     * @return 回答的内容
-     */
     @GetMapping("/answers/{id}/body")
-    fun answer(@PathVariable id: Int) {
-//        var ans = service.checkedFind(id);
-//        var map = new HashMap<String, Map<String, Object>>();
-////        for(var anssec : ans.getParts())
-////            // TODO: fix
-////            map.put(anssec.getId().toString(), anssec.getBody());
-//        return map;
-    }
+    fun answer(@PathVariable id: Int) = service.answerBody(id)
+
+    @PutMapping("/answers/{id}/body")
+    fun updateAnswer(@PathVariable id: Int, @RequestBody body: Map<String, String>) = service.updateAnswer(id, body)
 
     /**
      * 删除回答
