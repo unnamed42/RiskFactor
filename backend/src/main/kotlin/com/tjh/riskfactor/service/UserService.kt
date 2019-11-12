@@ -45,7 +45,7 @@ class UserService: IDBService<User>("user") {
      * @param password 原始密码
      * @return 加密后密码
      */
-    fun encode(password: String): String = encoder.encode(password)
+    fun encode(password: String) = encoder.encode(password)
 
     /**
      * 将用户实体的密码加密

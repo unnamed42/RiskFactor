@@ -15,7 +15,7 @@ class SectionService: IDBService<Section>("section") {
     @Transactional
     fun sectionsOfTask(taskId: Int): List<Section> {
         val sections = repo.findAllByOwnerTaskId(taskId)
-        sections.forEach{ it.questions!!.size }
+        val unused = sections.map { it.questions?.size }.toList()
         return sections
     }
 

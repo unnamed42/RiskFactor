@@ -44,12 +44,11 @@ class WebSecurityConfig: WebSecurityConfigurerAdapter() {
         isHideUserNotFoundExceptions = false
     }
 
-    override fun configure(auth: AuthenticationManagerBuilder?) {
-        auth?.authenticationProvider(daoAuthenticationProvider())
+    override fun configure(auth: AuthenticationManagerBuilder) {
+        auth.authenticationProvider(daoAuthenticationProvider())
     }
 
-    override fun configure(http: HttpSecurity?) {
-        if(http == null) return
+    override fun configure(http: HttpSecurity) {
         http.cors().and()
             .httpBasic().disable()
             .csrf().disable()
