@@ -7,10 +7,9 @@ COPY build.gradle build.gradle
 
 COPY src src
 
-RUN ./gradlew bootJar --no-daemon
+RUN ./gradlew bootJar --no-daemon --console rich
 
 FROM adoptopenjdk/openjdk11:alpine-jre
 ARG BUILD=/app/build/libs
-ARG PKGNAME=backend
 
-COPY --from=build ${BUILD}/${PKGNAME}.jar /app.jar
+COPY --from=build ${BUILD}/*.jar /app.jar
