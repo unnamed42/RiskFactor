@@ -4,7 +4,7 @@ services:
   spring:
     build:
       context: backend
-    command: sh -c '/init/wait-for db:3306 -- java -jar /app.jar'
+    command: sh -c '/init/wait-for db:3306 -- java -jar /app/app.jar'
     expose:
       - "8090"
     restart: always
@@ -14,6 +14,7 @@ services:
       SPRING_DATASOURCE_URL: jdbc:mysql://db:3306/riskfactor?createDatabaseIfNotExist=true&useSSL=false
     volumes:
       - ./init:/init:ro
+      - ./init/m2:/root/.m2
     networks:
       - database
       - webserver
@@ -63,7 +64,6 @@ services:
 
 volumes:
   storage:
-  gradle:
 
 networks:
   database:
