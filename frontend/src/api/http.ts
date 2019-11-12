@@ -8,7 +8,7 @@ import { JWT } from "@/types/auth";
 export const http = Axios.create({
   baseURL: baseUrl,
   headers: {
-    "Content-Type": "application/json"
+    "Content-Type": "application/json; charset=utf-8"
   }
 });
 

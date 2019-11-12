@@ -7,6 +7,9 @@ COPY build.gradle build.gradle
 
 COPY src src
 
+RUN mkdir -p /root/.gradle
+VOLUME /root/.gradle
+
 RUN ./gradlew bootJar --no-daemon --console rich
 
 FROM adoptopenjdk/openjdk11:alpine-jre

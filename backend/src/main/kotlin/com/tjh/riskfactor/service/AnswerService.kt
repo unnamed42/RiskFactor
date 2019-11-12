@@ -12,9 +12,8 @@ import com.tjh.riskfactor.repo.AnswerEntryRepository
 import com.tjh.riskfactor.repo.AnswerRepository
 import com.tjh.riskfactor.util.ExcelReader
 
-import java.util.*
+import java.util.Date
 import java.io.InputStream
-import kotlin.reflect.full.createInstance
 
 @Service
 class AnswerService: IDBService<Answer>("answer") {
@@ -45,7 +44,7 @@ class AnswerService: IDBService<Answer>("answer") {
             }.toMap())
         }.toMap()
 
-        val answer = repo.save(Answer::class.createInstance().apply {
+        val answer = repo.save(Answer().apply {
             this.task = task; this.creator = creator; this.mtime = Date()
         })
 
