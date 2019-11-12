@@ -1,18 +1,16 @@
 FROM adoptopenjdk/openjdk11:alpine as build
 WORKDIR /app
 
-COPY mvnw mvnw
-COPY .mvn .mvn
-COPY pom.xml .
-
-RUN ./mvnw dependency:go-offline -B
+COPY gradlew gradlew
+COPY gradle gradle
+COPY build.gradle build.gradle
 
 COPY src src
 
-RUN ./mvnw clean package -Dmaven.test.skip=true
+RUN ./gradlew bootJar --no-daemon
 
 FROM adoptopenjdk/openjdk11:alpine-jre
-ARG BUILD=/app/target
-ARG PKGNAME=riskfactor-0.0.1-SNAPSHOT
+ARG BUILD=/app/build/libs
+ARG PKGNAME=backend
 
 COPY --from=build ${BUILD}/${PKGNAME}.jar /app.jar
