@@ -7,16 +7,16 @@ import { FormContext, Question } from "./Question";
 import { Section } from "@/types/task";
 
 interface P extends FormComponentProps {
-  source: Section;
+  layout: Section;
   answer?: any;
   onSave?: () => void;
   onSubmit?: () => void;
 }
 
-// to use refs elegantly, has to be class component
+// 为了提供对外的方法，设置成class component
 export class QFormD extends Component<P> {
 
-  submit(): Promise<any> {
+  validatedValues(): Promise<any> {
     return new Promise((resolve, reject) => {
       const { validateFieldsAndScroll, getFieldsValue } = this.props.form;
       validateFieldsAndScroll((errors, _) => {
@@ -27,7 +27,7 @@ export class QFormD extends Component<P> {
   }
 
   render() {
-    const { source: { questions }, form, onSubmit, onSave } = this.props;
+    const { layout: { questions }, form, onSubmit, onSave } = this.props;
     const style = { labelCol: { span: 4 }, wrapperCol: { span: 14 } };
     return <Form layout="horizontal">
       <FormContext.Provider value={form}>
@@ -39,8 +39,7 @@ export class QFormD extends Component<P> {
           )
         }
         <Form.Item wrapperCol={{ span: 14, offset: 4 }}>
-          <Button type="primary" onClick={() => onSubmit?.()}>提交本节</Button>
-          <Button onClick={() => onSave?.()} style={{marginLeft: 5}}>本地暂存</Button>
+          <Button onClick={() => onSave?.()} style={{marginLeft: 5}}>提交</Button>
         </Form.Item>
       </FormContext.Provider>
     </Form>;
@@ -50,10 +49,8 @@ export class QFormD extends Component<P> {
 
 export const QForm = Form.create<P>({
   mapPropsToFields({ answer }) {
-    if(!answer)
-      return {};
-    return Object.assign({}, Object.keys(answer).map(k => ({
+    return answer ? Object.assign({}, Object.keys(answer).map(k => ({
       [k]: Form.createFormField({ value: answer[k] })
-    })));
+    }))) : {};
   }
 })(QFormD);
