@@ -12,16 +12,16 @@ import javax.persistence.*
 class Answer(
     @get:Column(nullable = false)
     @get:JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
-    var mtime: Date = Date()
-): IEntity() {
-    @get:ManyToOne
-    @get:JoinColumn(nullable = false)
-    lateinit var creator: User
+    var mtime: Date = Date(),
 
     @get:ManyToOne
     @get:JoinColumn(nullable = false)
-    lateinit var task: Task
+    var creator: User,
+
+    @get:ManyToOne
+    @get:JoinColumn(nullable = false)
+    var task: Task,
 
     @get:OneToMany(mappedBy = "answer", cascade = [CascadeType.REMOVE])
-    lateinit var answers: MutableSet<AnswerEntry>
-}
+    var answers: MutableSet<AnswerEntry>? = null
+): IEntity()

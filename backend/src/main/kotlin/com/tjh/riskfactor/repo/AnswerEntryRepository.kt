@@ -3,6 +3,7 @@ package com.tjh.riskfactor.repo
 import org.springframework.stereotype.Repository
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.data.jpa.repository.Query
+import org.springframework.data.jpa.repository.Modifying
 
 import com.tjh.riskfactor.entity.form.AnswerEntry
 import com.tjh.riskfactor.entity.view.AnswerEntryView
@@ -14,12 +15,16 @@ interface AnswerEntryRepository: JpaRepository<AnswerEntry, Int> {
         "select ae.question_id as qid, ae.value as value from answer_entry ae " +
             "inner join answer a on ae.answer_id = a.id and a.id = :answerId"
     )
-    fun valuesOf(answerId: Int): List<AnswerEntryView>
+    fun valueViewsOf(answerId: Int): List<AnswerEntryView>
 
+    @Query("select e from AnswerEntry e inner join e.answer a on a.id = :answerId")
+    fun entriesOf(answerId: Int): List<AnswerEntry>
+
+    @Modifying
     @Query(nativeQuery = true, value =
-        "select ae.* from answer_entry ae inner join answer a on ae.answer_id = a.id " +
-            "and a.id = :answerId and ae.question_id in :questionIds"
+        "insert into answer_entry(`value`, answer_id, question_id) value (:value, :answerId, :questionId) " +
+            "on duplicate key update `value` = values(`value`)"
     )
-    fun entriesOf(answerId: Int, questionIds: Collection<Int>): List<AnswerEntry>
+    fun putValue(answerId: Int, questionId: Int, value: String)
 
 }

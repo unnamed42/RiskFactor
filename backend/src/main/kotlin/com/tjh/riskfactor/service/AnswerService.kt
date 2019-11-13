@@ -12,7 +12,6 @@ import com.tjh.riskfactor.repo.AnswerEntryRepository
 import com.tjh.riskfactor.repo.AnswerRepository
 import com.tjh.riskfactor.util.ExcelReader
 
-import java.util.Date
 import java.io.InputStream
 
 @Service
@@ -30,7 +29,7 @@ class AnswerService: IDBService<Answer>("answer") {
      * @param id 回答id
      * @return 回答的内容
      */
-    fun answerBody(id: Int) = ansEntries.valuesOf(id).map {
+    fun answerBody(id: Int) = ansEntries.valueViewsOf(id).map {
         it.getQid().toString() to it.getValue()
     }.toMap()
 
@@ -39,14 +38,13 @@ class AnswerService: IDBService<Answer>("answer") {
      * @param id 回答id
      * @param body 有更新的内容
      */
+    @Transactional
     fun updateAnswer(id: Int, body: Map<String, String>) {
         if(body.isEmpty())
             return
-        val questionIds = body.keys.map { it.toInt() }
-        val entries = ansEntries.entriesOf(id, questionIds).map {
-            it.value = body[it.question.id.toString()]; it
+        body.entries.forEach{ (qid, value) ->
+            ansEntries.putValue(id, qid.toInt(), value)
         }
-        ansEntries.saveAll(entries)
     }
 
     fun export(id: Int) {}
@@ -79,19 +77,15 @@ class AnswerService: IDBService<Answer>("answer") {
             }.toMap())
         }.toMap()
 
-        val answer = repo.save(Answer().apply {
-            this.task = task; this.creator = creator; this.mtime = Date()
-        })
+        val answer = repo.save(Answer(task = task, creator = creator))
 
         ExcelReader(istream).use { reader ->
             val answers = reader.cells().map { dataCell ->
                 val (h1, h2, h3, cell) = dataCell
                 val title = "${trim(h1)}/${if (h2 == null) "" else trim(h2)}"
                 val question = layout[title]?.second?.get(h3) ?: throw notFound("question", title)
-                AnswerEntry().apply {
-                    this.answer = answer; this.question = question
-                    this.value = formatValue(cell, question)
-                }
+                AnswerEntry(answer = answer, question = question,
+                    value = formatValue(cell, question))
             }
             ansEntries.saveAll(answers.asIterable())
         }

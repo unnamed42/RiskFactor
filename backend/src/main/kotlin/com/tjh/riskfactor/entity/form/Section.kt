@@ -22,7 +22,7 @@ class Section(
     )
     @get:OrderColumn(name = "seq", nullable = false)
     @get:JsonInclude(JsonInclude.Include.NON_EMPTY)
-    var questions: MutableList<Question>?
+    var questions: MutableList<Question>? = null
 ): IEntity() {
 
     @JsonIgnore

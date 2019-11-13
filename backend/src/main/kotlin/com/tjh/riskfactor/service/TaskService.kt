@@ -3,16 +3,16 @@ package com.tjh.riskfactor.service;
 import org.springframework.stereotype.Service;
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.transaction.annotation.Transactional
+import org.springframework.http.ResponseEntity
 
 import com.tjh.riskfactor.entity.User
 import com.tjh.riskfactor.repo.*;
 import com.tjh.riskfactor.entity.form.*;
-import org.springframework.http.ResponseEntity
 
 @Service
 class TaskService: IDBService<Task>("task") {
 
-    @Autowired private lateinit var questions: QuestionRepository
+    @Autowired private lateinit var questions: QuestionService
     @Autowired private lateinit var sections: SectionRepository
     @Autowired private lateinit var answers: AnswerService
 
@@ -20,6 +20,8 @@ class TaskService: IDBService<Task>("task") {
 
     fun taskBrief(id: Int) = repo.findTaskInfoById(id)
     fun tasks() = repo.findAllTasks()
+
+    fun modifiedTime(id: Int) = repo.mtime(id)
 
     /**
      * 获取项目下属的分节的基本信息
@@ -37,14 +39,11 @@ class TaskService: IDBService<Task>("task") {
      */
     @Transactional
     fun createAnswer(taskId: Int, creator: User, body: Map<String, Any>): Map<String, Int> {
-        val answer = answers.save(Answer().apply {
-            this.creator = creator; this.task = checkedFind(taskId)
-        })
+        val answer = answers.save(Answer(creator = creator, task = checkedFind(taskId)))
         val entries = body.entries.map { (k, v) ->
-            AnswerEntry(v.toString()).apply {
-                // TODO: 弄个合理的错误处理
-                this.answer = answer; this.question = questions.findById(k.toInt()).orElseThrow()
-            }
+            val question = questions.checkedFind(k.toInt())
+            AnswerEntry(answer = answer, question = question,
+                value = v.toString())
         }
         answers.saveEntries(entries)
         return mapOf("id" to answer.id)

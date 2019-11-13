@@ -4,6 +4,7 @@ import jwt_decode from "jwt-decode";
 import { baseUrl } from "@/config";
 import { local } from "@/api/persist";
 import { JWT } from "@/types/auth";
+import { now } from "@/utils";
 
 export const http = Axios.create({
   baseURL: baseUrl,
@@ -16,9 +17,7 @@ http.interceptors.request.use(config => {
   const { auth: { token } } = local;
   if (token) {
     const jwt = jwt_decode<JWT>(token);
-    // Date.getTime() 是微秒
-    const now = Math.floor(Date.now() / 1000);
-    if(jwt.exp > now)
+    if(jwt.exp > now())
       config.headers = { ...config.headers, Authorization: `Bearer ${token}` };
   }
   return config;

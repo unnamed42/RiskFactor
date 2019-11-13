@@ -4,20 +4,22 @@ import com.tjh.riskfactor.entity.IEntity
 
 import javax.persistence.*
 
-@Entity @Table(name = "answer_entry")
+@Entity
+@Table(name = "answer_entry",
+    uniqueConstraints = [UniqueConstraint(columnNames = ["question_id", "answer_id"])])
 class AnswerEntry(
     /**
      * null：无答案
      * 有内容：根据question-type来实际解析
      */
     @get:Column
-    var value: String? = null
-): IEntity() {
-    @get:ManyToOne
-    @get:JoinColumn(nullable = false)
-    lateinit var question: Question
+    var value: String? = null,
 
     @get:ManyToOne
-    @get:JoinColumn(nullable = false)
-    lateinit var answer: Answer
-}
+    @get:JoinColumn(nullable = false, name = "question_id")
+    var question: Question,
+
+    @get:ManyToOne
+    @get:JoinColumn(nullable = false, name = "answer_id")
+    var answer: Answer
+): IEntity()

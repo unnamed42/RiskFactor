@@ -21,5 +21,5 @@ class Group(
 
     @get:OneToMany(mappedBy = "group")
     @JsonIgnore
-    var members: MutableSet<User>?
+    var members: MutableSet<User>
 ): IEntity()

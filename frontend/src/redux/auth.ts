@@ -24,7 +24,7 @@ enum AuthAction {
 /**
  * reducer状态
  */
-interface State {
+export interface State {
   username?: string;
   userId?: number;
   expiry?: number;

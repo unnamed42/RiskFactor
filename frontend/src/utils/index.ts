@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { DependencyList, useEffect, useState } from "react";
 
 import { message } from "antd";
 
@@ -52,10 +52,32 @@ export const usePromise = <T>(api: () => Promise<T>, onError?: OnError | null): 
   return state;
 };
 
+export const useEffectAsync = (callback: () => Promise<void>, deps?: DependencyList) => {
+  useEffect(() => { callback(); }, deps);
+};
+
+/**
+ * 获取当前时间。这个时间和java的Date得到的单位一致（毫秒）
+ */
+export const now = () => Math.floor(Date.now() / 1000);
+
 export const firstKey = (obj: any) => {
   const keys = Object.keys(obj);
   return keys.length !== 0 ? keys[0] : null;
 };
 
+export const firstEntry = (obj: any) => {
+  const entries = Object.entries(obj);
+  return entries ? entries[0] : null;
+};
+
 export const sleep = (ms: number) =>
   new Promise<void>(resolve => setTimeout(resolve, ms));
+
+/**
+ * 除了某个属性之外，复制一个新的Object
+ * @param obj 源Object
+ * @param key 要排除的属性
+ */
+export const without = (obj: any, key: string) =>
+  Object.assign({}, ...(Object.entries(obj).filter(([k, _]) => k !== key)));

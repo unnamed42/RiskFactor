@@ -41,6 +41,9 @@ class TaskController {
     @GetMapping("/tasks/{id}/sections/name")
     fun sectionNames(@PathVariable id: Int) = service.taskSectionsInfo(id)
 
+    @GetMapping("/tasks/{id}/mtime")
+    fun modifiedTime(@PathVariable id: Int) = service.modifiedTime(id)
+
     @GetMapping("/tasks/{id}/answers")
     fun answers(@PathVariable id: Int, @AuthenticationPrincipal details: JwtUserDetails): List<AnswerView> {
         // 是root组，返回所有内容

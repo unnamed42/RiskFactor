@@ -23,10 +23,10 @@ class User(
 
     @get:Transient
     @JsonProperty(value = "group", access = JsonProperty.Access.WRITE_ONLY)
-    var groupName: String = ""
-): IEntity() {
+    var groupName: String = "",
+
     @get:ManyToOne
     @get:JoinColumn(nullable = false)
     @JsonIgnore
-    lateinit var group: Group
-}
+    var group: Group
+): IEntity()

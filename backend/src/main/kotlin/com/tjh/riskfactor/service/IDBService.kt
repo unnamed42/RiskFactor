@@ -10,7 +10,7 @@ abstract class IDBService<T>(private val entityName: String) {
     fun drop() = repo.deleteAllInBatch()
 
     fun save(item: T) = repo.save(item)
-    fun saveAll(items: Iterable<T>): List<T> = repo.saveAll(items)
+    fun saveAll(items: Iterable<T>): MutableList<T> = repo.saveAll(items)
 
     fun remove(id: Int) = repo.deleteById(id)
     fun has(id: Int) = repo.existsById(id)

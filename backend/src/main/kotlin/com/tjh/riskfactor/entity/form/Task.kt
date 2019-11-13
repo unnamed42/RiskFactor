@@ -22,6 +22,11 @@ class Task(
     @get:JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     var mtime: Date = Date(),
 
+    @get:ManyToOne
+    @get:JoinColumn(name = "gid", referencedColumnName = "id", nullable = false)
+    @JsonIgnore
+    var group: Group,
+
     @get:OneToMany(cascade = [CascadeType.REMOVE])
     @get:JoinTable(name = "task_sections",
         joinColumns = [JoinColumn(name = "tid")],
@@ -29,12 +34,8 @@ class Task(
     )
     @get:OrderColumn(name = "seq", nullable = false)
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
-    var sections: MutableList<Section>?
+    var sections: MutableList<Section>? = null
 ): IEntity() {
-    @get:ManyToOne
-    @get:JoinColumn(name = "gid", referencedColumnName = "id", nullable = false)
-    @JsonIgnore
-    lateinit var group: Group
 
     // 用来给JSON用的，传入内容为用户组名
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
