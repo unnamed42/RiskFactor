@@ -10,18 +10,18 @@ import javax.persistence.*
 
 @Entity @Table(name = "answer")
 class Answer(
-    @get:Column(nullable = false)
-    @get:JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
-    var mtime: Date = Date(),
-
     @get:ManyToOne
     @get:JoinColumn(nullable = false)
     var creator: User,
 
     @get:ManyToOne
     @get:JoinColumn(nullable = false)
-    var task: Task,
+    var task: Task
+): IEntity() {
+    @get:Column(nullable = false)
+    @get:JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
+    var mtime: Date = Date()
 
     @get:OneToMany(mappedBy = "answer", cascade = [CascadeType.REMOVE])
-    var answers: MutableSet<AnswerEntry>? = null
-): IEntity()
+    var answers: MutableSet<AnswerEntry> = mutableSetOf()
+}

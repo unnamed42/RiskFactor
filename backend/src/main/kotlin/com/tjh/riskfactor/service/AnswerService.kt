@@ -66,7 +66,7 @@ class AnswerService(
         // 问卷的总体结构 查找表
         // 问题所属大纲标题(String) -> Pair<大纲id, 问题标签(String) -> 问题(Question)>
         val layout = task.sections.map {
-            trim(it.title) to Pair(it, it.questions!!.map {
+            trim(it.title) to Pair(it, it.questions.map {
                 q -> q.label to q
             }.toMap())
         }.toMap()

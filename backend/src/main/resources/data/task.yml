@@ -999,8 +999,6 @@
 - name: 项目一
   center: users
   mtime: 2019-11-12
-  sections:
 - name: 项目二
   center: users
   mtime: 2019-11-12
-  sections:

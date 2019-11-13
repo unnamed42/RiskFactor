@@ -13,8 +13,8 @@ class Section(
      * 某一级标题允许空置，比如没有一级标题就是 /[二级标题]/[三级标题]，没有二级就是 [一级标题]//[三级标题]
      */
     @get:Column(nullable = false)
-    var title: String,
-
+    var title: String
+): IEntity() {
     @get:OneToMany(cascade = [CascadeType.REMOVE])
     @get:JoinTable(name = "section_question_list",
         joinColumns = [JoinColumn(name = "sid")],
@@ -22,8 +22,7 @@ class Section(
     )
     @get:OrderColumn(name = "seq", nullable = false)
     @get:JsonInclude(JsonInclude.Include.NON_EMPTY)
-    var questions: MutableList<Question>? = null
-): IEntity() {
+    var questions: MutableList<Question> = mutableListOf()
 
     @JsonIgnore
     @Transient fun getTitles() = title.split('/')

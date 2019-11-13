@@ -17,8 +17,8 @@ class Question(
     var type: QuestionType? = null,
 
     @get:Column
-    var label: String? = null,
-
+    var label: String? = null
+): IEntity() {
     @get:ManyToMany(fetch = FetchType.EAGER, cascade = [CascadeType.REMOVE])
     @get:JoinTable(name = "question_list",
         joinColumns = [JoinColumn(name = "head", referencedColumnName = "id")],
@@ -26,8 +26,7 @@ class Question(
     )
     @get:OrderColumn(name = "sequence", nullable = false)
     @get:JsonInclude(JsonInclude.Include.NON_EMPTY)
-    var list: MutableList<Question>? = null
-): IEntity() {
+    var list: MutableList<Question> = mutableListOf()
 
     // 指定是否为必填
     @get:Transient var required: Boolean? = null

@@ -77,11 +77,11 @@ class DataService(
     }
 
     private fun prepareQuestion(q: Question): Question = q.apply {
-        list = list?.let { tasks.saveQuestions(it.map { q -> prepareQuestion(q) }) }
+        list = list.let { tasks.saveQuestions(it.map { q -> prepareQuestion(q) }) }
     }
 
     private fun prepareSection(s: Section): Section = s.apply {
-        questions = questions?.let { tasks.saveQuestions(it.map { q -> prepareQuestion(q) }) }
+        questions = questions.let { tasks.saveQuestions(it.map { q -> prepareQuestion(q) }) }
     }
 
     private fun guarded(func: () -> Unit, guard: Int) {
