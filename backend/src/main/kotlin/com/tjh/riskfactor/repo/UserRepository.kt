@@ -15,7 +15,7 @@ interface UserRepository: JpaRepository<User, Int> {
 
     @Query(nativeQuery = true, value =
         "select count(*) from users a, users u where " +
-            "a.id = :adminId and u.id = :userId and a.group_id = u.group_id and a.is_admin = true"
+            "a.id = :adminId and u.id = :userId and a.group_id = u.group_id and a.admin = true"
     )
     fun isManaging(adminId: Int, userId: Int): Boolean
 
@@ -26,7 +26,7 @@ interface UserRepository: JpaRepository<User, Int> {
     fun findGroupName(uid: Int): String?
 
     @Query(nativeQuery = true, value =
-        "select u.group_id from users u where u.id = :uid and u.is_admin = true"
+        "select u.group_id from users u where u.id = :uid and u.admin = true"
     )
     fun findManagedGroupId(uid: Int): Int?
 

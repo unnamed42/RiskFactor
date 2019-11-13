@@ -4,7 +4,7 @@ import javax.persistence.*
 
 @MappedSuperclass
 open class IEntity(
-    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @get:Id @get:GeneratedValue(strategy = GenerationType.IDENTITY)
     var id: Int = 0
 ) {
     override fun equals(other: Any?): Boolean {

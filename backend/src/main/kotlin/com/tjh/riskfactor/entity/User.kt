@@ -7,25 +7,26 @@ import javax.persistence.*
 
 @Entity @Table(name = "users")
 class User(
-    @Column(unique = true, nullable = false)
+    @get:Column(unique = true, nullable = false)
     var username: String,
 
-    @Column(nullable = false)
+    @get:Column(nullable = false)
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     var password: String,
 
+    @get:Column
     var email: String? = null,
 
-    @Column(nullable = false)
+    @get:Column(nullable = false)
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     var isAdmin: Boolean = false,
 
-    @Transient
+    @get:Transient
     @JsonProperty(value = "group", access = JsonProperty.Access.WRITE_ONLY)
     var groupName: String = ""
 ): IEntity() {
-    @ManyToOne
-    @JoinColumn(nullable = false)
+    @get:ManyToOne
+    @get:JoinColumn(nullable = false)
     @JsonIgnore
     lateinit var group: Group
 }

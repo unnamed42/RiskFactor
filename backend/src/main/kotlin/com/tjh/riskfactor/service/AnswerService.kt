@@ -20,6 +20,7 @@ class AnswerService: IDBService<Answer>("answer") {
 
     @Autowired private lateinit var tasks: TaskService
     @Autowired private lateinit var users: UserService
+    @Autowired private lateinit var groups: GroupService
     @Autowired private lateinit var ansEntries: AnswerEntryRepository
 
     @Autowired override lateinit var repo: AnswerRepository
@@ -47,6 +48,16 @@ class AnswerService: IDBService<Answer>("answer") {
         }
         ansEntries.saveAll(entries)
     }
+
+    fun export(id: Int) {}
+
+    fun answersOfTask(taskId: Int) = repo.findAllByTaskId(taskId)
+
+    fun answersOfTask(taskId: Int, groupId: Int) = repo.findAllByTaskIdCreatedBy(taskId, groups.memberNames(groupId))
+
+    fun answersCreatedBy(taskId: Int, userId: Int) = repo.findTaskAnswersCreatedBy(taskId, userId)
+
+    internal fun saveEntries(entries: Iterable<AnswerEntry>) = ansEntries.saveAll(entries)
 
     /**
      * 自Excel（xls，xlsx）格式导入回答（多个）

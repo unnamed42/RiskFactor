@@ -12,16 +12,16 @@ class Section(
      * 标题，多级标题以斜杠分割，即 [一级标题]/[二级标题]/[三级标题]
      * 某一级标题允许空置，比如没有一级标题就是 /[二级标题]/[三级标题]，没有二级就是 [一级标题]//[三级标题]
      */
-    @Column(nullable = false)
+    @get:Column(nullable = false)
     var title: String,
 
-    @OneToMany(cascade = [CascadeType.REMOVE])
-    @JoinTable(name = "section_question_list",
+    @get:OneToMany(cascade = [CascadeType.REMOVE])
+    @get:JoinTable(name = "section_question_list",
         joinColumns = [JoinColumn(name = "sid")],
         inverseJoinColumns = [JoinColumn(name = "qid")]
     )
-    @OrderColumn(name = "seq", nullable = false)
-    @JsonInclude(JsonInclude.Include.NON_EMPTY)
+    @get:OrderColumn(name = "seq", nullable = false)
+    @get:JsonInclude(JsonInclude.Include.NON_EMPTY)
     var questions: MutableList<Question>?
 ): IEntity() {
 

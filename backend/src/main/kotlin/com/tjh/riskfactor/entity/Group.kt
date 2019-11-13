@@ -9,17 +9,17 @@ class Group(
     /**
      * 用于内部标识的用户组名，比如"root"
      */
-    @Column(unique = true, nullable = false)
+    @get:Column(unique = true, nullable = false)
     var name: String,
 
     /**
      * 用于外部展示的用户组名，比如“华中科技大学”
      * 在本项目中也用作分中心名称
      */
-    @Column(nullable = false)
+    @get:Column(nullable = false)
     var displayName: String,
 
-    @OneToMany(mappedBy = "group")
+    @get:OneToMany(mappedBy = "group")
     @JsonIgnore
     var members: MutableSet<User>?
 ): IEntity()

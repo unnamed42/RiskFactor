@@ -1,10 +1,11 @@
 package com.tjh.riskfactor.util
 
 import com.fasterxml.jackson.core.type.TypeReference
-import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
+
 import com.tjh.riskfactor.error.invalidArg
 
-private val mapper = ObjectMapper()
+private val mapper = jacksonObjectMapper()
 
 fun <V> require(map: Map<String, V>, key: String) =
     map[key] ?: throw invalidArg(key, "null")

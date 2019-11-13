@@ -10,13 +10,14 @@ class AnswerEntry(
      * null：无答案
      * 有内容：根据question-type来实际解析
      */
+    @get:Column
     var value: String? = null
 ): IEntity() {
-    @ManyToOne
-    @JoinColumn(nullable = false)
+    @get:ManyToOne
+    @get:JoinColumn(nullable = false)
     lateinit var question: Question
 
-    @ManyToOne
-    @JoinColumn(nullable = false)
+    @get:ManyToOne
+    @get:JoinColumn(nullable = false)
     lateinit var answer: Answer
 }
