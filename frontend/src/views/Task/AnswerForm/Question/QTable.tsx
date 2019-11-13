@@ -6,18 +6,6 @@ import { QProps, QSchema, Question } from ".";
 
 export class QTable extends Component<QProps> {
 
-  renderRow = ({ type, id, list }: QSchema, idx: number) => {
-    if (type !== "list")
-      throw new Error(`table row ${id} is incorrectly configured - not a question list`);
-    if (list === undefined)
-      throw new Error(`table row ${id} is incorrectly configured - no list provided`);
-
-    const cell = list[idx];
-    if (!cell.type)
-      return <span>{cell.label}</span>;
-    return <Question schema={cell}/>;
-  };
-
   render() {
     const { id, list } = this.props.schema;
     if (!list)
@@ -37,4 +25,17 @@ export class QTable extends Component<QProps> {
       }
     </Table>;
   }
+
+  private renderRow = ({ type, id, list }: QSchema, idx: number) => {
+    if (type !== "list")
+      throw new Error(`table row ${id} is incorrectly configured - not a question list`);
+    if (list === undefined)
+      throw new Error(`table row ${id} is incorrectly configured - no list provided`);
+
+    const cell = list[idx];
+    if (!cell.type)
+      return <span>{cell.label}</span>;
+    return <Question schema={cell}/>;
+  };
+
 }

@@ -1,4 +1,4 @@
-import React, { forwardRef, createContext, useContext } from "react";
+import React, { forwardRef, createContext, useContext, ReactNode } from "react";
 
 import { Form } from "antd";
 import { WrappedFormUtils, GetFieldDecoratorOptions } from "antd/lib/form/Form";
@@ -29,6 +29,7 @@ const renderer = (type: QSchema["type"]) => {
     case "date": return QDate;
     case "number": case "text": return QInput;
     case "select": case "select-multi": return QSelect;
+    case "list": return QList;
     case "choice": return QChoice;
     case "choice-multi": return QCheckbox;
     case "either": return QYesNo;
@@ -38,25 +39,26 @@ const renderer = (type: QSchema["type"]) => {
   }
 };
 
-export const FormContext = createContext(null as WrappedFormUtils | null);
+export const FormContext = createContext<WrappedFormUtils | null>(null);
 
 export { QSchema };
 
-export interface QProps<T = any> {
+export interface QProps {
   schema: QSchema;
-  value?: T;
-  onChange?: (value: T) => void;
+  value?: string;
+  onChange?: (value: string) => void;
 }
 
 interface P extends QProps {
   formItemProps?: FormItemProps;
   decorator?: GetFieldDecoratorOptions;
   noFormItem?: boolean;
+  noDecorator?: boolean;
 }
 
-export const Question = forwardRef<any, P>(({ formItemProps, noFormItem, children, decorator, ...props }, ref) => {
+export const Question = forwardRef<any, P>((props, ref) => {
 
-  const { schema, onChange } = props;
+  const { schema, onChange, noDecorator, noFormItem, decorator, value, children, formItemProps } = props;
   const { type, label, id } = schema;
 
   const { getFieldDecorator } = useContext(FormContext)!;
@@ -69,13 +71,12 @@ export const Question = forwardRef<any, P>(({ formItemProps, noFormItem, childre
   const rules = validationRules(schema);
 
   const Renderer = renderer(type);
-  const child = type !== "list" ?
-      <Renderer schema={schema} ref={ref} onChange={onChange} /> :
-      <QList list={schema.list!} ref={ref} onChange={onChange} />;
 
-  const body = type && type !== "list" ?
-      getFieldDecorator(id.toString(), { ...rules, ...decorator })(child) :
-      child;
+  // value 属性有些需要经过setFieldValue有些（当noDecorator为true时）直接设置
+  const valueProp = noDecorator ? { value } : undefined;
+  let body: ReactNode = <Renderer schema={schema} ref={ref} onChange={onChange} {...valueProp} />;
+  if(!noDecorator)
+    body = getFieldDecorator(id.toString(), { ...rules, ...decorator})(body);
 
   if(noFormItem)
     return <div>{body}{children}</div>;

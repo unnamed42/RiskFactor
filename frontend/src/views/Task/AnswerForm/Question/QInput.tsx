@@ -14,8 +14,7 @@ export const QInput = forwardRef<Input, QProps>(({ schema, onChange, value }, re
   const changed = (e: ChangeEvent<HTMLInputElement>) => {
     const { value } = e.target;
     setInput(value);
-    if (onChange)
-      onChange(value);
+    onChange?.(value);
   };
 
   const inputFilter = (e: ChangeEvent<HTMLInputElement>) => {

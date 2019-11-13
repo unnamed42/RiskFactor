@@ -4,7 +4,7 @@ import { Select } from "antd";
 
 import { QProps } from ".";
 
-export const QSelect = forwardRef<Select, QProps<any | any[]>>(({ schema, onChange, value }, ref) => {
+export const QSelect = forwardRef<Select, QProps>(({ schema, onChange, value }, ref) => {
   const { type, list, id, filterKey, placeholder } = schema;
 
   if (!list)

@@ -50,6 +50,8 @@ interface S {
   id: number;
   h1: string;
   h2: string;
+  // 创建新answer时此项为undefined，其余情况应该均有值
+  answerId?: number | string;
   answers: KV<KV<string>>;
   // 修改内容，更新回答时使用
   // 如后端api一般，扁平而非按Section分层的结构
@@ -57,11 +59,13 @@ interface S {
   layout?: KV<KV<Section>>;
 }
 
+// TODO: 问卷的样式不用每次都获取，后端需要给Section或Task加一个mtime
+//       然后比较mtime，当有更新时再去重新拉一个样式下来
 export class AnswerForm extends Component<P, S> {
 
   constructor(props: P) {
     super(props);
-    this.state = { id: 0, h1: "", h2: "", answers: {}, patches: {} };
+    this.state = { id: 0, h1: "", h2: "", answers: {}, patches: {}, answerId: props.answerId };
   }
 
   componentDidMount() {
@@ -121,13 +125,21 @@ export class AnswerForm extends Component<P, S> {
   }
 
   private async post(values: any) {
-    const { taskId, answerId } = this.props;
+    const { taskId } = this.props;
+    const { answerId } = this.state;
     try {
-      if(answerId === undefined)
-        await postAnswer(taskId, values);
-      else if(!isEmpty(this.state.patches))
-        await updateAnswer(answerId, this.state.patches);
-      message.success("提交成功");
+      if(answerId === undefined) {
+        const { id } = await postAnswer(taskId, values);
+        message.success("提交成功");
+        this.setState({ answerId: id });
+      } else {
+        if(!isEmpty(this.state.patches)) {
+          await updateAnswer(answerId, this.state.patches);
+          message.success("更新成功");
+          this.setState({ patches: {} });
+        } else
+          message.info("没有更新内容，无需提交");
+      }
     } catch (e) {
       message.error(e.message);
     }

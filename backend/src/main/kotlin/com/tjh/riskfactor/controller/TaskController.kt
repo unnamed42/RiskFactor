@@ -54,9 +54,8 @@ class TaskController {
 
     @PostMapping("/tasks/{id}/answers")
     fun postAnswer(@PathVariable id: Int, @AuthenticationPrincipal details: JwtUserDetails,
-                   @RequestBody body: Map<String, Any>) {
+                   @RequestBody body: Map<String, Any>) =
         service.createAnswer(id, details.user, body)
-    }
 
     @PostMapping(value = ["/tasks/{id}/answers/file"], consumes = ["application/vnd.ms-excel", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"])
     fun importAnswer(@PathVariable id: Int, @AuthenticationPrincipal details: JwtUserDetails,

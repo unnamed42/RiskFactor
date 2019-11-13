@@ -5,7 +5,7 @@ import { RadioChangeEvent } from "antd/lib/radio";
 
 import { Question, QProps } from ".";
 
-export const QYesNo = forwardRef<any, QProps<string>>(({ schema, value, onChange }, ref) => {
+export const QYesNo = forwardRef<any, QProps>(({ schema, value, onChange }, ref) => {
 
   const [choice, setChoice] = useState(value);
 

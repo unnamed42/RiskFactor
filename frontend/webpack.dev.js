@@ -7,6 +7,8 @@ module.exports = merge(common, {
     contentBase: "./",
     host: "0.0.0.0",
     disableHostCheck: true,
-    hot: true
+    hot: true,
+    liveReload: false,
+    inline: false
   }
 });

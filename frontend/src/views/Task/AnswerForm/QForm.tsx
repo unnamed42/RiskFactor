@@ -18,7 +18,7 @@ const QFormD: FC<P> = ({ layout: { questions }, onSubmit, form }) => {
 
   const validated = () => {
     form.validateFieldsAndScroll((errors, values) => {
-      if(!errors && onSubmit) onSubmit(values);
+      if(!errors) onSubmit?.(values);
     });
   };
 

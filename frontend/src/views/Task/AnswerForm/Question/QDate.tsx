@@ -6,7 +6,7 @@ import moment, { Moment } from "moment";
 import { QProps } from ".";
 import { datePattern } from "@/config";
 
-export const QDate = forwardRef<any, QProps<string>>(({ schema, onChange, value }, ref) => {
+export const QDate = forwardRef<any, QProps>(({ schema, onChange, value }, ref) => {
 
   const [date, setDate] = useState((value && moment(value, datePattern)) || undefined);
 

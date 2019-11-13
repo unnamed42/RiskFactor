@@ -52,8 +52,15 @@ class TaskService: IDBService<Task>("task") {
      */
     fun centerAnswers(taskId: Int, gid: Int) = answers.findAllByTaskIdCreatedBy(taskId, groups.memberNames(gid))
 
+    /**
+     * 创建新的回答
+     * @param taskId 项目id
+     * @param creator 创建者（用户）实体
+     * @param body 回答内容
+     * @return 新创建的回答id
+     */
     @Transactional
-    fun createAnswer(taskId: Int, creator: User, body: Map<String, Any>) {
+    fun createAnswer(taskId: Int, creator: User, body: Map<String, Any>): Map<String, Int> {
         val answer = answers.save(Answer().apply {
             this.creator = creator; this.task = checkedFind(taskId)
         })
@@ -63,6 +70,7 @@ class TaskService: IDBService<Task>("task") {
             }
         }
         answerEntries.saveAll(entries)
+        return mapOf("id" to answer.id)
     }
 
     internal fun saveSections(sections: Iterable<Section>) = this.sections.saveAll(sections)

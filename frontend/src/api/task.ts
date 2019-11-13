@@ -50,7 +50,7 @@ export const answer = (answerId: number | string) =>
   request<any>({ url: `/answers/${answerId}/body` });
 
 export const deleteAnswer = (answerId: number | string) =>
-  request<void>({ url: `/tasks/0/answers/${answerId}`, method: "DELETE" });
+  request<void>({ url: `/answers/${answerId}`, method: "DELETE" });
 
 export const downloadAnswer = (answerId: number | string) =>
   request<Blob>({ url: `/answers/${answerId}/file`, responseType: "blob" })
