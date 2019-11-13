@@ -34,7 +34,7 @@ class Task(
     )
     @get:OrderColumn(name = "seq", nullable = false)
     @set:JsonProperty
-    var sections: MutableList<Section>? = null
+    var sections: MutableList<Section> = mutableListOf()
 ): IEntity() {
 
     // 用来给JSON用的，传入内容为用户组名

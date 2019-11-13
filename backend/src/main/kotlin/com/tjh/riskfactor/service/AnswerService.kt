@@ -3,9 +3,9 @@ package com.tjh.riskfactor.service
 import org.apache.poi.ss.usermodel.Cell
 
 import org.springframework.stereotype.Service
-import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.transaction.annotation.Transactional
 
+import com.tjh.riskfactor.entity.User
 import com.tjh.riskfactor.entity.form.*
 import com.tjh.riskfactor.error.notFound
 import com.tjh.riskfactor.repo.AnswerEntryRepository
@@ -16,14 +16,10 @@ import java.io.InputStream
 
 @Service
 class AnswerService(
-    private val users: UserService,
     private val groups: GroupService,
     private val ansEntries: AnswerEntryRepository,
     override val repo: AnswerRepository
 ): IDBService<Answer>("answer") {
-
-    // 为了避免循环依赖
-    @Autowired private lateinit var tasks: TaskService
 
     /**
      * 获取回答的内容（不包含信息）
@@ -60,19 +56,16 @@ class AnswerService(
 
     /**
      * 自Excel（xls，xlsx）格式导入回答（多个）
-     * @param taskId 问题所属项目id
-     * @param userId 导入动作执行者id
+     * @param task 项目实体
+     * @param creator 导入动作执行者
      * @param istream 上传文件的输入流
      * @return 导入完成的数据库实体
      */
     @Transactional
-    fun importExcel(taskId: Int, userId: Int, istream: InputStream) {
-        val task = tasks.checkedFind(taskId)
-        val creator = users.checkedFind(userId)
-
+    fun importExcel(task: Task, creator: User, istream: InputStream) {
         // 问卷的总体结构 查找表
         // 问题所属大纲标题(String) -> Pair<大纲id, 问题标签(String) -> 问题(Question)>
-        val layout = task.sections!!.map {
+        val layout = task.sections.map {
             trim(it.title) to Pair(it, it.questions!!.map {
                 q -> q.label to q
             }.toMap())

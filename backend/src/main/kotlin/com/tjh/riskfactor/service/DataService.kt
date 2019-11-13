@@ -49,7 +49,7 @@ class DataService(
         TypeReference::class.java.getResourceAsStream("/data/task.yml").use { stream ->
             mapper.readValue(stream, type).forEach{ task ->
                 val group = groups.find(task.center) ?: throw notFound("group", task.center)
-                val sections = task.sections?.let { tasks.saveSections(it.map { s -> prepareSection(s) }) }
+                val sections = task.sections.let { tasks.saveSections(it.map { s -> prepareSection(s) }) }
                 tasks.save(task.apply {
                     this.group = group; this.sections = sections
                 })
