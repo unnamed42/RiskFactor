@@ -2,7 +2,6 @@ package com.tjh.riskfactor.controller
 
 import org.springframework.web.bind.annotation.*
 import org.springframework.web.multipart.MultipartFile
-import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.security.core.annotation.AuthenticationPrincipal
 
 import com.tjh.riskfactor.service.*
@@ -12,13 +11,12 @@ import com.tjh.riskfactor.security.JwtUserDetails
 
 @CrossOrigin
 @RestController
-class TaskController {
-
-    @Autowired private lateinit var service: TaskService
-
-    @Autowired private lateinit var users: UserService
-    @Autowired private lateinit var answers: AnswerService
-    @Autowired private lateinit var sections: SectionService
+class TaskController(
+    private val service: TaskService,
+    private val users: UserService,
+    private val answers: AnswerService,
+    private val sections: SectionService
+) {
 
     /**
      * 获取全部项目的基础信息

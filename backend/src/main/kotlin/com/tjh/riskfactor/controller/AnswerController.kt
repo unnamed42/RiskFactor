@@ -1,15 +1,12 @@
 package com.tjh.riskfactor.controller;
 
-import org.springframework.web.bind.annotation.*;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.*
 
-import com.tjh.riskfactor.service.AnswerService;
+import com.tjh.riskfactor.service.AnswerService
 
 @CrossOrigin
 @RestController
-class AnswerController {
-
-    @Autowired private lateinit var service: AnswerService;
+class AnswerController(private val service: AnswerService) {
 
     @GetMapping("/answers/{id}/body")
     fun answer(@PathVariable id: Int) = service.answerBody(id)

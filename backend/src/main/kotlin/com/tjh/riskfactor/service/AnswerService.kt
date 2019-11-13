@@ -15,14 +15,15 @@ import com.tjh.riskfactor.util.ExcelReader
 import java.io.InputStream
 
 @Service
-class AnswerService: IDBService<Answer>("answer") {
+class AnswerService(
+    private val users: UserService,
+    private val groups: GroupService,
+    private val ansEntries: AnswerEntryRepository,
+    override val repo: AnswerRepository
+): IDBService<Answer>("answer") {
 
+    // 为了避免循环依赖
     @Autowired private lateinit var tasks: TaskService
-    @Autowired private lateinit var users: UserService
-    @Autowired private lateinit var groups: GroupService
-    @Autowired private lateinit var ansEntries: AnswerEntryRepository
-
-    @Autowired override lateinit var repo: AnswerRepository
 
     /**
      * 获取回答的内容（不包含信息）

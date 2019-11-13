@@ -20,6 +20,6 @@ class Group(
     var displayName: String,
 
     @get:OneToMany(mappedBy = "group")
-    @JsonIgnore
-    var members: MutableSet<User>
+    @get:JsonIgnore
+    var members: MutableSet<User>?
 ): IEntity()

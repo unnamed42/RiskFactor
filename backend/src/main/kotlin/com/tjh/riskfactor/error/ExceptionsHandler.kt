@@ -1,7 +1,5 @@
 package com.tjh.riskfactor.error
 
-import org.springframework.beans.factory.annotation.Autowired
-
 import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
@@ -18,9 +16,7 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 import javax.servlet.http.HttpServletRequest
 
 @RestControllerAdvice
-class ExceptionsHandler: ResponseEntityExceptionHandler() {
-
-    @Autowired private lateinit var builder: ApiErrorBuilder
+class ExceptionsHandler(private val builder: ApiErrorBuilder): ResponseEntityExceptionHandler() {
 
     override fun handleHttpRequestMethodNotSupported(ex: HttpRequestMethodNotSupportedException,
         headers: HttpHeaders, status: HttpStatus, request: WebRequest): ResponseEntity<Any> {

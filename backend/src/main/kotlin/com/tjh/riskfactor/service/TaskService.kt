@@ -1,22 +1,20 @@
 package com.tjh.riskfactor.service;
 
-import org.springframework.stereotype.Service;
-import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import org.springframework.http.ResponseEntity
 
 import com.tjh.riskfactor.entity.User
-import com.tjh.riskfactor.repo.*;
-import com.tjh.riskfactor.entity.form.*;
+import com.tjh.riskfactor.repo.*
+import com.tjh.riskfactor.entity.form.*
 
 @Service
-class TaskService: IDBService<Task>("task") {
-
-    @Autowired private lateinit var questions: QuestionService
-    @Autowired private lateinit var sections: SectionRepository
-    @Autowired private lateinit var answers: AnswerService
-
-    @Autowired override lateinit var repo: TaskRepository
+class TaskService(
+    private val questions: QuestionService,
+    private val sections: SectionService,
+    private val answers: AnswerService,
+    override val repo: TaskRepository
+): IDBService<Task>("task") {
 
     fun taskBrief(id: Int) = repo.findTaskInfoById(id)
     fun tasks() = repo.findAllTasks()

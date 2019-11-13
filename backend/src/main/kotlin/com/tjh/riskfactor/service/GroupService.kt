@@ -1,15 +1,12 @@
 package com.tjh.riskfactor.service
 
 import org.springframework.stereotype.Service
-import org.springframework.beans.factory.annotation.Autowired
 
 import com.tjh.riskfactor.entity.Group
 import com.tjh.riskfactor.repo.GroupRepository
 
 @Service
-class GroupService: IDBService<Group>("group") {
-
-    @Autowired override lateinit var repo: GroupRepository
+class GroupService(override val repo: GroupRepository): IDBService<Group>("group") {
 
     /**
      * 获取用户组的所有用户的用户名

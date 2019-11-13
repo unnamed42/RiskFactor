@@ -3,7 +3,6 @@ package com.tjh.riskfactor.controller
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
-import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.security.access.prepost.PreAuthorize
 
 import com.tjh.riskfactor.service.UserService
@@ -13,9 +12,7 @@ import com.tjh.riskfactor.service.UserService
  */
 @CrossOrigin
 @RestController
-class UserController {
-
-    @Autowired private lateinit var service: UserService
+class UserController(private val service: UserService) {
 
     /**
      * 检查用户名{@code username}是否存在

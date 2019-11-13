@@ -2,7 +2,6 @@ package com.tjh.riskfactor.security
 
 import io.jsonwebtoken.*
 import io.jsonwebtoken.security.Keys
-import org.springframework.beans.factory.annotation.Autowired
 
 import org.springframework.stereotype.Component
 import org.springframework.beans.factory.annotation.Value
@@ -16,14 +15,12 @@ import java.util.Date
 private const val BEARER = "Bearer "
 
 @Component
-class JwtTokenProvider {
+class JwtTokenProvider(private val userDetailsService: JwtUserDetailsService) {
     @Value("\${security.jwt.signing-key}")
     private lateinit var signingKey: String
 
     @Value("\${security.jwt.expiry-hours}")
     private lateinit var expiryHours: Number
-
-    @Autowired private lateinit var userDetailsService: JwtUserDetailsService
 
     fun generateToken(auth: Authentication): String {
         val id = (auth.principal as JwtUserDetails).id

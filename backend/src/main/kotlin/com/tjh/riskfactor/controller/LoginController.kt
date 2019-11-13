@@ -4,7 +4,6 @@ import org.springframework.http.HttpStatus
 import org.springframework.security.authentication.*
 import org.springframework.security.core.Authentication
 import org.springframework.security.core.userdetails.UsernameNotFoundException
-import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.web.server.ResponseStatusException
 import org.springframework.web.bind.annotation.*
 
@@ -16,10 +15,10 @@ import com.tjh.riskfactor.security.JwtTokenProvider
  */
 @CrossOrigin
 @RestController
-class LoginController {
-
-    @Autowired private lateinit var authManager: AuthenticationManager
-    @Autowired private lateinit var provider: JwtTokenProvider
+class LoginController(
+    private val authManager: AuthenticationManager,
+    private val provider: JwtTokenProvider
+) {
 
     private fun authenticate(username: String, password: String): Authentication {
         try {

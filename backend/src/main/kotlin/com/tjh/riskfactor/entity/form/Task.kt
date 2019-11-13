@@ -25,7 +25,7 @@ class Task(
     @get:ManyToOne
     @get:JoinColumn(name = "gid", referencedColumnName = "id", nullable = false)
     @JsonIgnore
-    var group: Group,
+    var group: Group?,
 
     @get:OneToMany(cascade = [CascadeType.REMOVE])
     @get:JoinTable(name = "task_sections",
@@ -33,14 +33,14 @@ class Task(
         inverseJoinColumns = [JoinColumn(name = "sid")]
     )
     @get:OrderColumn(name = "seq", nullable = false)
-    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+    @set:JsonProperty
     var sections: MutableList<Section>? = null
 ): IEntity() {
 
     // 用来给JSON用的，传入内容为用户组名
-    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+    @set:JsonProperty
     @get:Transient var center: String = ""
 
     @JsonProperty(value = "center", access = JsonProperty.Access.READ_ONLY)
-    @Transient fun getCenterName() = group.displayName
+    @Transient fun getCenterName() = group?.displayName
 }

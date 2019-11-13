@@ -10,12 +10,12 @@ users:
     password: admin
     email: admin@example.com
     group: root
-    isAdmin: true
+    admin: true
   - username: user
     password: user
     email: user@example.com
     group: users
-    isAdmin: true
+    admin: true
   - username: user2
     password: user2
     email: user2@example.com
