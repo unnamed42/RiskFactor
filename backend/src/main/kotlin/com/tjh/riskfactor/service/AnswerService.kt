@@ -3,34 +3,30 @@ package com.tjh.riskfactor.service
 import org.apache.poi.ss.usermodel.Cell
 
 import org.springframework.stereotype.Service
-import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.transaction.annotation.Transactional
 
+import com.tjh.riskfactor.entity.User
 import com.tjh.riskfactor.entity.form.*
 import com.tjh.riskfactor.error.notFound
 import com.tjh.riskfactor.repo.AnswerEntryRepository
 import com.tjh.riskfactor.repo.AnswerRepository
 import com.tjh.riskfactor.util.ExcelReader
 
-import java.util.Date
 import java.io.InputStream
 
 @Service
-class AnswerService: IDBService<Answer>("answer") {
-
-    @Autowired private lateinit var tasks: TaskService
-    @Autowired private lateinit var users: UserService
-    @Autowired private lateinit var groups: GroupService
-    @Autowired private lateinit var ansEntries: AnswerEntryRepository
-
-    @Autowired override lateinit var repo: AnswerRepository
+class AnswerService(
+    private val groups: GroupService,
+    private val ansEntries: AnswerEntryRepository,
+    override val repo: AnswerRepository
+): IDBService<Answer>("answer") {
 
     /**
      * 获取回答的内容（不包含信息）
      * @param id 回答id
      * @return 回答的内容
      */
-    fun answerBody(id: Int) = ansEntries.valuesOf(id).map {
+    fun answerBody(id: Int) = ansEntries.valueViewsOf(id).map {
         it.getQid().toString() to it.getValue()
     }.toMap()
 
@@ -39,14 +35,13 @@ class AnswerService: IDBService<Answer>("answer") {
      * @param id 回答id
      * @param body 有更新的内容
      */
+    @Transactional
     fun updateAnswer(id: Int, body: Map<String, String>) {
         if(body.isEmpty())
             return
-        val questionIds = body.keys.map { it.toInt() }
-        val entries = ansEntries.entriesOf(id, questionIds).map {
-            it.value = body[it.question.id.toString()]; it
+        body.entries.forEach{ (qid, value) ->
+            ansEntries.putValue(id, qid.toInt(), value)
         }
-        ansEntries.saveAll(entries)
     }
 
     fun export(id: Int) {}
@@ -61,37 +56,30 @@ class AnswerService: IDBService<Answer>("answer") {
 
     /**
      * 自Excel（xls，xlsx）格式导入回答（多个）
-     * @param taskId 问题所属项目id
-     * @param userId 导入动作执行者id
+     * @param task 项目实体
+     * @param creator 导入动作执行者
      * @param istream 上传文件的输入流
      * @return 导入完成的数据库实体
      */
     @Transactional
-    fun importExcel(taskId: Int, userId: Int, istream: InputStream) {
-        val task = tasks.checkedFind(taskId)
-        val creator = users.checkedFind(userId)
-
+    fun importExcel(task: Task, creator: User, istream: InputStream) {
         // 问卷的总体结构 查找表
         // 问题所属大纲标题(String) -> Pair<大纲id, 问题标签(String) -> 问题(Question)>
-        val layout = task.sections!!.map {
-            trim(it.title) to Pair(it, it.questions!!.map {
+        val layout = task.sections.map {
+            trim(it.title) to Pair(it, it.questions.map {
                 q -> q.label to q
             }.toMap())
         }.toMap()
 
-        val answer = repo.save(Answer().apply {
-            this.task = task; this.creator = creator; this.mtime = Date()
-        })
+        val answer = repo.save(Answer(task = task, creator = creator))
 
         ExcelReader(istream).use { reader ->
             val answers = reader.cells().map { dataCell ->
                 val (h1, h2, h3, cell) = dataCell
                 val title = "${trim(h1)}/${if (h2 == null) "" else trim(h2)}"
                 val question = layout[title]?.second?.get(h3) ?: throw notFound("question", title)
-                AnswerEntry().apply {
-                    this.answer = answer; this.question = question
-                    this.value = formatValue(cell, question)
-                }
+                AnswerEntry(answer = answer, question = question,
+                    value = formatValue(cell, question))
             }
             ansEntries.saveAll(answers.asIterable())
         }

@@ -22,11 +22,11 @@ class User(
     var isAdmin: Boolean = false,
 
     @get:Transient
-    @JsonProperty(value = "group", access = JsonProperty.Access.WRITE_ONLY)
+    @set:JsonProperty(value = "group")
     var groupName: String = ""
 ): IEntity() {
     @get:ManyToOne
     @get:JoinColumn(nullable = false)
-    @JsonIgnore
+    @get:JsonIgnore
     lateinit var group: Group
 }

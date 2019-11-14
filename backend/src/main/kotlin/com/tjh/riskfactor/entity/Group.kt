@@ -17,9 +17,9 @@ class Group(
      * 在本项目中也用作分中心名称
      */
     @get:Column(nullable = false)
-    var displayName: String,
-
+    var displayName: String
+): IEntity() {
     @get:OneToMany(mappedBy = "group")
-    @JsonIgnore
-    var members: MutableSet<User>?
-): IEntity()
+    @get:JsonIgnore
+    var members: MutableSet<User> = mutableSetOf()
+}

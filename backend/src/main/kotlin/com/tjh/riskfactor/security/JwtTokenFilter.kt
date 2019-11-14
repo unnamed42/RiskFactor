@@ -4,7 +4,6 @@ import io.jsonwebtoken.ExpiredJwtException
 import io.jsonwebtoken.MalformedJwtException
 
 import org.springframework.stereotype.Component
-import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpStatus
 import org.springframework.web.filter.OncePerRequestFilter
 import org.springframework.security.core.context.SecurityContextHolder
@@ -17,10 +16,10 @@ import javax.servlet.http.HttpServletRequest
 import javax.servlet.http.HttpServletResponse
 
 @Component
-class JwtTokenFilter: OncePerRequestFilter() {
-
-    @Autowired private lateinit var provider: JwtTokenProvider
-    @Autowired private lateinit var e: ErrorResponder
+class JwtTokenFilter(
+    private val provider: JwtTokenProvider,
+    private val e: ErrorResponder
+): OncePerRequestFilter() {
 
     override fun doFilterInternal(req: HttpServletRequest, res: HttpServletResponse, chain: FilterChain) {
         try {

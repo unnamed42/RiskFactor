@@ -25,6 +25,9 @@ export const tasks = () =>
 export const taskSections = (taskId: number | string) =>
   request<Section[]>({ url: `/tasks/${taskId}/sections` });
 
+export const taskMtime = (taskId: number | string) =>
+  request<{ mtime: number }>({ url: `/tasks/${taskId}/mtime` });
+
 /**
  * 获取Task下属的所有分节的基础信息
  * @param taskId Task的id

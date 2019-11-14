@@ -16,11 +16,16 @@ import java.util.Date
 @Entity @Table(name = "task")
 class Task(
     @get:Column(nullable = false)
-    var name: String,
-
+    var name: String
+): IEntity() {
     @get:Column(nullable = false)
     @get:JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
-    var mtime: Date = Date(),
+    var mtime: Date = Date()
+
+    @get:ManyToOne
+    @get:JoinColumn(name = "gid", referencedColumnName = "id", nullable = false)
+    @JsonIgnore
+    lateinit var group: Group
 
     @get:OneToMany(cascade = [CascadeType.REMOVE])
     @get:JoinTable(name = "task_sections",
@@ -28,16 +33,11 @@ class Task(
         inverseJoinColumns = [JoinColumn(name = "sid")]
     )
     @get:OrderColumn(name = "seq", nullable = false)
-    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
-    var sections: MutableList<Section>?
-): IEntity() {
-    @get:ManyToOne
-    @get:JoinColumn(name = "gid", referencedColumnName = "id", nullable = false)
-    @JsonIgnore
-    lateinit var group: Group
+    @set:JsonProperty
+    var sections: MutableList<Section> = mutableListOf()
 
     // 用来给JSON用的，传入内容为用户组名
-    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+    @set:JsonProperty
     @get:Transient var center: String = ""
 
     @JsonProperty(value = "center", access = JsonProperty.Access.READ_ONLY)

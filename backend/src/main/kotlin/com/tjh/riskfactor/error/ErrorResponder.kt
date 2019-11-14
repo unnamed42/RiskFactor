@@ -4,16 +4,13 @@ import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
 import org.springframework.stereotype.Component
-import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.security.core.context.SecurityContextHolder
 
 import javax.servlet.http.HttpServletRequest
 import javax.servlet.http.HttpServletResponse
 
 @Component
-class ErrorResponder {
-
-    @Autowired private lateinit var builder: ApiErrorBuilder
+class ErrorResponder(private val builder: ApiErrorBuilder) {
 
     fun response(req: HttpServletRequest, resp: HttpServletResponse,
                  ex: Exception, status: HttpStatus, message: String) {

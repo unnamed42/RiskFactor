@@ -8,14 +8,17 @@ import com.tjh.riskfactor.entity.IEntity
 
 import javax.persistence.*
 
+import kotlin.reflect.KMutableProperty
+import kotlin.reflect.full.*
+
 @Entity @Table(name = "question")
 class Question(
     @get:Column
     var type: QuestionType? = null,
 
     @get:Column
-    var label: String? = null,
-
+    var label: String? = null
+): IEntity() {
     @get:ManyToMany(fetch = FetchType.EAGER, cascade = [CascadeType.REMOVE])
     @get:JoinTable(name = "question_list",
         joinColumns = [JoinColumn(name = "head", referencedColumnName = "id")],
@@ -23,14 +26,13 @@ class Question(
     )
     @get:OrderColumn(name = "sequence", nullable = false)
     @get:JsonInclude(JsonInclude.Include.NON_EMPTY)
-    var list: MutableList<Question>?
-): IEntity() {
+    var list: MutableList<Question> = mutableListOf()
 
     // 指定是否为必填
     @get:Transient var required: Boolean? = null
     // 指定该问题的输入能否控制后续问题的显示
     // 用于指定联动问题，即只有这个问题输入之后才能显示后续问题
-    @JsonProperty("isEnabler")
+    @get:JsonProperty("isEnabler")
     @get:Transient var isEnabler: Boolean? = null
     // 问题标签位置，仅供输入类组件使用，表示标签的位置
     // 值的含义同addonPosition
@@ -59,36 +61,40 @@ class Question(
     // 对于下拉选择类问题来说，只要这一项不为空则开启输入筛选功能
     @get:Transient var filterKey: String? = null
 
+    @ExperimentalStdlibApi
     @Column(name = "option", length = 512)
     @JsonIgnore
     fun getOptions(): String? {
-        val collected = this.javaClass.declaredFields.filter { it.isAnnotationPresent(Transient::class.java) }.map {
-            it.isAccessible = true; val name = it.name
+        val collected = this.javaClass.kotlin.declaredMemberProperties.filter { it.getter.hasAnnotation<Transient>() }.map {
+            val name = it.name
             try {
                 val value = it.get(this) ?: return@map null
                 if(value is Boolean && value == true)
                     return@map name
                 else
                     return@map "$name:$value"
-            } catch (e: IllegalAccessException) { return@map null }
-        }.filterNotNull().joinToString("$;")
+            } catch(e: IllegalCallableAccessException) { return@map null }
+        }.filterNotNull().joinToString(sep)
         return if(collected.isEmpty()) null else collected
     }
 
     fun setOptions(value: String?) {
         if(value == null) return
-        value.split(Regex("\\$;")).forEach{ part ->
+        value.split(sep).forEach{ part ->
             val kv = part.split(':')
+            val fields = this.javaClass.kotlin.declaredMemberProperties
             try {
-                val field = this.javaClass.getDeclaredField(kv[0])
-                field.isAccessible = true
+                val field = fields.first { it.name == kv[0] }
+                if(field !is KMutableProperty<*>)
+                    return@forEach
                 if(kv.size == 1)
-                    field.set(this, true)
+                    field.setter.call(this, true)
                 else
-                    field.set(this, kv[1])
-            } catch(e: IllegalAccessException) {
-            } catch(e: NoSuchFieldException) {}
+                    field.setter.call(this, kv[1])
+            } catch(e: IllegalCallableAccessException) {
+            } catch(e: NoSuchPropertyException) {}
         }
     }
-
 }
+
+private const val sep = "\u2063"

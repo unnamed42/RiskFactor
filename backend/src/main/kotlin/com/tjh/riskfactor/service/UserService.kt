@@ -1,18 +1,16 @@
 package com.tjh.riskfactor.service
 
-import org.springframework.stereotype.Service;
-import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service
+import org.springframework.security.crypto.password.PasswordEncoder
 
-import com.tjh.riskfactor.entity.User;
-import com.tjh.riskfactor.repo.UserRepository;
+import com.tjh.riskfactor.entity.User
+import com.tjh.riskfactor.repo.UserRepository
 
 @Service
-class UserService: IDBService<User>("user") {
-
-    @Autowired private lateinit var encoder: PasswordEncoder
-
-    @Autowired override lateinit var repo: UserRepository
+class UserService(
+    private val encoder: PasswordEncoder,
+    override val repo: UserRepository
+): IDBService<User>("user") {
 
     fun has(username: String) = repo.existsByUsername(username)
 

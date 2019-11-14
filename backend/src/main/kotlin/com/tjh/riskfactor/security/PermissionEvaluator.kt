@@ -1,15 +1,12 @@
 package com.tjh.riskfactor.security
 
 import org.springframework.stereotype.Component
-import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.security.core.context.SecurityContextHolder
 
 import com.tjh.riskfactor.service.UserService
 
 @Component
-class PermissionEvaluator {
-
-    @Autowired private lateinit var users: UserService
+class PermissionEvaluator(private val users: UserService) {
 
     fun isRoot() = me().isRoot
 

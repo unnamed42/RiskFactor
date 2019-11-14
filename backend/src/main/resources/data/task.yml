@@ -1,12 +1,42 @@
-# 编写规则：
-# type === list
-# type === null
-#    该类为多选/单选类问题的选项
-#    可携带list，意为被选中时激活的问题
-#    isEnabler不需要设置，当有list的时候自动视为true
-# type === number | text
-#    可携带list，其下所有问题均需设置addonPosition
-#    labelPosition
+# 编写规则与数据规则
+# 通用：（如果某type的规则与此重叠，以type的规则为准）
+#    type: 问题的类型，如果为空则代表这是个选项
+#    label: 问题的标签。具有type的问题，标签是渲染出来的标题；type为空的问题，标签是选项的值
+#    required: 表示该项必填
+#    description: 表示问题的详细描述，可放在问题下方做详细说明
+#    placeholder: 输入类控件的占位文字
+#    filterKey: 用于下拉选择类的选项，在下拉选择问题上设置则代表启用“输入时筛选选项”功能，在选项上设置则代表此选项的筛选用key
+#               “输入时筛选选项”的含义是，筛选出所有 key.startsWith(input) 的选项
+#    selected: 用于指定多选类问题（下拉选择，多项单/多选）的初始值，为 string （针对单项选择类）或者以`,`分隔的string（多项选择类）
+#    isEnabler: 用于指定联动性，如果该问题被填写了内容，那么渲染出其 list 下的内容作为联动问题
+#               type为空的也可以设置 isEnabler，代表如果选中这个选项那么联动它的list
+# 数据采集：
+#    指前端提交给后端的数据格式。所有的问题提交过来都应当是 string 类型的数据，其实际含义根据 type 来解析
+#    整个表单提交过来应当是如下格式的内容：{ [问题的id]: [问题收集到的string], ... }
+# type: list
+#   该项按照list属性中的设置，按顺序渲染出各个控件。下属的控件不再自行采集数据提交，全部采集到 list 问题当中统一处理
+#   在收集数据时，其数据格式为JSON，内容为（一个Object）：{ [问题在list中的index]: [问题收集到的string], ... }
+#     设置为 (index -> 内容) 的映射而非数组，是为了允许list中某个问题没有答案
+# type: template
+#   该项为可重复添加的问题。根据重复添加的次数，渲染[次数]遍list。同样，下属问题不会自行收集数据
+#   在收集数据时，其数据格式为JSON，内容为（一个Array<Object>）：[ list-0数据, list-1数据, ... ]
+# type: disabled
+#   该项被渲染为input控件，且状态为disabled。该组件意为其值应当是从后端获取，或者是利用其他域的值计算得到
+#   该类问题不收集数据
+# type: text | number
+#   该项被渲染为input控件，text类型可随意输入；number类型只能输入合法的数字（[负号][整数部分][小数点][小数部分]）
+#   该类问题收集到的数据为input控件的内容，即一个 string
+# type: date
+#   该项被渲染为datepicker，在本项目中，所有的日期均是年月日选择器（没有单独选择月或者选择年的情况）
+#   该类问题收集到的数据为 yyyy-MM-dd 格式的string
+# type: select
+#   该项被渲染为单项下拉菜单选择。单选的下属选项不允许设置 isEnabler
+#   该类问题收集到的数据为 string，即为选项的label
+# type: choice
+#   该类问题被渲染为多项单选（Radio）。选项可以设置 isEnabler，表示该选项被选中时联动list，其值为其作为 list 类型问题收集到的数据
+#   该类问题收集到的数据为 string，即为选项的label或者收集到的数据
+# type: either
+#   该类问题被渲染成
 - name: 胆胰危险因素采集
   center: users
   mtime: 2019-10-29
@@ -969,8 +999,6 @@
 - name: 项目一
   center: users
   mtime: 2019-11-12
-  sections:
 - name: 项目二
   center: users
   mtime: 2019-11-12
-  sections:
