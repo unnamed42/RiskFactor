@@ -44,7 +44,12 @@ class AnswerService(
         }
     }
 
-    fun export(id: Int) {}
+    @Transactional(readOnly = true)
+    fun export(id: Int) {
+        val answer = checkedFind(id)
+        val task = answer.task; val entries = answer.answers
+
+    }
 
     fun answersOfTask(taskId: Int) = repo.findAllByTaskId(taskId)
 
@@ -96,6 +101,11 @@ class AnswerService(
             else -> ""
         }
     }
+}
+
+@Transactional
+internal fun formatSections(task: Task) {
+    task.sections.map {  }
 }
 
 /**

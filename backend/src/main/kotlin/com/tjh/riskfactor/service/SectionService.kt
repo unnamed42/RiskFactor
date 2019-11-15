@@ -12,8 +12,11 @@ class SectionService(override val repo: SectionRepository): IDBService<Section>(
     @Transactional
     fun sectionsOfTask(taskId: Int): List<Section> {
         val sections = repo.findAllByOwnerTaskId(taskId)
+        @Suppress("UNUSED_VARIABLE")
         val unused = sections.map { it.questions.size }.toList()
         return sections
     }
+
+    fun sectionViewsOfTask(taskId: Int) = repo.sectionViewsOfTask(taskId)
 
 }

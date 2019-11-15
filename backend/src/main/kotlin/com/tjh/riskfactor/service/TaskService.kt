@@ -2,7 +2,6 @@ package com.tjh.riskfactor.service;
 
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
-import org.springframework.http.ResponseEntity
 
 import com.tjh.riskfactor.entity.User
 import com.tjh.riskfactor.repo.*
@@ -16,8 +15,8 @@ class TaskService(
     override val repo: TaskRepository
 ): IDBService<Task>("task") {
 
-    fun taskBrief(id: Int) = repo.findTaskInfoById(id)
-    fun tasks() = repo.findAllTasks()
+    fun taskView(id: Int) = repo.taskView(id)
+    fun taskViews() = repo.taskViews()
 
     fun modifiedTime(id: Int) = repo.mtime(id)
 
@@ -26,7 +25,7 @@ class TaskService(
      * @param id 项目id
      * @return 所有分节的基本信息
      */
-    fun taskSectionsInfo(id: Int) = repo.findSectionNamesById(id)
+    fun taskSectionsInfo(id: Int) = sections.sectionViewsOfTask(id)
 
     /**
      * 创建新的回答

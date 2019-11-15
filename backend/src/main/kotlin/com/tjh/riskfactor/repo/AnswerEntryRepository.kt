@@ -17,9 +17,6 @@ interface AnswerEntryRepository: JpaRepository<AnswerEntry, Int> {
     )
     fun valueViewsOf(answerId: Int): List<AnswerEntryView>
 
-    @Query("select e from AnswerEntry e inner join e.answer a on a.id = :answerId")
-    fun entriesOf(answerId: Int): List<AnswerEntry>
-
     @Modifying
     @Query(nativeQuery = true, value =
         "insert into answer_entry(`value`, answer_id, question_id) value (:value, :answerId, :questionId) " +

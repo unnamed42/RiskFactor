@@ -11,6 +11,9 @@ class AnswerController(private val service: AnswerService) {
     @GetMapping("/answers/{id}/body")
     fun answer(@PathVariable id: Int) = service.answerBody(id)
 
+    @GetMapping("/answers/{id}")
+    fun exportAnswer(@PathVariable id: Int) = service.export(id)
+
     @PutMapping("/answers/{id}/body")
     fun updateAnswer(@PathVariable id: Int, @RequestBody body: Map<String, String>) = service.updateAnswer(id, body)
 

@@ -5,6 +5,7 @@ import org.springframework.stereotype.Repository
 import org.springframework.data.jpa.repository.JpaRepository
 
 import com.tjh.riskfactor.entity.form.Section
+import com.tjh.riskfactor.entity.view.SectionView
 
 @Repository
 interface SectionRepository: JpaRepository<Section, Int> {
@@ -15,5 +16,8 @@ interface SectionRepository: JpaRepository<Section, Int> {
             "order by ts.seq"
     )
     fun findAllByOwnerTaskId(taskId: Int): List<Section>
+
+    @Query("select s.id as id, s.title as title from Task t join t.sections s on t.id = :taskId")
+    fun sectionViewsOfTask(taskId: Int): List<SectionView>
 
 }

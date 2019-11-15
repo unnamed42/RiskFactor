@@ -23,7 +23,7 @@ class TaskController(
      * @return 全部项目的基础信息
      */
     @GetMapping("/tasks")
-    fun tasks() = service.tasks()
+    fun tasks() = service.taskViews()
 
     /**
      * 获取某个项目的基础信息
@@ -31,7 +31,7 @@ class TaskController(
      * @return 基础信息
      */
     @GetMapping("/tasks/{id}")
-    fun task(@PathVariable id: Int) = service.taskBrief(id) ?: throw notFound("task", id.toString())
+    fun task(@PathVariable id: Int) = service.taskView(id) ?: throw notFound("task", id.toString())
 
     @GetMapping("/tasks/{id}/sections")
     fun sections(@PathVariable id: Int) = sections.sectionsOfTask(id)
