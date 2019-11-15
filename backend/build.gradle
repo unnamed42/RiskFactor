@@ -55,24 +55,27 @@ dependencies {
   runtimeOnly("org.springframework.boot:spring-boot-devtools")
 
   runtimeOnly("mysql:mysql-connector-java:8.0.13")
-
+  // kotlin
   implementation("org.jetbrains.kotlin:kotlin-stdlib:$kotlinVersion")
   implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
   implementation("org.jetbrains.kotlin:kotlin-reflect")
-
+  // jackson
   implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
   implementation("com.fasterxml.jackson.datatype:jackson-datatype-hibernate5")
   implementation("com.fasterxml.jackson.dataformat:jackson-dataformat-yaml")
-
+  // Excel xls xlsx
   compileOnly("org.apache.poi:poi:4.1.1")
   runtimeOnly("org.apache.poi:poi-ooxml:4.1.1")
-
+  // json web token
   compileOnly("io.jsonwebtoken:jjwt-api:0.10.7")
   runtimeOnly("io.jsonwebtoken:jjwt-impl:0.10.7")
   runtimeOnly("io.jsonwebtoken:jjwt-jackson:0.10.7")
 
   testImplementation("org.springframework.boot:spring-boot-starter-test") {
+    // 排除 junit 4
     exclude group: "junit", module: "junit"
+    // 不需要 junit 4 兼容
+    exclude group: "org.junit.vintage", module: "junit-vintage-engine"
   }
   testCompileOnly("org.junit.jupiter:junit-jupiter-api")
   testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine")

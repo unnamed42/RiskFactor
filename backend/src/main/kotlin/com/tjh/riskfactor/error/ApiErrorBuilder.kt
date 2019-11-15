@@ -8,11 +8,13 @@ import org.springframework.web.context.request.ServletWebRequest
 import org.springframework.web.context.request.WebRequest
 
 import com.tjh.riskfactor.util.toJson
+import java.io.BufferedReader
 
 import javax.servlet.http.HttpServletRequest
 
 import java.io.PrintWriter
 import java.io.StringWriter
+import java.lang.IllegalStateException
 
 @Component
 class ApiErrorBuilder {
@@ -29,8 +31,9 @@ class ApiErrorBuilder {
         fun request(req: HttpServletRequest): Builder {
             error.uri = req.requestURI
             if(debug) {
-                val lines = Iterable { req.reader.lines().iterator() }
-                error.body = lines.joinToString(System.lineSeparator())
+                error.body = try {
+                    req.inputStream.bufferedReader().use { it.readText() }
+                } catch (e: IllegalStateException) { null }
             }
             return this
         }
