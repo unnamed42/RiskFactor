@@ -2,7 +2,7 @@ import { request, downloadAsFile } from "./http";
 
 import {
   IdResponse,
-  TaskBrief, SectionBrief, AnswerBrief, Section
+  TaskBrief, Section, AnswerBrief, Question
 } from "@/types";
 
 /**
@@ -22,8 +22,8 @@ export const tasks = () =>
  * 获取Task下属的所有分节的详细信息
  * @param taskId Task的id
  */
-export const taskSections = (taskId: number | string) =>
-  request<Section[]>({ url: `/tasks/${taskId}/sections` });
+export const taskQuestions = (taskId: number | string) =>
+  request<Question[]>({ url: `/tasks/${taskId}/sections` });
 
 export const taskMtime = (taskId: number | string) =>
   request<{ mtime: number }>({ url: `/tasks/${taskId}/mtime` });
@@ -33,7 +33,7 @@ export const taskMtime = (taskId: number | string) =>
  * @param taskId Task的id
  */
 export const taskSectionNames = (taskId: number | string) =>
-  request<SectionBrief[]>({ url: `/tasks/${taskId}/sections/name` });
+  request<Section[]>({ url: `/tasks/${taskId}/sections/name` });
 
 /**
  * 获取提交给Task的所有问卷回复的基础信息
@@ -41,13 +41,6 @@ export const taskSectionNames = (taskId: number | string) =>
  */
 export const taskAnswers = (taskId: number | string) =>
   request<AnswerBrief[]>({ url: `/tasks/${taskId}/answers` });
-
-/**
- * 获取分节（Section）的完整信息
- * @param sectionId Section的id
- */
-export const section = (sectionId: number | string) =>
-  request<Section>({ url: `/sections/${sectionId}` });
 
 export const answer = (answerId: number | string) =>
   request<any>({ url: `/answers/${answerId}/body` });
@@ -58,9 +51,6 @@ export const deleteAnswer = (answerId: number | string) =>
 export const downloadAnswer = (answerId: number | string) =>
   request<Blob>({ url: `/answers/${answerId}/file`, responseType: "blob" })
     .then(data => downloadAsFile(data, "export.json"));
-
-export const postAnswerSection = (sectionId: number | string, value: any) =>
-  request<IdResponse>({ url: `/answers/section/${sectionId}`, data: value, method: "POST" });
 
 export const postAnswer = (taskId: number | string, value: any) =>
   request<IdResponse>({ url: `/tasks/${taskId}/answers`, data: value, method: "POST" });

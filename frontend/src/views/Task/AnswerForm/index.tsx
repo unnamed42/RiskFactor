@@ -3,12 +3,12 @@ import { useDispatch, useSelector } from "react-redux";
 import { RouteComponentProps, withRouter } from "react-router-dom";
 
 import { Icon, Layout, Menu, message, PageHeader } from "antd";
-import { merge, isEmpty, debounce } from "lodash";
+import { merge, isEmpty, debounce, flatMap } from "lodash";
 
 import { PageLoading } from "@/components";
 import { QForm } from "./QForm";
 
-import { answer, postAnswer, updateAnswer, taskSections, taskMtime } from "@/api/task";
+import { answer, postAnswer, updateAnswer, taskQuestions, taskMtime } from "@/api/task";
 import { firstKey, useEffectAsync } from "@/utils";
 import { Question, Section } from "@/types";
 import { StoreType } from "@/redux";
@@ -38,6 +38,30 @@ const putAnswers = (sections: Section[], values: KV<string>) => sections.reduce(
   });
   return Object.assign(acc, { [`${h1}/${h2}`]: sectionAnswers });
 }, {});
+
+// 将所有内容归约为 { [一级标题/二级标题/三级标题...]: 问题list, ... }
+const formatSections = (questions: Question[]) => {
+  // 默认第一层的Question type为header
+  let init = questions.map(q => ({ label: q.label ?? "", data: q }));
+  for(;;) {
+    let changed = false;
+    init = flatMap(init, elem => {
+      const { label, data } = elem;
+      if (data.type !== "header")
+        return { label, data };
+      else {
+        if(data.list === undefined)
+          throw new Error(`header ${data.id} is invalid`);
+        changed = true;
+        return data.list.map(q => ({ label: `${label}/${q.label}`, data: q }));
+      }
+    });
+    if(!changed) break;
+  }
+  return init.reduce((obj: KV<Question>, { label, data }) => {
+    obj[label] = data;
+  }, {});
+};
 
 const formatSections = (sections: Section[]) => sections.reduce((obj: KV<KV<Section>>, sec) => {
   const [h1, h2] = sec.title.split("/");
@@ -84,7 +108,7 @@ export const AnswerForm = withRouter<P, FC<P>>(({ taskId, history, ...props }) =
       const { mtime } = await taskMtime(taskId);
       const cached = cache[taskId];
       // 如果已经缓存最新样式，则设置样式，否则重新获取
-      const sections = cached?.mtime === mtime ? cached.layout : await taskSections(taskId);
+      const sections = cached?.mtime === mtime ? cached.layout : await taskQuestions(taskId);
       const formatted = formatSections(sections);
       // 将样式存入store中
       dispatch(taskStore.update(taskId, mtime, sections));

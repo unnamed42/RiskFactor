@@ -1,4 +1,5 @@
 export type QType =
+  "header" |
   "text" | "number" | "date" | "disabled" | "either" |
   "list" | "template" | "table" |
   "choice" | "choice-multi" | "select" | "select-multi";
@@ -19,13 +20,9 @@ export interface Question {
   filterKey?: string;
 }
 
-export interface SectionBrief {
-  id: number;
-  title: string;
-}
-
-export interface Section extends SectionBrief {
-  questions?: Question[];
+export interface Section {
+  name: string;
+  list?: Section[];
 }
 
 export interface TaskBrief {
@@ -36,8 +33,7 @@ export interface TaskBrief {
 }
 
 export interface Task extends TaskBrief {
-  sections?: Section[];
-  questions?: Question[];
+  list: Question[];
 }
 
 export interface AnswerBrief {
