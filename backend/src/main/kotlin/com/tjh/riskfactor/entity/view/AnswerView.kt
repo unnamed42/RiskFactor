@@ -5,12 +5,8 @@ import com.fasterxml.jackson.annotation.JsonFormat
 import java.util.Date
 
 interface AnswerView {
-
-    fun getId(): Int
-
-    fun getCreator(): String
-
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
-    fun getMtime(): Date
-
+    val id: Int
+    val creator: String
+    @get:JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
+    val mtime: Date
 }

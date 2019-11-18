@@ -12,7 +12,12 @@ import com.tjh.riskfactor.repo.AnswerEntryRepository
 import com.tjh.riskfactor.repo.AnswerRepository
 import com.tjh.riskfactor.util.ExcelReader
 
+import mu.KotlinLogging
+
 import java.io.InputStream
+import java.lang.RuntimeException
+
+private val logger = KotlinLogging.logger { }
 
 @Service
 class AnswerService(
@@ -27,7 +32,7 @@ class AnswerService(
      * @return 回答的内容
      */
     fun answerBody(id: Int) = ansEntries.valueViewsOf(id).map {
-        it.getQid().toString() to it.getValue()
+        it.qid.toString() to it.value
     }.toMap()
 
     /**
@@ -65,8 +70,10 @@ class AnswerService(
     fun importExcel(task: Task, creator: User, istream: InputStream) {
         // 问卷的总体结构 查找表
         // 问题所属大纲标题(String) -> Pair<大纲id, 问题标签(String) -> 问题(Question)>
-        val layout = task.sections.map {
-            trim(it.title) to Pair(it, it.questions.map {
+        val layout = task.list.map {
+            // TODO: error message
+            val label = it.label ?: throw RuntimeException("")
+            trim(label) to Pair(it, it.list.map {
                 q -> q.label to q
             }.toMap())
         }.toMap()

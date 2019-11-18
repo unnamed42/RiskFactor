@@ -53,8 +53,10 @@ dependencies {
   implementation("org.springframework.boot:spring-boot-starter-data-jpa")
   compileOnly("org.springframework.boot:spring-boot-configuration-processor")
   runtimeOnly("org.springframework.boot:spring-boot-devtools")
-
+  // jdbc
   runtimeOnly("mysql:mysql-connector-java:8.0.13")
+  // logging wrapper
+  implementation("io.github.microutils:kotlin-logging:1.7.7")
   // kotlin
   implementation("org.jetbrains.kotlin:kotlin-stdlib:$kotlinVersion")
   implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")

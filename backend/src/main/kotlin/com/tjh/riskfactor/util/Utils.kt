@@ -16,3 +16,9 @@ fun fromJson(body: String): Map<String, Any> {
     val type = object: TypeReference<Map<String, Any>>() {}
     return mapper.readValue(body, type)
 }
+
+fun <T: Collection<*>> T.fetchLazy(): T {
+    @Suppress("UNUSED_VARIABLE")
+    val unused = this.size
+    return this
+}

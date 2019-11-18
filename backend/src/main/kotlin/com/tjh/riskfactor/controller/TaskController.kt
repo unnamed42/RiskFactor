@@ -6,7 +6,6 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal
 
 import com.tjh.riskfactor.service.*
 import com.tjh.riskfactor.entity.view.*
-import com.tjh.riskfactor.error.notFound
 import com.tjh.riskfactor.security.JwtUserDetails
 
 @CrossOrigin
@@ -14,8 +13,7 @@ import com.tjh.riskfactor.security.JwtUserDetails
 class TaskController(
     private val service: TaskService,
     private val users: UserService,
-    private val answers: AnswerService,
-    private val sections: SectionService
+    private val answers: AnswerService
 ) {
 
     /**
@@ -31,16 +29,16 @@ class TaskController(
      * @return 基础信息
      */
     @GetMapping("/tasks/{id}")
-    fun task(@PathVariable id: Int) = service.taskBrief(id) ?: throw notFound("task", id.toString())
+    fun task(@PathVariable id: Int) = service.taskBrief(id)
 
     @GetMapping("/tasks/{id}/sections")
-    fun sections(@PathVariable id: Int) = sections.sectionsOfTask(id)
+    fun sections(@PathVariable id: Int) = service.taskSections(id)
 
     @GetMapping("/tasks/{id}/sections/name")
     fun sectionNames(@PathVariable id: Int) = service.taskSectionsInfo(id)
 
     @GetMapping("/tasks/{id}/mtime")
-    fun modifiedTime(@PathVariable id: Int) = service.modifiedTime(id)
+    fun modifiedTime(@PathVariable id: Int) = service.accessChecked(id) { it.mtime.time }
 
     @GetMapping("/tasks/{id}/answers")
     fun answers(@PathVariable id: Int, @AuthenticationPrincipal details: JwtUserDetails): List<AnswerView> {
@@ -60,7 +58,7 @@ class TaskController(
     @PostMapping(value = ["/tasks/{id}/answers/file"], consumes = ["application/vnd.ms-excel", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"])
     fun importAnswer(@PathVariable id: Int, @AuthenticationPrincipal details: JwtUserDetails,
                      @RequestParam("file") file: MultipartFile) {
-        val task = service.checkedFind(id)
+        val task = service.findChecked(id)
         answers.importExcel(task, details.user, file.inputStream)
     }
 

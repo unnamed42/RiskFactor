@@ -6,10 +6,6 @@ import org.springframework.data.jpa.repository.Query
 import org.springframework.stereotype.Repository
 
 import com.tjh.riskfactor.entity.SaveGuard
-import com.tjh.riskfactor.entity.form.Question
-
-@Repository
-interface QuestionRepository : JpaRepository<Question, Int>
 
 @Repository
 interface SaveGuardRepository : JpaRepository<SaveGuard, Int> {

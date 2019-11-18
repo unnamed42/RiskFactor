@@ -14,6 +14,7 @@ import kotlin.reflect.full.*
 @Entity @Table(name = "question")
 class Question(
     @get:Column
+    @get:Enumerated
     var type: QuestionType? = null,
 
     @get:Column

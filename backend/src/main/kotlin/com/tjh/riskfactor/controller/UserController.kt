@@ -36,11 +36,11 @@ class UserController(private val service: UserService) {
     @PutMapping("/users/{id}")
     @PreAuthorize("@e.canWriteUser(#id)")
     fun updateInfo(@PathVariable id: Int, @RequestBody body: Map<String, String>) {
-        val user = service.checkedFind(id)
         if(body.isEmpty()) return
-        body["username"]?.let { user.username = it }
-        body["password"]?.let { user.password = service.encode(it) }
-        service.save(user)
+        service.save(service.updateChecked(id) { user ->
+            body["username"]?.let { user.username = it }
+            body["password"]?.let { user.password = service.encode(it) }
+        })
     }
 
 }
