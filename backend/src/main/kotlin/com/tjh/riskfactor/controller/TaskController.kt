@@ -31,8 +31,8 @@ class TaskController(
     @GetMapping("/tasks/{id}")
     fun task(@PathVariable id: Int) = service.taskBrief(id)
 
-    @GetMapping("/tasks/{id}/sections")
-    fun sections(@PathVariable id: Int) = service.taskSections(id)
+    @GetMapping("/tasks/{id}/layout")
+    fun layout(@PathVariable id: Int) = service.taskLayout(id)
 
     @GetMapping("/tasks/{id}/sections/name")
     fun sectionNames(@PathVariable id: Int) = service.taskSectionsInfo(id)

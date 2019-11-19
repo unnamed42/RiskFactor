@@ -81,21 +81,22 @@ class AnswerService(
         val answer = repo.save(Answer(task = task, creator = creator))
 
         ExcelReader(istream).use { reader ->
-            val answers = reader.cells().map { dataCell ->
-                val (h1, h2, h3, cell) = dataCell
+            val answers = mutableListOf<AnswerEntry>()
+            for((h1, h2, h3, cell) in reader.cells()) {
+                if(cell == null) continue
                 val title = "${trim(h1)}/${if (h2 == null) "" else trim(h2)}"
                 val question = layout[title]?.second?.get(h3) ?: throw notFound("question", title)
-                AnswerEntry(answer = answer, question = question,
-                    value = formatValue(cell, question))
+                answers.add(
+                    AnswerEntry(answer = answer, question = question,
+                        value = formatValue(cell, question))
+                )
             }
-            ansEntries.saveAll(answers.asIterable())
+            ansEntries.saveAll(answers)
         }
     }
 
     @Transactional(readOnly = true)
-    protected fun formatValue(cell: Cell?, question: Question): String? {
-        if(cell == null)
-            return null
+    protected fun formatValue(cell: Cell, question: Question): String {
         val content = cell.stringCellValue
         return when(question.type) {
             QuestionType.TEXT, QuestionType.NUMBER, QuestionType.SINGLE_CHOICE -> content

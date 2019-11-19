@@ -20,11 +20,6 @@ export interface Question {
   filterKey?: string;
 }
 
-export interface Section {
-  name: string;
-  list?: Section[];
-}
-
 export interface TaskBrief {
   id: number;
   center: string;

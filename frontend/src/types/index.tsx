@@ -12,5 +12,9 @@ export interface IdResponse {
   id: string | number;
 }
 
+export interface KVPair<T> {
+  [key: string]: T;
+}
+
 export * from "./auth";
 export * from "./task";

@@ -3,11 +3,11 @@ package com.tjh.riskfactor.service;
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
-import com.tjh.riskfactor.entity.User
 import com.tjh.riskfactor.repo.*
+import com.tjh.riskfactor.entity.User
 import com.tjh.riskfactor.entity.form.*
 import com.tjh.riskfactor.error.notFound
-import com.tjh.riskfactor.util.fetchLazy
+import com.tjh.riskfactor.util.fetchEager
 
 @Service
 class TaskService(
@@ -20,8 +20,12 @@ class TaskService(
 
     fun tasks() = repo.taskViews()
 
+    /**
+     * 获取项目的问题结构和内容
+     * @param taskId 项目id
+     */
     @Transactional
-    fun taskSections(taskId: Int) = accessChecked(taskId) { it.list.fetchLazy() }
+    fun taskLayout(taskId: Int) = accessChecked(taskId) { it.list.fetchEager() }
 
     /**
      * 获取项目下属的分节的基本信息

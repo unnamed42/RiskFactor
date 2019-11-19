@@ -1,4 +1,4 @@
-import { Section } from "@/types";
+import { KVPair, Question } from "@/types";
 import { without } from "@/utils";
 
 enum Actions {
@@ -6,17 +6,16 @@ enum Actions {
   INVALIDATE = "task/invalidate"
 }
 
-export interface State {
-  [taskId: string]: {
-    mtime: number;
-    layout: Section[];
-  };
+interface Data {
+  mtime: number;
+  layout: Map<string, Question[]>;
 }
 
-interface Payload {
+// taskId -> Data
+export type State = KVPair<Data>;
+
+interface Payload extends Partial<Data> {
   taskId: string | number;
-  mtime?: number;
-  layout?: Section[];
 }
 
 interface ReducerAction {
@@ -24,7 +23,7 @@ interface ReducerAction {
   payload: Payload;
 }
 
-export const update = (taskId: number | string, mtime: number, layout: Section[]): ReducerAction =>
+export const update = (taskId: number | string, mtime: Data["mtime"], layout: Data["layout"]): ReducerAction =>
   ({ type: Actions.STORE, payload: { taskId, mtime, layout } });
 
 export const invalidate = (taskId: number | string): ReducerAction =>

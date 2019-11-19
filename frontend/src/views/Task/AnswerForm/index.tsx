@@ -3,84 +3,81 @@ import { useDispatch, useSelector } from "react-redux";
 import { RouteComponentProps, withRouter } from "react-router-dom";
 
 import { Icon, Layout, Menu, message, PageHeader } from "antd";
-import { merge, isEmpty, debounce, flatMap } from "lodash";
+import { assign, isEmpty, debounce, flatMap } from "lodash";
 
 import { PageLoading } from "@/components";
 import { QForm } from "./QForm";
 
 import { answer, postAnswer, updateAnswer, taskQuestions, taskMtime } from "@/api/task";
-import { firstKey, useEffectAsync } from "@/utils";
-import { Question, Section } from "@/types";
+import { firstKey, useEffectAsync, appendArray } from "@/utils";
+import { KVPair, Question } from "@/types";
 import { StoreType } from "@/redux";
 import * as taskStore from "@/redux/task";
 
-const travel = (set: Set<string>, q: Question): void => {
-  set.add(q.id.toString());
-  q.list?.forEach(q1 => travel(set, q1));
-};
-
-// 收集Section下所有Question的id
-const collectQId = (sec: Section) => {
+// 收集所有Question的id。如果有list，递归进行
+const collectQId = (qs: Question[]) => {
   const result = new Set<string>();
-  sec.questions?.forEach(q => travel(result, q));
+  for(let arr = qs; arr.length !== 0; ) {
+    let next: Question[] = [];
+    arr.forEach(({ id, list }) => {
+      result.add(id.toString());
+      if(list) next = appendArray(next, list);
+    });
+    arr = next;
+  }
   return result;
 };
 
 // 在控件中的answer state是按照 { "[一级标题]/[二级标题]": { "问题id": "问题回复" } } 的格式组织的，而
 // 后端api中返回的回答是 { "问题id": "问题回复" } 格式，即所有Section下的回答合并到一起。
 // 该函数将后端api的格式转化为控件需要的按Section分隔的格式
-const putAnswers = (sections: Section[], values: KV<string>) => sections.reduce((acc: any, sec) => {
-  const [h1, h2] = sec.title.split("/");
-  const sectionAnswers: any = {};
-  collectQId(sec).forEach(id => {
-    if (id in values)
-      sectionAnswers[id] = values[id];
-  });
-  return Object.assign(acc, { [`${h1}/${h2}`]: sectionAnswers });
-}, {});
+const putAnswers = (layout: Map<string, Question[]>, values: KVPair<string>): KVPair<KVPair<string>> => {
+  let ret = {};
+  for(const [title, list] of layout) {
+    const sectionAnswers: KVPair<string> = {};
+    collectQId(list).forEach(id => {
+      if(id in values)
+        sectionAnswers[id] = values[id];
+    });
+    ret = assign(ret, { [title]: sectionAnswers });
+  }
+  return ret;
+};
 
 // 将所有内容归约为 { [一级标题/二级标题/三级标题...]: 问题list, ... }
-const formatSections = (questions: Question[]) => {
-  // 默认第一层的Question type为header
-  let init = questions.map(q => ({ label: q.label ?? "", data: q }));
+const formatLayout = (questions: Question[]): Map<string, Question[]> => {
+  // 默认第一层的Question type应该为header
+  // 将第一层map成 { header的label: header的list } 形式，成一个数组
+  let init = questions.map(q => {
+    if(q.type !== "header" || !q.list)
+      throw new Error(`questions in first layer is not a valid header`);
+    return { title: q.label ?? "", list: q.list };
+  });
+  // 如果list中还有header，也将其展开成上述格式并合并到数组中来
   for(;;) {
     let changed = false;
     init = flatMap(init, elem => {
-      const { label, data } = elem;
-      if (data.type !== "header")
-        return { label, data };
-      else {
-        if(data.list === undefined)
-          throw new Error(`header ${data.id} is invalid`);
-        changed = true;
-        return data.list.map(q => ({ label: `${label}/${q.label}`, data: q }));
-      }
+      const { title, list } = elem;
+      if(list[0].type !== "header")
+        return elem;
+      changed = true;
+      // 只要list中有一个是header，那么认为都是header
+      return list.map(q => {
+        if(q.type !== "header" || !q.list)
+          throw new Error(`question is not a header`);
+        return { title: `${title}/${q.label ?? ""}`, list: q.list };
+      });
     });
     if(!changed) break;
   }
-  return init.reduce((obj: KV<Question>, { label, data }) => {
-    obj[label] = data;
-  }, {});
+  // 将 { title, list } 数组合并成Map
+  return new Map(init.map(({ title, list }) => [title, list]));
 };
-
-const formatSections = (sections: Section[]) => sections.reduce((obj: KV<KV<Section>>, sec) => {
-  const [h1, h2] = sec.title.split("/");
-  return merge(obj, { [h1]: { [h2]: sec } });
-}, {});
 
 interface P extends RouteComponentProps {
   taskId: number | string;
   answerId?: number | string;
   sectionId?: number | string;
-}
-
-interface KV<T> {
-  [key: string]: T;
-}
-
-interface Headers {
-  h1: string;
-  h2: string;
 }
 
 export const AnswerForm = withRouter<P, FC<P>>(({ taskId, history, ...props }) => {
@@ -89,15 +86,17 @@ export const AnswerForm = withRouter<P, FC<P>>(({ taskId, history, ...props }) =
   const dispatch = useDispatch();
 
   // 问卷样式，之后再获取
-  const [layout, setLayout] = useState<KV<KV<Section>>>({});
+  const [layout, setLayout] = useState<Map<string, Question[]>>();
+  // 问卷目录结构
+  const [struct, setStruct] = useState({});
   // 创建新answer时此项为undefined，其余情况应该均有值
   const [answerId, setAnswerId] = useState(props.answerId);
   // 修改内容，更新回答时使用。如后端api一般，扁平而非按Section分层的结构
-  const [patches, setPatches] = useState<KV<string>>({});
-  // 当前选中的 [一级标题(h1)]/[二级标题(h2)]
-  const [{ h1, h2 }, setHeaders] = useState<Headers>({ h1: "", h2: "" });
+  const [patches, setPatches] = useState<KVPair<string>>({});
+  // 当前选中的 [一级标题(h1)]/[二级标题(h2)]/...
+  const [header, setHeader] = useState("");
   // 该项目的所有回答，按照 { "[一级标题]/[二级标题]": { "问题id": "问题回复" } } 形式组织
-  const [answers, setAnswers] = useState<KV<KV<string>>>({});
+  const [answers, setAnswers] = useState<KVPair<KVPair<string>>>({});
   // 加载完成时的指示器
   const [loaded, setLoaded] = useState(false);
 
@@ -108,35 +107,34 @@ export const AnswerForm = withRouter<P, FC<P>>(({ taskId, history, ...props }) =
       const { mtime } = await taskMtime(taskId);
       const cached = cache[taskId];
       // 如果已经缓存最新样式，则设置样式，否则重新获取
-      const sections = cached?.mtime === mtime ? cached.layout : await taskQuestions(taskId);
-      const formatted = formatSections(sections);
-      // 将样式存入store中
-      dispatch(taskStore.update(taskId, mtime, sections));
+      const layout = await (async () => {
+        if(cached?.mtime === mtime)
+          return cached.layout;
+        else {
+          const fetchedLayout = formatLayout(await taskQuestions(taskId));
+          // 将新样式存入store中
+          dispatch(taskStore.update(taskId, mtime, fetchedLayout));
+          return fetchedLayout;
+        }
+      })();
       // 将样式更新到state
-      setLayout(formatted);
-      const header1 = firstKey(formatted);
-      const header2 = header1 != null ? firstKey(formatted[header1]) : null;
-      setHeaders({ h1: header1 ?? "", h2: header2 ?? "" });
+      setLayout(layout);
+      setHeader(firstKey(layout) ?? "");
 
       // 当存在answerId时，从后端获取答案值
       if (answerId !== undefined) {
         const values = await answer(answerId);
-        setAnswers(putAnswers(sections, values));
+        setAnswers(putAnswers(layout, values));
       }
 
       setLoaded(true);
-    } catch (err) {
-      message.error(err.message);
-    }
+    } catch (err) { message.error(err.message); }
   }, []);
 
-  const page = () => `${h1}/${h2}`;
-
   const valuesChanged = (changes: any) => {
-    const curr = page();
-    const currAnswer = answers[page()];
+    const currAnswer = answers[header];
     const newAnswers = Object.assign(answers, {
-      [curr]: { ...currAnswer, ...changes }
+      [header]: { ...currAnswer, ...changes }
     });
     const newPatches = Object.assign(patches, changes);
     setAnswers(newAnswers);
@@ -159,11 +157,7 @@ export const AnswerForm = withRouter<P, FC<P>>(({ taskId, history, ...props }) =
     } catch (e) {
       message.error(e.message);
     }
-  }, 100, { leading: true });
-
-  const pageChanged = (newH1: string, newH2: string) => {
-    setHeaders({ h1: newH1, h2: newH2 });
-  };
+  }, 200, { leading: true });
 
   if (!loaded)
     return <PageLoading/>;
@@ -190,7 +184,7 @@ export const AnswerForm = withRouter<P, FC<P>>(({ taskId, history, ...props }) =
     <Layout>
       <Layout.Content style={{ padding: "20px 24px", minHeight: 280 }}>
         <PageHeader title="返回数据页" onBack={() => window.location.hash = `/task/${taskId}/answers`}/>
-        <QForm layout={layout[h1][h2]} answer={answers[page()]}
+        <QForm layout={layout.get(header)} answer={answers[page()]}
                onChange={valuesChanged} onSubmit={post} />
       </Layout.Content>
     </Layout>
