@@ -1,12 +1,14 @@
 import React, { FormEvent, FC, useState } from "react";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 
-import { Form, Icon, Input, Button, Checkbox, Tabs } from "antd";
+import { Form, Icon, Input, Button, Checkbox, Tabs, message } from "antd";
 import { FormComponentProps } from "antd/lib/form";
 
 import { TimedButton } from "@/components";
-import * as store from "@/redux/auth";
+import { StoreType } from "@/redux";
+import * as authStore from "@/redux/auth";
 
+import { login } from "@/api/login";
 import "./index.less";
 
 // 匹配所有号码（手机卡 + 数据卡 + 上网卡） https://github.com/VincentSit/ChinaMobilePhoneNumberRegex
@@ -28,18 +30,26 @@ type P = FormComponentProps<TabFields<UsernameTabFields> | TabFields<PhoneTabFie
   onLoginSuccess?: () => void;
 };
 
-const LoginFormD: FC<P> = ({ form, onLoginSuccess }) => {
+const LoginFormD: FC<P> = ({ form , onLoginSuccess }) => {
+
+  const auth = useSelector((store: StoreType) => store.auth);
 
   const [tab, setTab] = useState("1");
+  const [logging, setLogging] = useState(false);
   const dispatch = useDispatch();
 
-  const login = (e: FormEvent<HTMLFormElement>) => {
+  const doLogin = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (tab === "1") {
       // username login
-      form.validateFields(["username", "password", "remember"], (err, values) => {
+      form.validateFields(["username", "password", "remember"], async (err, values) => {
         if (err) return;
-        dispatch(store.login(values as TabFields<UsernameTabFields>, onLoginSuccess));
+        setLogging(true);
+        const { username, password } = values as TabFields<UsernameTabFields>;
+        const token = await login(username, password).catch(error => message.error(error.message));
+        dispatch(authStore.login(token));
+        setLogging(false);
+        onLoginSuccess?.();
       });
     } else {
       form.validateFields(["phone", "captcha", "remember"], (err, values) => {
@@ -51,7 +61,7 @@ const LoginFormD: FC<P> = ({ form, onLoginSuccess }) => {
 
   const { getFieldDecorator } = form;
 
-  return <Form onSubmit={login} className="login-form">
+  return <Form onSubmit={doLogin} className="login-form">
     <Tabs defaultActiveKey={tab} onChange={setTab} animated={{ inkBar: true, tabPane: false }}
           tabBarStyle={{ textAlign: "center" }}>
       <Tabs.TabPane tab="用户名登录" key="1">
@@ -59,7 +69,8 @@ const LoginFormD: FC<P> = ({ form, onLoginSuccess }) => {
           {
             getFieldDecorator("username", {
               rules: [{ required: true, message: "请输入用户名！" }],
-              validateTrigger: ["onChange", "onBlur"]
+              validateTrigger: ["onChange", "onBlur"],
+              initialValue: auth.token !== null ? auth.username : undefined
             })(
               <Input prefix={<Icon type="user" className="login-form-icon"/>}
                      placeholder="用户名"/>
@@ -112,7 +123,7 @@ const LoginFormD: FC<P> = ({ form, onLoginSuccess }) => {
         valuePropName: "checked", initialValue: false
       })(<Checkbox className="login-form-remember">保持登录</Checkbox>)}
       <a className="login-form-forget" href="">忘记密码？</a>
-      <Button type="primary" htmlType="submit" className="login-form-submit">登录</Button>
+      <Button type="primary" htmlType="submit" className="login-form-submit" disabled={logging}>登录</Button>
     </Form.Item>
   </Form>;
 };

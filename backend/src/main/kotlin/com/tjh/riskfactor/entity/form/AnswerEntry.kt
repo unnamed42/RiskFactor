@@ -13,8 +13,11 @@ class AnswerEntry(
      * 有内容：根据question-type来实际解析
      */
     @get:Column
-    var value: String? = null,
+    var value: String,
 
+    /**
+     * 回答的问题的id
+     */
     @get:ManyToOne
     @get:JoinColumn(nullable = false, name = "question_id")
     var question: Question,

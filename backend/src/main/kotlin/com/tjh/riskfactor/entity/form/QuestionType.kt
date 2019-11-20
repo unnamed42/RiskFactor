@@ -23,7 +23,9 @@ enum class QuestionType(private val value: String) {
     SINGLE_SELECT("select"), // 单项下拉选择
     MULTI_SELECT("select-multi"), // 多项下拉选择
 
-    TABLE("table");
+    TABLE("table"),
+
+    HEADER("header");
 
     @JsonValue
     fun getValue() = this.value

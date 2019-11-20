@@ -3,29 +3,37 @@ package com.tjh.riskfactor.service;
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
-import com.tjh.riskfactor.entity.User
 import com.tjh.riskfactor.repo.*
+import com.tjh.riskfactor.entity.User
 import com.tjh.riskfactor.entity.form.*
+import com.tjh.riskfactor.error.notFound
+import com.tjh.riskfactor.util.fetchEager
 
 @Service
 class TaskService(
     private val questions: QuestionService,
-    private val sections: SectionService,
     private val answers: AnswerService,
     override val repo: TaskRepository
 ): IDBService<Task>("task") {
 
-    fun taskView(id: Int) = repo.taskView(id)
-    fun taskViews() = repo.taskViews()
+    fun taskBrief(id: Int) = repo.taskView(id) ?: throw notFound("task", id.toString())
 
-    fun modifiedTime(id: Int) = repo.mtime(id)
+    fun tasks() = repo.taskViews()
+
+    /**
+     * 获取项目的问题结构和内容
+     * @param taskId 项目id
+     */
+    @Transactional
+    fun taskLayout(taskId: Int) = accessChecked(taskId) { it.list.fetchEager() }
 
     /**
      * 获取项目下属的分节的基本信息
      * @param id 项目id
      * @return 所有分节的基本信息
      */
-    fun taskSectionsInfo(id: Int) = sections.sectionViewsOfTask(id)
+    fun taskSectionsInfo(id: Int) =
+        questions.listIdsOfTask(id).mapNotNull(questions::describeSection)
 
     /**
      * 创建新的回答
@@ -36,9 +44,9 @@ class TaskService(
      */
     @Transactional
     fun createAnswer(taskId: Int, creator: User, body: Map<String, Any>): Map<String, Int> {
-        val answer = answers.save(Answer(creator = creator, task = checkedFind(taskId)))
+        val answer = answers.save(Answer(creator = creator, task = findChecked(taskId)))
         val entries = body.entries.map { (k, v) ->
-            val question = questions.checkedFind(k.toInt())
+            val question = questions.findChecked(k.toInt())
             AnswerEntry(answer = answer, question = question,
                 value = v.toString())
         }
@@ -50,7 +58,6 @@ class TaskService(
     fun exportAnswer(taskId: Int, answerId: Int) /*: ResponseEntity<ByteArray>*/ {
     }
 
-    internal fun saveSections(sections: Iterable<Section>) = this.sections.saveAll(sections)
     internal fun saveQuestions(questions: Iterable<Question>) = this.questions.saveAll(questions)
 
 }

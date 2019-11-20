@@ -1,43 +1,46 @@
-import { Section } from "@/types";
-import { without } from "@/utils";
+import { Reducer } from "redux";
+
+import { omit } from "lodash";
+import { merge } from "lodash/fp";
+
+import { KVPair, Question, TaskStruct } from "@/types";
 
 enum Actions {
-  STORE = "task/store",
+  UPDATE = "task/update",
   INVALIDATE = "task/invalidate"
 }
 
-export interface State {
-  [taskId: string]: {
-    mtime: number;
-    layout: Section[];
-  };
+interface Data {
+  mtime: number;
+  struct?: TaskStruct[];
+  layout?: Map<string, Question[]>;
 }
 
-interface Payload {
-  taskId: string | number;
-  mtime?: number;
-  layout?: Section[];
-}
+// taskId -> Data
+export type State = KVPair<Data>;
 
 interface ReducerAction {
   type: Actions;
-  payload: Payload;
+  payload: { taskId: string | number } & Partial<Data>;
 }
 
-export const update = (taskId: number | string, mtime: number, layout: Section[]): ReducerAction =>
-  ({ type: Actions.STORE, payload: { taskId, mtime, layout } });
+export const update = (taskId: number | string, newData: Data): ReducerAction =>
+  ({ type: Actions.UPDATE, payload: { taskId, ...newData } });
 
 export const invalidate = (taskId: number | string): ReducerAction =>
   ({ type: Actions.INVALIDATE, payload: { taskId } });
 
-export const reducer = (state: State = {}, action: ReducerAction) => {
-  const { type, payload } = action;
-  switch(type) {
-    case Actions.STORE:
-      const { taskId, ...data } = payload;
-      return { ...state, [taskId]: data };
+export const reducer: Reducer<State, ReducerAction> = (state: State = {}, action: ReducerAction) => {
+  switch(action.type) {
+    case Actions.UPDATE:
+      const { taskId, ...data } = action.payload;
+      const savedData = state[taskId];
+      if(savedData !== undefined && savedData.mtime === data.mtime)
+        return merge(state, { [taskId]: data });
+      else
+        return Object.assign(state, { [taskId]: data });
     case Actions.INVALIDATE:
-      return without(state, payload.taskId.toString());
+      return omit(state, action.payload.taskId.toString());
     default:
       return state;
   }

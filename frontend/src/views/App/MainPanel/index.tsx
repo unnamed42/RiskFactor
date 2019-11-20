@@ -11,7 +11,7 @@ import { logout } from "@/redux/auth";
 import "./index.less";
 
 const UserDropdown: FC = () => {
-  const username = useSelector((state: StoreType) => state.auth.username);
+  const auth = useSelector((state: StoreType) => state.auth);
   const dispatch = useDispatch();
 
   const dropdown = () => <Menu className="main-user-dropdown">
@@ -31,7 +31,7 @@ const UserDropdown: FC = () => {
       <Dropdown overlay={dropdown} trigger={["click"]}>
         <span>
           <Avatar icon="user" className="main-navbar-avatar"/>
-          {username || ""}
+          {auth.token !== null ? auth.username : ""}
           <Icon type="down" className="navbar-icon"/>
         </span>
       </Dropdown>

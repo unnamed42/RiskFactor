@@ -3,17 +3,16 @@ import React, { FC } from "react";
 import {Button, Form} from "antd";
 import { FormComponentProps, FormItemProps } from "antd/lib/form";
 
-import { FormContext, Question } from "./Question";
-import { Section } from "@/types/task";
+import { FormContext, QSchema, Question } from "./Question";
 
 interface P extends FormComponentProps {
-  layout: Section;
+  layout?: QSchema[];
   answer?: any;
   onChange?: (changedValues: any, allValues: any) => void;
   onSubmit?: (values: any) => void;
 }
 
-const QFormD: FC<P> = ({ layout: { questions }, onSubmit, form }) => {
+const QFormD: FC<P> = ({ layout, onSubmit, form }) => {
   const style: FormItemProps = { labelCol: { span: 4 }, wrapperCol: { span: 14 } };
 
   const validated = () => {
@@ -24,7 +23,7 @@ const QFormD: FC<P> = ({ layout: { questions }, onSubmit, form }) => {
 
   return <Form layout="horizontal">
     <FormContext.Provider value={form}>
-      {questions?.map(q => <Question schema={q} key={q.id} formItemProps={style} />)}
+      {layout?.map(q => <Question schema={q} key={q.id} formItemProps={style} />)}
     </FormContext.Provider>
     <Form.Item wrapperCol={{ span: 14, offset: 4 }}>
       <Button onClick={validated} style={{marginLeft: 5}}>提交</Button>

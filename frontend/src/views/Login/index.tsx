@@ -4,11 +4,19 @@ import { withRouter } from "react-router";
 import { LoginForm } from "./LoginForm";
 
 import "./index.less";
+import { useSelector } from "react-redux";
+import { StoreType } from "@/redux";
 
 export const Login = withRouter(({ history, location: { state } }) => {
 
+  const token = useSelector((store: StoreType) => store.auth.token);
+
   const redirect = () =>
     history.push(state ? state.from : "/");
+
+  // 已登录不允许重新进入该界面
+  if(token !== null)
+    redirect();
 
   return <div>
     <div className="login-background"/>

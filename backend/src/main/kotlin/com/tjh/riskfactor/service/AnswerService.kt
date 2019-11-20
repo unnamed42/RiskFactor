@@ -12,7 +12,12 @@ import com.tjh.riskfactor.repo.AnswerEntryRepository
 import com.tjh.riskfactor.repo.AnswerRepository
 import com.tjh.riskfactor.util.ExcelReader
 
+import mu.KotlinLogging
+
 import java.io.InputStream
+import java.lang.RuntimeException
+
+private val logger = KotlinLogging.logger { }
 
 @Service
 class AnswerService(
@@ -27,7 +32,7 @@ class AnswerService(
      * @return 回答的内容
      */
     fun answerBody(id: Int) = ansEntries.valueViewsOf(id).map {
-        it.getQid().toString() to it.getValue()
+        it.qid.toString() to it.value
     }.toMap()
 
     /**
@@ -70,8 +75,10 @@ class AnswerService(
     fun importExcel(task: Task, creator: User, istream: InputStream) {
         // 问卷的总体结构 查找表
         // 问题所属大纲标题(String) -> Pair<大纲id, 问题标签(String) -> 问题(Question)>
-        val layout = task.sections.map {
-            trim(it.title) to Pair(it, it.questions.map {
+        val layout = task.list.map {
+            // TODO: error message
+            val label = it.label ?: throw RuntimeException("")
+            trim(label) to Pair(it, it.list.map {
                 q -> q.label to q
             }.toMap())
         }.toMap()
@@ -79,21 +86,22 @@ class AnswerService(
         val answer = repo.save(Answer(task = task, creator = creator))
 
         ExcelReader(istream).use { reader ->
-            val answers = reader.cells().map { dataCell ->
-                val (h1, h2, h3, cell) = dataCell
+            val answers = mutableListOf<AnswerEntry>()
+            for((h1, h2, h3, cell) in reader.cells()) {
+                if(cell == null) continue
                 val title = "${trim(h1)}/${if (h2 == null) "" else trim(h2)}"
                 val question = layout[title]?.second?.get(h3) ?: throw notFound("question", title)
-                AnswerEntry(answer = answer, question = question,
-                    value = formatValue(cell, question))
+                answers.add(
+                    AnswerEntry(answer = answer, question = question,
+                        value = formatValue(cell, question))
+                )
             }
-            ansEntries.saveAll(answers.asIterable())
+            ansEntries.saveAll(answers)
         }
     }
 
     @Transactional(readOnly = true)
-    protected fun formatValue(cell: Cell?, question: Question): String? {
-        if(cell == null)
-            return null
+    protected fun formatValue(cell: Cell, question: Question): String {
         val content = cell.stringCellValue
         return when(question.type) {
             QuestionType.TEXT, QuestionType.NUMBER, QuestionType.SINGLE_CHOICE -> content

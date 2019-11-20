@@ -30,11 +30,11 @@ class Task(
     @get:OneToMany(cascade = [CascadeType.REMOVE])
     @get:JoinTable(name = "task_sections",
         joinColumns = [JoinColumn(name = "tid")],
-        inverseJoinColumns = [JoinColumn(name = "sid")]
+        inverseJoinColumns = [JoinColumn(name = "qid")]
     )
     @get:OrderColumn(name = "seq", nullable = false)
     @set:JsonProperty
-    var sections: MutableList<Section> = mutableListOf()
+    var list: MutableList<Question> = mutableListOf()
 
     // 用来给JSON用的，传入内容为用户组名
     @set:JsonProperty

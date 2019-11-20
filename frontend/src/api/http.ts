@@ -1,9 +1,9 @@
 import Axios, { AxiosRequestConfig } from "axios";
 
-import jwt_decode from "jwt-decode";
+import { assign } from "lodash";
+
 import { baseUrl } from "@/config";
-import { local } from "@/api/persist";
-import { JWT } from "@/types/auth";
+import { store } from "@/redux";
 import { now } from "@/utils";
 
 export const http = Axios.create({
@@ -14,12 +14,9 @@ export const http = Axios.create({
 });
 
 http.interceptors.request.use(config => {
-  const { auth: { token } } = local;
-  if (token) {
-    const jwt = jwt_decode<JWT>(token);
-    if(jwt.exp > now())
-      config.headers = { ...config.headers, Authorization: `Bearer ${token}` };
-  }
+  const auth = store.getState().auth;
+  if(auth.token !== null && auth.expiry > now())
+    assign(config.headers, { Authorization: `Bearer ${auth.token}` });
   return config;
 }, Promise.reject);
 

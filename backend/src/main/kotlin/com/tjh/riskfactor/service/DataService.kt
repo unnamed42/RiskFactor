@@ -49,9 +49,9 @@ class DataService(
         TypeReference::class.java.getResourceAsStream("/data/task.yml").use { stream ->
             mapper.readValue(stream, type).forEach{ task ->
                 val group = groups.find(task.center) ?: throw notFound("group", task.center)
-                val sections = task.sections.let { tasks.saveSections(it.map { s -> prepareSection(s) }) }
+                val list = tasks.saveQuestions(task.list.map { prepareQuestion(it) })
                 tasks.save(task.apply {
-                    this.group = group; this.sections = sections
+                    this.group = group; this.list = list
                 })
             }
         }
@@ -77,11 +77,7 @@ class DataService(
     }
 
     private fun prepareQuestion(q: Question): Question = q.apply {
-        list = list.let { tasks.saveQuestions(it.map { q -> prepareQuestion(q) }) }
-    }
-
-    private fun prepareSection(s: Section): Section = s.apply {
-        questions = questions.let { tasks.saveQuestions(it.map { q -> prepareQuestion(q) }) }
+        list = tasks.saveQuestions(list.map { prepareQuestion(it) })
     }
 
     private fun guarded(func: () -> Unit, guard: Int) {

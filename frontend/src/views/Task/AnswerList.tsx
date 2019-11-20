@@ -1,17 +1,19 @@
 import React, { FC } from "react";
 import { Link } from "react-router-dom";
+import { useSelector } from "react-redux";
 
 import { Button, PageHeader, message, Table, Upload } from "antd";
 
 import {
-   taskAnswers, task, deleteAnswer,
-  downloadAnswer, taskSectionNames
+  taskAnswers, task, deleteAnswer,
+  downloadAnswer, taskStructure
 } from "@/api/task";
-import { local } from "@/api/persist";
 
 import { AnswerBrief } from "@/types";
 import { usePromise } from "@/utils";
 import { PageLoading } from "@/components";
+import { StoreType } from "@/redux";
+import { cacheSelector } from "@/views/util";
 
 interface P {
   taskId: string | number;
@@ -21,21 +23,21 @@ type T = AnswerBrief;
 
 export const AnswerList: FC<P> = ({ taskId }) => {
 
-  const source = usePromise(() =>
-    Promise.all([task(taskId), taskSectionNames(taskId), taskAnswers(taskId)])
-  );
+  const token = useSelector((store: StoreType) => store.auth.token);
 
-  if(!source.loaded)
-    return <PageLoading />;
-  if("error" in source)
-    return null;
+  const [state] = usePromise(async () => {
+    const [taskView, answers] = await Promise.all([task(taskId), taskAnswers(taskId)]);
+    const struct = await cacheSelector(taskId, "struct", () => taskStructure(taskId));
+    return { taskView, struct, answers };
+  }, e => message.error(e.message));
 
-  // const sectionLink = (answer: T, section: SectionBrief) =>
-  //   <Link to={`/task/${taskId}/form/${answer.id}/${section.id}`}>{section.title}</Link>;
-
-  const delAnswer = (answer: T) =>
-    deleteAnswer(answer.id).then(() => { window.location.reload(); message.success("删除成功"); })
-      .catch(err => message.error(err.message));
+  const delAnswer = async (answer: T) => {
+    try {
+      await deleteAnswer(answer.id);
+      message.success("删除成功");
+      window.location.reload();
+    } catch (e) { message.error(e.message); }
+  };
 
   const actions = (text: any, answer: T) => {
     return <span>
@@ -47,23 +49,22 @@ export const AnswerList: FC<P> = ({ taskId }) => {
     </span>;
   };
 
-  const [info, sections, answers] = source.value;
+  if(state.loaded == null)
+    return null;
+  if(!state.loaded || state.struct === undefined)
+    return <PageLoading/>;
+  const { taskView, struct, answers } = state;
 
-  const names = sections.reduce((reduced, curr) => {
-    const [h1] = curr.title.split("/");
-    if(!reduced.includes(h1))
-      reduced.push(h1);
-    return reduced;
-  }, [] as string[]);
+  const names = struct.map(s => s.name);
 
   return <div>
-    <PageHeader title={info.name}
+    <PageHeader title={taskView.name}
       extra={[
         <Button key="1" type="link" icon="plus">
           <Link to={`/task/${taskId}/form`}>添加受试者</Link>
         </Button>,
         <Upload key="_2" action={`http://localhost:8090/task/${taskId}/answer/file`}
-          headers={{ authorization: `Bearer ${local.auth.token}` }}
+          headers={{ authorization: `Bearer ${token}` }}
           onChange={({ file, fileList }) => {
             if (file.status !== "uploading")
               console.log(file, fileList);
