@@ -4,7 +4,7 @@ import com.tjh.riskfactor.error.notFound
 import org.springframework.data.jpa.repository.JpaRepository
 import javax.persistence.EntityNotFoundException
 
-abstract class IDBService<T>(val entityName: String) {
+abstract class IDBService<T>(@PublishedApi internal val entityName: String) {
 
     protected abstract val repo: JpaRepository<T, Int>
 
@@ -23,7 +23,8 @@ abstract class IDBService<T>(val entityName: String) {
      * 获取的实际上是hibernate提供的proxy object因此永远不会是null，同时也要注意一定要在获取它的@Transactional中使用，否则
      * 会抛出{@link LazyInitializationException}。
      */
-    fun findLazy(id: Int): T = repo.getOne(id)
+    @PublishedApi
+    internal fun findLazy(id: Int): T = repo.getOne(id)
 
     inline fun <P> access(id: Int, accessor: (T) -> P): P? =
         try { accessor(findLazy(id)) } catch (e: EntityNotFoundException) { null }

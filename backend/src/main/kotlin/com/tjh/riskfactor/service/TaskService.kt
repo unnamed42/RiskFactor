@@ -18,7 +18,7 @@ class TaskService(
 
     fun taskBrief(id: Int) = repo.taskView(id) ?: throw notFound("task", id.toString())
 
-    fun tasks() = repo.taskViews()
+    fun taskViews() = repo.taskViews()
 
     /**
      * 获取项目的问题结构和内容

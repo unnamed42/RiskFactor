@@ -51,7 +51,7 @@ class AnswerService(
 
     @Transactional(readOnly = true)
     fun export(id: Int) {
-        val answer = checkedFind(id)
+        val answer = findChecked(id)
         val task = answer.task; val entries = answer.answers
 
     }
@@ -109,11 +109,6 @@ class AnswerService(
             else -> ""
         }
     }
-}
-
-@Transactional
-internal fun formatSections(task: Task) {
-    task.sections.map {  }
 }
 
 /**
