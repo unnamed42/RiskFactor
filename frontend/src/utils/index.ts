@@ -1,4 +1,4 @@
-import { DependencyList, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 
 import { omitBy, isNil } from "lodash";
 
@@ -39,9 +39,6 @@ export const usePromise = <State>(fetch: () => Promise<State>, onError?: OnError
 
   return [state, updateState];
 };
-
-export const useEffectAsync = (callback: () => Promise<void>, deps?: DependencyList) =>
-  useEffect(() => { callback(); }, deps);
 
 /**
  * 获取当前时间。这个时间和java的Date得到的单位一致（毫秒）

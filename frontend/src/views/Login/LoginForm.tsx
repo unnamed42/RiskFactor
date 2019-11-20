@@ -7,28 +7,20 @@ import { FormComponentProps } from "antd/lib/form";
 import { TimedButton } from "@/components";
 import { StoreType } from "@/redux";
 import * as authStore from "@/redux/auth";
-
 import { login } from "@/api/login";
+import { phoneRegex } from "@/config";
+
 import "./index.less";
 
-// 匹配所有号码（手机卡 + 数据卡 + 上网卡） https://github.com/VincentSit/ChinaMobilePhoneNumberRegex
-const phoneRegex = /^(?:\+?86)?1(?:3\d{3}|5[^4\D]\d{2}|8\d{3}|7(?:[01356789]\d{2}|4(?:0\d|1[0-2]|9\d))|9[189]\d{2}|6[567]\d{2}|4(?:[14]0\d{3}|[68]\d{4}|[579]\d{2}))\d{6}$/;
+type Fields = { remember: boolean; } & ({
+  username: string; password: string;
+} | {
+  phone: string; captcha: string;
+});
 
-interface UsernameTabFields {
-  username: string;
-  password: string;
-}
-
-interface PhoneTabFields {
-  phone: string;
-  captcha: string;
-}
-
-type TabFields<T> = T & { remember: boolean; };
-
-type P = FormComponentProps<TabFields<UsernameTabFields> | TabFields<PhoneTabFields>> & {
+interface P extends FormComponentProps<Fields> {
   onLoginSuccess?: () => void;
-};
+}
 
 const LoginFormD: FC<P> = ({ form , onLoginSuccess }) => {
 
@@ -38,25 +30,24 @@ const LoginFormD: FC<P> = ({ form , onLoginSuccess }) => {
   const [logging, setLogging] = useState(false);
   const dispatch = useDispatch();
 
+  // 内部用async-await有渲染问题
   const doLogin = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    if (tab === "1") {
-      // username login
-      form.validateFields(["username", "password", "remember"], async (err, values) => {
-        if (err) return;
-        setLogging(true);
-        const { username, password } = values as TabFields<UsernameTabFields>;
-        const token = await login(username, password).catch(error => message.error(error.message));
-        dispatch(authStore.login(token));
-        setLogging(false);
-        onLoginSuccess?.();
-      });
-    } else {
-      form.validateFields(["phone", "captcha", "remember"], (err, values) => {
-        if (err) return;
-        // dispatch({ type: "auth/login-phone", payload: values as FormFields<PhoneFields> });
-      });
-    }
+    if(tab !== "1") return;
+    form.validateFields(["username", "password", "remember"], (error, values) => {
+      if (error || !("username" in values)) return;
+      const { username, password } = values;
+      setLogging(true);
+      login(username, password)
+        .then(token => { dispatch(authStore.login(token)); onLoginSuccess?.(); })
+        .catch(ee => { setLogging(false); message.error(ee.message); });
+    });
+
+    //   form.validateFields(["phone", "captcha", "remember"], (err, values) => {
+    //     if (err) return;
+    //     // dispatch({ type: "auth/login-phone", payload: values as FormFields<PhoneFields> });
+    //   });
+    // }
   };
 
   const { getFieldDecorator } = form;
@@ -123,7 +114,8 @@ const LoginFormD: FC<P> = ({ form , onLoginSuccess }) => {
         valuePropName: "checked", initialValue: false
       })(<Checkbox className="login-form-remember">保持登录</Checkbox>)}
       <a className="login-form-forget" href="">忘记密码？</a>
-      <Button type="primary" htmlType="submit" className="login-form-submit" disabled={logging}>登录</Button>
+      <Button type="primary" htmlType="submit" className="login-form-submit"
+              disabled={logging} loading={logging}>登录</Button>
     </Form.Item>
   </Form>;
 };
