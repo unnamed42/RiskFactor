@@ -2,7 +2,7 @@ import { request, downloadAsFile } from "./http";
 
 import {
   IdResponse,
-  TaskBrief, Section, AnswerBrief, Question
+  TaskView, TaskStruct, AnswerBrief, Question
 } from "@/types";
 
 /**
@@ -10,20 +10,20 @@ import {
  * @param taskId Task的id
  */
 export const task = (taskId: number | string) =>
-  request<TaskBrief>({ url: `/tasks/${taskId}` });
+  request<TaskView>({ url: `/tasks/${taskId}` });
 
 /**
  * 获取当前用户能访问的所有Task
  */
 export const tasks = () =>
-  request<TaskBrief[]>({ url: "/tasks" });
+  request<TaskView[]>({ url: "/tasks" });
 
 /**
  * 获取Task下属的所有分节的详细信息
  * @param taskId Task的id
  */
-export const taskQuestions = (taskId: number | string) =>
-  request<Question[]>({ url: `/tasks/${taskId}/sections` });
+export const taskLayout = (taskId: number | string) =>
+  request<Question[]>({ url: `/tasks/${taskId}/layout` });
 
 export const taskMtime = (taskId: number | string) =>
   request<{ mtime: number }>({ url: `/tasks/${taskId}/mtime` });
@@ -32,8 +32,8 @@ export const taskMtime = (taskId: number | string) =>
  * 获取Task下属的所有分节的基础信息
  * @param taskId Task的id
  */
-export const taskSectionNames = (taskId: number | string) =>
-  request<Section[]>({ url: `/tasks/${taskId}/sections/name` });
+export const taskStructure = (taskId: number | string) =>
+  request<TaskStruct[]>({ url: `/tasks/${taskId}/sections/name` });
 
 /**
  * 获取提交给Task的所有问卷回复的基础信息

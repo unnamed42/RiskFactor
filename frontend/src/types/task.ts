@@ -20,14 +20,19 @@ export interface Question {
   filterKey?: string;
 }
 
-export interface TaskBrief {
+export interface TaskStruct {
+  name: string;
+  list?: TaskStruct[];
+}
+
+export interface TaskView {
   id: number;
   center: string;
   name: string;
   mtime: string;
 }
 
-export interface Task extends TaskBrief {
+export interface Task extends TaskView {
   list: Question[];
 }
 

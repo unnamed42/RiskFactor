@@ -1,5 +1,4 @@
 import React, { FC, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
 import { RouteComponentProps, withRouter } from "react-router-dom";
 
 import { Icon, Layout, Menu, message, PageHeader } from "antd";
@@ -8,11 +7,13 @@ import { assign, isEmpty, debounce, flatMap } from "lodash";
 import { PageLoading } from "@/components";
 import { QForm } from "./QForm";
 
-import { answer, postAnswer, updateAnswer, taskQuestions, taskMtime } from "@/api/task";
-import { firstKey, useEffectAsync, appendArray } from "@/utils";
+import {
+  answer, postAnswer, updateAnswer,
+  taskLayout, taskStructure
+} from "@/api/task";
+import { appendArray, usePromise } from "@/utils";
 import { KVPair, Question } from "@/types";
-import { StoreType } from "@/redux";
-import * as taskStore from "@/redux/task";
+import { cacheSelector } from "@/views/util";
 
 // 收集所有Question的id。如果有list，递归进行
 const collectQId = (qs: Question[]) => {
@@ -82,54 +83,36 @@ interface P extends RouteComponentProps {
 
 export const AnswerForm = withRouter<P, FC<P>>(({ taskId, history, ...props }) => {
 
-  const cache = useSelector((state: StoreType) => state.task);
-  const dispatch = useDispatch();
-
-  // 问卷样式，之后再获取
-  const [layout, setLayout] = useState<Map<string, Question[]>>();
-  // 问卷目录结构
-  const [struct, setStruct] = useState({});
   // 创建新answer时此项为undefined，其余情况应该均有值
   const [answerId, setAnswerId] = useState(props.answerId);
   // 修改内容，更新回答时使用。如后端api一般，扁平而非按Section分层的结构
   const [patches, setPatches] = useState<KVPair<string>>({});
-  // 当前选中的 [一级标题(h1)]/[二级标题(h2)]/...
-  const [header, setHeader] = useState("");
-  // 该项目的所有回答，按照 { "[一级标题]/[二级标题]": { "问题id": "问题回复" } } 形式组织
-  const [answers, setAnswers] = useState<KVPair<KVPair<string>>>({});
-  // 加载完成时的指示器
-  const [loaded, setLoaded] = useState(false);
 
-  // componentDidMount()
-  useEffectAsync(async () => {
-    try {
-      // task的更新时间
-      const { mtime } = await taskMtime(taskId);
-      const cached = cache[taskId];
-      // 如果已经缓存最新样式，则设置样式，否则重新获取
-      const layout = await (async () => {
-        if(cached?.mtime === mtime)
-          return cached.layout;
-        else {
-          const fetchedLayout = formatLayout(await taskQuestions(taskId));
-          // 将新样式存入store中
-          dispatch(taskStore.update(taskId, mtime, fetchedLayout));
-          return fetchedLayout;
-        }
-      })();
-      // 将样式更新到state
-      setLayout(layout);
-      setHeader(firstKey(layout) ?? "");
+  const [state, updateState] = usePromise(async () => {
+    // 问卷样式，之后再获取
+    const layout = await cacheSelector(taskId, "layout",
+      async () => formatLayout(await taskLayout(taskId)));
+    // 问卷大纲结构
+    const struct = await cacheSelector(taskId, "struct",
+      async () => taskStructure(taskId));
+    // 当前选中的 [一级标题(h1)]/[二级标题(h2)]/...
+    const header: string = layout.keys().next().value;
+    // 该项目的所有回答，按照 { "[一级标题]/[二级标题]": { "问题id": "问题回复" } } 形式组织
+    let answers: KVPair<KVPair<string>> = {};
+    if(answerId !== undefined) {
+      const values = await answer(answerId);
+      answers = putAnswers(layout, values);
+    }
+    console.log(header);
+    return { layout, struct, header, answers };
+  }, e => message.error(e.message));
 
-      // 当存在answerId时，从后端获取答案值
-      if (answerId !== undefined) {
-        const values = await answer(answerId);
-        setAnswers(putAnswers(layout, values));
-      }
+  if (state.loaded === null)
+    return null;
+  if (!state.loaded)
+    return <PageLoading/>;
 
-      setLoaded(true);
-    } catch (err) { message.error(err.message); }
-  }, []);
+  const { layout, struct, answers, header } = state;
 
   const valuesChanged = (changes: any) => {
     const currAnswer = answers[header];
@@ -137,10 +120,11 @@ export const AnswerForm = withRouter<P, FC<P>>(({ taskId, history, ...props }) =
       [header]: { ...currAnswer, ...changes }
     });
     const newPatches = Object.assign(patches, changes);
-    setAnswers(newAnswers);
+    updateState({ answers: newAnswers });
     setPatches(newPatches);
   };
 
+  // 或者用throttle？
   const post = debounce(async (values: any) => {
     try {
       if (answerId === undefined) {
@@ -159,20 +143,19 @@ export const AnswerForm = withRouter<P, FC<P>>(({ taskId, history, ...props }) =
     }
   }, 200, { leading: true });
 
-  if (!loaded)
-    return <PageLoading/>;
-
   return <Layout>
     <Layout.Sider style={{ width: 200, background: "#fff" }}>
-      <Menu mode="inline" selectedKeys={[page()]} defaultOpenKeys={[h1]}
+      <Menu mode="inline" selectedKeys={[header]} defaultOpenKeys={[header.split("/")[0]]}
             style={{ height: "100%", borderRight: 0 }}>
         {
-          Object.keys(layout).map(t1 =>
-            <Menu.SubMenu key={t1} title={<span><Icon type="bars"/>{t1}</span>}>
+          // 一级标题
+          struct.map(({ name, list }) =>
+            <Menu.SubMenu key={name} title={<span><Icon type="bars"/>{name}</span>}>
               {
-                Object.keys(layout[t1]).map(t2 =>
-                  <Menu.Item key={`${t1}/${t2}`} onClick={() => pageChanged(t1, t2)}>
-                    {t2}
+                // 二级标题
+                list?.map(s2 =>
+                  <Menu.Item key={`${name}/${s2.name}`} onClick={() => updateState({ header: `${name}/${s2.name}` })}>
+                    {s2.name}
                   </Menu.Item>
                 )
               }
@@ -184,7 +167,7 @@ export const AnswerForm = withRouter<P, FC<P>>(({ taskId, history, ...props }) =
     <Layout>
       <Layout.Content style={{ padding: "20px 24px", minHeight: 280 }}>
         <PageHeader title="返回数据页" onBack={() => window.location.hash = `/task/${taskId}/answers`}/>
-        <QForm layout={layout.get(header)} answer={answers[page()]}
+        <QForm layout={layout.get(header)} answer={answers[header]}
                onChange={valuesChanged} onSubmit={post} />
       </Layout.Content>
     </Layout>
