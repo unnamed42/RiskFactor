@@ -102,7 +102,6 @@ export const AnswerForm = withRouter<P, FC<P>>(({ taskId, history, ...props }) =
       const values = await answer(answerId);
       answers = putAnswers(layout, values);
     }
-    console.log(header);
     return { layout, struct, header, answers };
   }, e => message.error(e.message));
 
