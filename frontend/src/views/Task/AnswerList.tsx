@@ -25,17 +25,25 @@ export const AnswerList: FC<P> = ({ taskId }) => {
 
   const token = useSelector((store: StoreType) => store.auth.token);
 
-  const [state] = usePromise(async () => {
+  const [state, updateState] = usePromise(async () => {
     const [taskView, answers] = await Promise.all([task(taskId), taskAnswers(taskId)]);
     const struct = await cacheSelector(taskId, "struct", () => taskStructure(taskId));
     return { taskView, struct, answers };
   }, e => message.error(e.message));
 
+  if(state.loaded == null)
+    return null;
+  if(!state.loaded || state.struct === undefined)
+    return <PageLoading/>;
+  const { taskView, struct, answers } = state;
+
+  const names = struct.map(s => s.name);
+
   const delAnswer = async (answer: T) => {
     try {
       await deleteAnswer(answer.id);
       message.success("删除成功");
-      window.location.reload();
+      updateState({ answers: answers.filter(a => a.id !== answer.id) });
     } catch (e) { message.error(e.message); }
   };
 
@@ -48,14 +56,6 @@ export const AnswerList: FC<P> = ({ taskId }) => {
       <Link to="#" onClick={() => delAnswer(answer)}>删除</Link>
     </span>;
   };
-
-  if(state.loaded == null)
-    return null;
-  if(!state.loaded || state.struct === undefined)
-    return <PageLoading/>;
-  const { taskView, struct, answers } = state;
-
-  const names = struct.map(s => s.name);
 
   return <div>
     <PageHeader title={taskView.name}

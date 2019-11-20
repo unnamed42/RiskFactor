@@ -12,8 +12,8 @@ export interface IdResponse {
   id: string | number;
 }
 
-export interface KVPair<T> {
-  [key: string]: T;
+export interface Dict<T> {
+  [key: string]: T | undefined;
 }
 
 export * from "./auth";

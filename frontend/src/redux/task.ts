@@ -3,7 +3,7 @@ import { Reducer } from "redux";
 import { omit } from "lodash";
 import { merge } from "lodash/fp";
 
-import { KVPair, Question, TaskStruct } from "@/types";
+import { Dict, Question, TaskStruct } from "@/types";
 
 enum Actions {
   UPDATE = "task/update",
@@ -13,11 +13,11 @@ enum Actions {
 interface Data {
   mtime: number;
   struct?: TaskStruct[];
-  layout?: Map<string, Question[]>;
+  layout?: Dict<Question[]>;
 }
 
 // taskId -> Data
-export type State = KVPair<Data>;
+export type State = Dict<Data>;
 
 interface ReducerAction {
   type: Actions;
