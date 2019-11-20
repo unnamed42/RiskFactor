@@ -1,6 +1,6 @@
 import { combineReducers, createStore, applyMiddleware } from "redux";
 import { persistStore, persistReducer } from "redux-persist";
-import autoMergeLevel1 from "redux-persist/lib/stateReconciler/autoMergeLevel1";
+import hardSet from "redux-persist/lib/stateReconciler/hardSet";
 import { composeWithDevTools } from "redux-devtools-extension";
 
 import localforage from "localforage";
@@ -17,7 +17,7 @@ export interface StoreType {
 const config: PersistConfig<StoreType> = {
   key: "root",
   storage: localforage,
-  stateReconciler: autoMergeLevel1
+  stateReconciler: hardSet
 };
 
 const rootReducers = combineReducers({

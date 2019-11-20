@@ -35,7 +35,7 @@ export const reducer: Reducer<State, ReducerAction> = (state: State = {}, action
     case Actions.UPDATE:
       const { taskId, ...data } = action.payload;
       const savedData = state[taskId];
-      if(savedData !== undefined && savedData.mtime === data.mtime)
+      if(savedData?.mtime === data.mtime)
         return merge(state, { [taskId]: data });
       else
         return Object.assign(state, { [taskId]: data });

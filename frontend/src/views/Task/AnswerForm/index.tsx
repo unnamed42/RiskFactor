@@ -96,6 +96,7 @@ export const AnswerForm = withRouter<P, FC<P>>(({ taskId, history, ...props }) =
     const struct = await cacheSelector(taskId, "struct",
       async () => taskStructure(taskId));
     // 当前选中的 [一级标题(h1)]/[二级标题(h2)]/...
+    console.log(layout);
     const header: string = layout.keys().next().value;
     // 该项目的所有回答，按照 { "[一级标题]/[二级标题]": { "问题id": "问题回复" } } 形式组织
     let answers: KVPair<KVPair<string>> = {};

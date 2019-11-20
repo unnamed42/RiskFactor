@@ -1,9 +1,10 @@
 import React, { forwardRef, useState } from "react";
 
+import { omit } from "lodash";
+
 import { Table } from "antd";
 
 import { QProps, QSchema, Question } from ".";
-import { without } from "@/utils";
 
 interface S {
   [idx: number]: string;
@@ -20,7 +21,7 @@ export const QTable = forwardRef<any, QProps>(({ schema: { id, list }, value, on
 
   const changed = (value: string, idx: number) => {
     if(!value)
-      setValues(without(values, idx.toString()));
+      setValues(omit(values, idx.toString()));
     else
       setValues({ ...values, [idx]: value });
     onChange?.(JSON.stringify(values));
