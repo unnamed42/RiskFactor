@@ -1,4 +1,4 @@
-import React, { FC } from "react";
+import React, { FC, useState } from "react";
 
 import {Button, Form} from "antd";
 import { FormComponentProps, FormItemProps } from "antd/lib/form";
@@ -9,15 +9,20 @@ interface P extends FormComponentProps {
   layout?: QSchema[];
   answer?: any;
   onChange?: (changedValues: any, allValues: any) => void;
-  onSubmit?: (values: any) => void;
+  onSubmit?: (values: any) => Promise<void>;
 }
 
 const QFormD: FC<P> = ({ layout, onSubmit, form }) => {
+
   const style: FormItemProps = { labelCol: { span: 4 }, wrapperCol: { span: 14 } };
+
+  const [posting, setPosting] = useState(false);
 
   const validated = () => {
     form.validateFieldsAndScroll((errors, values) => {
-      if(!errors) onSubmit?.(values);
+      if(errors || !onSubmit) return;
+      setPosting(true);
+      onSubmit(values).then(() => setPosting(false));
     });
   };
 
@@ -26,7 +31,7 @@ const QFormD: FC<P> = ({ layout, onSubmit, form }) => {
       {layout?.map(q => <Question schema={q} key={q.id} formItemProps={style} />)}
     </FormContext.Provider>
     <Form.Item wrapperCol={{ span: 14, offset: 4 }}>
-      <Button onClick={validated} style={{marginLeft: 5}}>提交</Button>
+      <Button onClick={validated} style={{marginLeft: 5}} disabled={posting} loading={posting}>提交</Button>
     </Form.Item>
   </Form>;
 };
