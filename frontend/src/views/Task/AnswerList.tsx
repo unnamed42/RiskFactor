@@ -1,19 +1,12 @@
-import React, { FC } from "react";
+import React, { FC, useRef, useState } from "react";
 import { Link } from "react-router-dom";
-import { useSelector } from "react-redux";
 
-import { Button, PageHeader, message, Table, Upload } from "antd";
+import { Button, PageHeader, message, Table } from "antd";
 
-import {
-  taskAnswers, task, deleteAnswer,
-  downloadAnswer, taskStructure
-} from "@/api/task";
-
+import { taskAnswers, task, deleteAnswer, downloadAnswer } from "@/api/task";
 import { AnswerBrief } from "@/types";
-import { usePromise } from "@/utils";
-import { PageLoading } from "@/components";
-import { StoreType } from "@/redux";
-import { cacheSelector } from "@/views/util";
+import { usePromise, cachedStructure, parsedExcel } from "@/utils";
+import { PageLoading, File } from "@/components";
 
 interface P {
   taskId: string | number;
@@ -23,11 +16,12 @@ type T = AnswerBrief;
 
 export const AnswerList: FC<P> = ({ taskId }) => {
 
-  const token = useSelector((store: StoreType) => store.auth.token);
+  const file = useRef<HTMLInputElement>(null);
 
+  const [parsing, setParsing] = useState(false);
   const [state, updateState] = usePromise(async () => {
     const [taskView, answers] = await Promise.all([task(taskId), taskAnswers(taskId)]);
-    const struct = await cacheSelector(taskId, "struct", () => taskStructure(taskId));
+    const struct = await cachedStructure(taskId);
     return { taskView, struct, answers };
   }, e => message.error(e.message));
 
@@ -57,25 +51,25 @@ export const AnswerList: FC<P> = ({ taskId }) => {
     </span>;
   };
 
+  const importAnswers = async (buffer: ArrayBuffer) => {
+    setParsing(true);
+    try {
+      await parsedExcel(taskId, buffer);
+    } catch (e) { message.error(e.message); }
+    setParsing(false);
+  };
+
   return <div>
     <PageHeader title={taskView.name}
       extra={[
         <Button key="1" type="link" icon="plus">
           <Link to={`/task/${taskId}/form`}>添加受试者</Link>
         </Button>,
-        <Upload key="_2" action={`http://localhost:8090/task/${taskId}/answer/file`}
-          headers={{ authorization: `Bearer ${token}` }}
-          onChange={({ file, fileList }) => {
-            if (file.status !== "uploading")
-              console.log(file, fileList);
-            if (file.status === "done")
-              message.success(`${file.name} 上传成功`);
-            else
-              message.error(`${file.name} 上传失败`);
-          }}
-        >
-          <Button key="2" type="link" icon="import">批量导入</Button>
-        </Upload>
+        <div key="_2" style={{ display: "inline-block" }}>
+          <File ref={file} accept=".xlsx" onLoaded={importAnswers}/>
+          <Button key="2" type="link" icon="import" disabled={parsing} loading={parsing}
+                  onClick={() => file.current?.click()}>批量导入</Button>
+        </div>
       ]}
     />
     <Table<T> dataSource={answers} rowKey="id">

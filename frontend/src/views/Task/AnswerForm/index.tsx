@@ -2,18 +2,14 @@ import React, { FC, useState } from "react";
 import { RouteComponentProps, withRouter } from "react-router-dom";
 
 import { Icon, Layout, Menu, message, PageHeader } from "antd";
-import { assign, isEmpty, debounce, flatMap } from "lodash";
+import { assign, isEmpty, debounce } from "lodash";
 
 import { PageLoading } from "@/components";
 import { QForm } from "./QForm";
 
-import {
-  answer, postAnswer, updateAnswer,
-  taskLayout, taskStructure
-} from "@/api/task";
-import { appendArray, firstKey, usePromise } from "@/utils";
+import { answer, postAnswer, updateAnswer } from "@/api/task";
+import { appendArray, firstKey, usePromise, cachedLayout, cachedStructure } from "@/utils";
 import { Dict, Question } from "@/types";
-import { cacheSelector } from "@/views/util";
 
 // 收集所有Question的id。如果有list，递归进行
 const collectQId = (qs: Question[]) => {
@@ -44,36 +40,6 @@ const putAnswers = (layout: Dict<Question[]>, values: Dict<string>): Dict<Dict<s
     return assign(obj, { [title]: sectionAnswers });
   }, {});
 
-// 将所有内容归约为 { [一级标题/二级标题/三级标题...]: 问题list, ... }
-const formatLayout = (questions: Question[]): Dict<Question[]> => {
-  // 默认第一层的Question type应该为header
-  // 将第一层map成 { header的label: header的list } 形式，成一个数组
-  let init = questions.map(q => {
-    if(q.type !== "header" || !q.list)
-      throw new Error(`questions in first layer is not a valid header`);
-    return { title: q.label ?? "", list: q.list };
-  });
-  // 如果list中还有header，也将其展开成上述格式并合并到数组中来
-  for(;;) {
-    let changed = false;
-    init = flatMap(init, elem => {
-      const { title, list } = elem;
-      if(list[0].type !== "header")
-        return elem;
-      changed = true;
-      // 只要list中有一个是header，那么认为都是header
-      return list.map(q => {
-        if(q.type !== "header" || !q.list)
-          throw new Error(`question is not a header`);
-        return { title: `${title}/${q.label ?? ""}`, list: q.list };
-      });
-    });
-    if(!changed) break;
-  }
-  // 将 { title, list } 数组合并成Map
-  return init.reduce((obj: Dict<Question[]>, { title, list }) => assign(obj, { [title]: list }), {});
-};
-
 interface P extends RouteComponentProps {
   taskId: number | string;
   answerId?: number | string;
@@ -89,11 +55,9 @@ export const AnswerForm = withRouter<P, FC<P>>(({ taskId, history, ...props }) =
 
   const [state, updateState] = usePromise(async () => {
     // 问卷样式，之后再获取
-    const layout = await cacheSelector(taskId, "layout",
-      async () => formatLayout(await taskLayout(taskId)));
+    const layout = await cachedLayout(taskId);
     // 问卷大纲结构
-    const struct = await cacheSelector(taskId, "struct",
-      async () => taskStructure(taskId));
+    const struct = await cachedStructure(taskId);
     // 当前选中的 [一级标题(h1)]/[二级标题(h2)]/...
     const header: string = firstKey(layout) ?? "";
     // 该项目的所有回答，按照 { "[一级标题]/[二级标题]": { "问题id": "问题回复" } } 形式组织
