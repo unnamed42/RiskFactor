@@ -5,7 +5,7 @@ import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 
 import com.tjh.riskfactor.error.invalidArg
 
-private val mapper = jacksonObjectMapper()
+var mapper = jacksonObjectMapper()
 
 fun <V> require(map: Map<String, V>, key: String) =
     map[key] ?: throw invalidArg(key, "null")

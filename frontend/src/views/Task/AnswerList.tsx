@@ -51,12 +51,11 @@ export const AnswerList: FC<P> = ({ taskId }) => {
     </span>;
   };
 
-  const importAnswers = async (buffer: ArrayBuffer) => {
+  const importAnswers = (buffer: ArrayBuffer) => {
     setParsing(true);
-    try {
-      await parsedExcel(taskId, buffer);
-    } catch (e) { message.error(e.message); }
-    setParsing(false);
+    parsedExcel(taskId, buffer)
+      .catch(e => message.error(e.message))
+      .then(() => setParsing(false));
   };
 
   return <div>

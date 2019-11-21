@@ -12,7 +12,6 @@ import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder
 
 import com.tjh.riskfactor.entity.*
 import com.tjh.riskfactor.entity.form.*
-import com.tjh.riskfactor.error.notFound
 import com.tjh.riskfactor.repo.SaveGuardRepository
 
 @Service
@@ -48,7 +47,7 @@ class DataService(
         val type = object: TypeReference<List<Task>>() {}
         TypeReference::class.java.getResourceAsStream("/data/task.yml").use { stream ->
             mapper.readValue(stream, type).forEach{ task ->
-                val group = groups.find(task.center) ?: throw notFound("group", task.center)
+                val group = groups.findChecked(task.center)
                 val list = tasks.saveQuestions(task.list.map { prepareQuestion(it) })
                 tasks.save(task.apply {
                     this.group = group; this.list = list

@@ -1,25 +1,21 @@
 package com.tjh.riskfactor.entity.form
 
-import com.fasterxml.jackson.annotation.JsonIgnore
-import com.fasterxml.jackson.annotation.JsonInclude
-import com.fasterxml.jackson.annotation.JsonProperty
+import com.fasterxml.jackson.annotation.*
 
 import com.tjh.riskfactor.entity.IEntity
+import com.tjh.riskfactor.entity.cvt.QuestionOptionsConverter
 
 import javax.persistence.*
-
-import kotlin.reflect.KMutableProperty
-import kotlin.reflect.full.*
 
 @Entity @Table(name = "question")
 class Question(
     @get:Column
     @get:Enumerated
-    var type: QuestionType? = null,
+    var type: QuestionType?,
 
     @get:Column
-    var label: String? = null
-): IEntity() {
+    var label: String?,
+
     @get:ManyToMany(fetch = FetchType.EAGER, cascade = [CascadeType.REMOVE])
     @get:JoinTable(name = "question_list",
         joinColumns = [JoinColumn(name = "head", referencedColumnName = "id")],
@@ -28,74 +24,71 @@ class Question(
     @get:OrderColumn(name = "sequence", nullable = false)
     @get:JsonInclude(JsonInclude.Include.NON_EMPTY)
     var list: MutableList<Question> = mutableListOf()
+): IEntity() {
+    @get:Column(length = 102400)
+    @get:Convert(converter = QuestionOptionsConverter::class)
+    @get:JsonUnwrapped
+    var options: QuestionOptions? = null
+}
 
+enum class QuestionType(@get:JsonValue val value: String) {
+    // 单项输入，输入类型为对应类型
+
+    // 可为null，代表是多选/单选的选项
+
+    TEXT("text"), // 对应文本输入
+    NUMBER("number"), // 对应数字输入，浮点
+    DATE("date"), // 对应日期选择
+    IMMUTABLE("disabled"), // 不可变内容，其值由服务器赋予
+
+    YESNO_CHOICE("either"), // 两项单选，否/是，一般选“是”有后置问题
+
+    // 问题组类型
+    LIST("list"), // 固定数量问题组
+    LIST_APPENDABLE("template"), // 可变长度问题组，一般是可重复添加的项目
+    // 该类问题下所属question list的第一个（且应仅有一个）为添加问题模板
+    MULTI_CHOICE("choice-multi"), // 多选，一般是Checkbox实现
+    SINGLE_CHOICE("choice"), // 单选，一般是RadioButton实现
+    SINGLE_SELECT("select"), // 单项下拉选择
+    MULTI_SELECT("select-multi"), // 多项下拉选择
+
+    TABLE("table"),
+
+    HEADER("header");
+}
+
+@JsonInclude(JsonInclude.Include.NON_EMPTY)
+open class QuestionOptions {
     // 指定是否为必填
-    @get:Transient var required: Boolean? = null
+    open var required: Boolean? = null
     // 指定该问题的输入能否控制后续问题的显示
     // 用于指定联动问题，即只有这个问题输入之后才能显示后续问题
-    @get:JsonProperty("isEnabler")
-    @get:Transient var isEnabler: Boolean? = null
+    open var isEnabler: Boolean? = null
+    // 指定多选/下拉类控件的最后是否有一个“其他”用于输入自定义选项内容
+    open var customizable: Boolean? = null
+    // 指定多选/下拉类控件的选项
+    // 如果需要给选项指定筛选键，用 [内容]/[筛选键] 格式
+    open var choices: List<String>? = null
     // 问题标签位置，仅供输入类组件使用，表示标签的位置
     // 值的含义同addonPosition
-    @get:Transient var labelPosition: String? = null
+    open var labelPosition: String? = null
     // 指定YESNO_CHOICE问题的选项内容
     // 格式：[是含义]/[否含义]
-    @get:Transient var yesno: String? = null
+    open var yesno: String? = null
     // 指定该问题是问题组长的前置/后置输入控件
     //   比如 [输入持续时间（整数）][单位选择（天/月）]，后者是前者的后置输入控件
     // 该域的含义：
     //   null: 无效果（默认）
     //   prefix: 前置输入
     //   postfix: 后置输入
-    @get:Transient var addonPosition: String? = null
+    open var addonPosition: String? = null
     // 指定列表/多选类问题默认选项，默认是未选择
     // 对于单项选择来说，只有一个条目
     // 对于多项选择来说，有多个条目，由半角逗号分隔
-    @get:Transient var selected: String? = null
+    open var selected: String? = null
     // 额外说明
-    @get:Transient var description: String? = null
+    open var description: String? = null
     // 占位文字，一般是输入类控件需要
     // 对于IMMUTABLE类型来说，则是填充字符串
-    @get:Transient var placeholder: String? = null
-    // 下拉菜单如果选项很多，那么需要有输入时筛选的功能
-    // 指定输入时筛选的前缀key，仅用于CHOICE
-    // 对于下拉选择类问题来说，只要这一项不为空则开启输入筛选功能
-    @get:Transient var filterKey: String? = null
-
-    @ExperimentalStdlibApi
-    @Column(name = "option", length = 512)
-    @JsonIgnore
-    fun getOptions(): String? {
-        val collected = this.javaClass.kotlin.declaredMemberProperties.filter { it.getter.hasAnnotation<Transient>() }.map {
-            val name = it.name
-            try {
-                val value = it.get(this) ?: return@map null
-                if(value is Boolean && value == true)
-                    return@map name
-                else
-                    return@map "$name:$value"
-            } catch(e: IllegalCallableAccessException) { return@map null }
-        }.filterNotNull().joinToString(sep)
-        return if(collected.isEmpty()) null else collected
-    }
-
-    fun setOptions(value: String?) {
-        if(value == null) return
-        value.split(sep).forEach{ part ->
-            val kv = part.split(':')
-            val fields = this.javaClass.kotlin.declaredMemberProperties
-            try {
-                val field = fields.first { it.name == kv[0] }
-                if(field !is KMutableProperty<*>)
-                    return@forEach
-                if(kv.size == 1)
-                    field.setter.call(this, true)
-                else
-                    field.setter.call(this, kv[1])
-            } catch(e: IllegalCallableAccessException) {
-            } catch(e: NoSuchPropertyException) {}
-        }
-    }
+    open var placeholder: String? = null
 }
-
-private const val sep = "\u2063"
