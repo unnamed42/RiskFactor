@@ -1,7 +1,7 @@
 export type QType =
   "header" |
   "text" | "number" | "date" | "disabled" | "either" |
-  "list" | "template" | "table" |
+  "list" | "template" | "table" | "table-header" |
   "choice" | "choice-multi" | "select" | "select-multi";
 
 export interface Question {
@@ -10,6 +10,8 @@ export interface Question {
   label?: string;
   list?: Question[];
 
+  customizable?: boolean;
+  choices?: string[];
   required?: boolean;
   yesno?: string;
   addonPosition?: "prefix" | "postfix";
@@ -17,7 +19,6 @@ export interface Question {
   selected?: string;
   description?: string;
   placeholder?: string;
-  filterKey?: string;
 }
 
 export interface TaskStruct {

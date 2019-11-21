@@ -2,7 +2,7 @@ import React, { FC, useState } from "react";
 import { RouteComponentProps, withRouter } from "react-router-dom";
 
 import { Icon, Layout, Menu, message, PageHeader } from "antd";
-import { assign, isEmpty, debounce } from "lodash";
+import { assign, isEmpty } from "lodash";
 
 import { PageLoading } from "@/components";
 import { QForm } from "./QForm";
@@ -86,8 +86,7 @@ export const AnswerForm = withRouter<P, FC<P>>(({ taskId, history, ...props }) =
     setPatches(newPatches);
   };
 
-  // 或者用throttle？
-  const post = debounce(async (values: any) => {
+  const post = async (values: any) => {
     if(isEmpty(patches)) {
       message.info("没有更新内容，无需提交");
       return;
@@ -104,7 +103,7 @@ export const AnswerForm = withRouter<P, FC<P>>(({ taskId, history, ...props }) =
         message.success("更新成功");
       }
     } catch (e) { message.error(e.message); }
-  }, 200, { leading: true });
+  };
 
   const renderedMenu = struct.map(({ name, list }) => {
     if(!list || list.length === 0)

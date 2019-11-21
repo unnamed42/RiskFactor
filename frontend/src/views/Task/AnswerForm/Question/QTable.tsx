@@ -16,7 +16,7 @@ export const QTable = forwardRef<any, QProps>(({ schema: { id, list }, value, on
   if (!list)
     throw new Error(`Question ${id} has no list`);
   const [columns, ...rows] = list;
-  if(columns.list === undefined)
+  if(columns.choices === undefined)
     throw new Error(`Question ${id} is incorrectly configured - no table header`);
 
   const changed = (value: string, idx: number) => {
@@ -35,17 +35,16 @@ export const QTable = forwardRef<any, QProps>(({ schema: { id, list }, value, on
 
     const cell = list[idx];
     if (!cell.type)
-      return <span>{cell.label}</span>;
+      return <>{cell.label}</>;
     return <Question schema={cell} onChange={v => changed(v, idx)}
                      value={values[idx]} />;
   };
 
   return <Table bordered={true} dataSource={rows} pagination={false} rowKey="id">
     {
-      columns.list.map(({ label }, idx) =>
-        <Table.Column<QSchema> key={idx} title={label} dataIndex=""
-                               render={(text, schema) => renderRow(schema, idx)}
-        />
+      columns.choices.map((choice, idx) =>
+        <Table.Column<QSchema> key={idx} title={choice} dataIndex=""
+                               render={(text, schema) => renderRow(schema, idx)} />
       )
     }
   </Table>;

@@ -1,6 +1,7 @@
-import {GetFieldDecoratorOptions} from "antd/lib/form/Form";
+import { GetFieldDecoratorOptions } from "antd/lib/form/Form";
 
-import {Question as QSchema} from "@/types/task";
+import { Question as QSchema } from "@/types/task";
+import { numberRegex, text } from "@/config";
 
 export const validationRules = (schema: QSchema): GetFieldDecoratorOptions => {
   const ret: GetFieldDecoratorOptions = {};
@@ -9,12 +10,17 @@ export const validationRules = (schema: QSchema): GetFieldDecoratorOptions => {
     ret.rules = (ret.rules || []);
     ret.rules.push({
       required: true,
-      message: "该项必填"
+      message: text.required
     });
   }
 
-  if (schema.selected)
-    ret.initialValue = schema.selected.split(",");
+  if(schema.type === "number") {
+    ret.rules = (ret.rules || []);
+    ret.rules.push({
+      pattern: numberRegex,
+      message: text.numberRequired
+    });
+  }
 
   return ret;
 };

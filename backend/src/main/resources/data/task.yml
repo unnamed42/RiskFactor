@@ -64,9 +64,7 @@
               type: select
               required: true
               placeholder: 性别
-              choices:
-                - 男
-                - 女
+              choices: [男, 女]
             - label: 民族
               type: select
               required: true
@@ -185,130 +183,37 @@
               description: 精确到年，月份或日期未知用1月1日代替
             - label: 就诊症状
               type: choice-multi
+              isEnabler: true
+              customizable: true
+              choices:
+                - 腹痛
+                - 腹胀
+                - 黄疸
+                - 恶心呕吐
+                - 乏力纳差
+                - 消瘦
+                - 发热
               list:
-                - label: 腹痛
+                - label: 持续时间
+                  type: number
+                  required: true
                   list:
-                    - label: 持续时间
-                      type: number
-                      required: true
-                      list:
-                        - type: select
-                          addonPosition: postfix
-                          selected: 天
-                          list:
-                            - label: 天
-                            - label: 月
-                            - label: 年
-                - label: 腹胀
-                  list:
-                    - label: 持续时间
-                      type: number
-                      required: true
-                      list:
-                        - type: select
-                          addonPosition: postfix
-                          selected: 天
-                          list:
-                            - label: 天
-                            - label: 月
-                            - label: 年
-                - label: 黄疸
-                  list:
-                    - label: 持续时间
-                      type: number
-                      required: true
-                      list:
-                        - type: select
-                          addonPosition: postfix
-                          selected: 天
-                          list:
-                            - label: 天
-                            - label: 月
-                            - label: 年
-                - label: 恶心呕吐
-                  list:
-                    - label: 持续时间
-                      type: number
-                      required: true
-                      list:
-                        - type: select
-                          addonPosition: postfix
-                          selected: 天
-                          list:
-                            - label: 天
-                            - label: 月
-                            - label: 年
-                - label: 乏力纳差
-                  list:
-                    - label: 持续时间
-                      type: number
-                      required: true
-                      list:
-                        - type: select
-                          addonPosition: postfix
-                          selected: 天
-                          list:
-                            - label: 天
-                            - label: 月
-                            - label: 年
-                - label: 消瘦
-                  list:
-                    - label: 持续时间
-                      type: number
-                      required: true
-                      list:
-                        - type: select
-                          addonPosition: postfix
-                          selected: 天
-                          list:
-                            - label: 天
-                            - label: 月
-                            - label: 年
-                - label: 发热
-                  list:
-                    - label: 持续时间
-                      type: number
-                      required: true
-                      list:
-                        - type: select
-                          addonPosition: postfix
-                          selected: 天
-                          list:
-                            - label: 天
-                            - label: 月
-                            - label: 年
-                - label: 其他
-                  list:
-                    - type: text
-                      required: true
-                      placeholder: 症状名称
-                    - label: 持续时间
-                      type: number
-                      required: true
-                      list:
-                        - type: select
-                          addonPosition: postfix
-                          selected: 天
-                          list:
-                            - label: 天
-                            - label: 月
-                            - label: 年
+                    - type: select
+                      addonPosition: postfix
+                      selected: 天
+                      choices: [天, 月, 年]
             - label: 入院体征
               type: choice-multi
-              list:
-                - label: 腹部包块
-                - label: 黄疸
-                - label: Murphy征
-                - label: 肝大
-                - label: 上腹压痛
-                - label: 腹水
-                - label: 心率不齐
-                - label: 发热
-                - label: 其他
-                  list:
-                    - type: text
-                      required: true
-                      placeholder: 症状名称
+              customizable: true
+              choices:
+                - 腹部包块
+                - 黄疸
+                - Murphy征
+                - 肝大
+                - 上腹压痛
+                - 腹水
+                - 心率不齐
+                - 发热
         - label: 既往病史
           type: header
           list:
@@ -318,9 +223,7 @@
               list:
                 - type: choice
                   required: true
-                  list:
-                    - label: 急性
-                    - label: 慢性
+                  choices: [急性, 慢性]
             - label: 胆囊结石
               type: either
               yesno: 有/无
@@ -364,9 +267,7 @@
               list:
                 - type: choice-multi
                   required: true
-                  list:
-                    - label: 胆道蛔虫
-                    - label: 华支睾吸虫
+                  choices: [胆道蛔虫, 华支睾吸虫]
             - label: 胆胰管汇合异常
               type: either
               yesno: 有/无
@@ -376,13 +277,8 @@
               list:
                 - type: choice-multi
                   required: true
-                  list:
-                    - label: 高血压
-                    - label: 糖尿病
-                    - label: 其他
-                      list:
-                      - type: text
-                        required: true
+                  customizable: true
+                  choices: [高血压, 糖尿病]
             - label: 手术史
               type: template
               list:
@@ -426,16 +322,10 @@
                   labelPosition: postfix
             - label: 饮水
               type: choice-multi
-              list:
-                - label: 自来水
-                - label: 井水
-                - label: 河水
+              choices: [自来水, 井水, 河水]
             - label: 饮食
               type: choice-multi
-              list:
-                - label: 高脂
-                - label: 普通
-                - label: 素食
+              choices: [高脂, 普通, 素食]
             - label: BMI（体重/身高²）
               type: disabled
         - label: 家族史
@@ -446,20 +336,15 @@
               yesno: 有/无
               list:
                 - type: choice-multi
-                  list:
-                    - label: 胆囊癌
-                    - label: 其他
-                      type: text
+                  customizable: true
+                  choices: [胆囊癌]
             - label: 胆道疾病
               type: either
               yesno: 有/无
               list:
                 - type: choice-multi
-                  list:
-                    - label: 胆囊结石
-                    - label: 胆囊息肉
-                    - label: 其他
-                      type: text
+                  customizable: true
+                  choices: [胆囊结石, 胆囊息肉]
             - label: 心血管疾病
               type: either
               yesno: 有/无
@@ -477,111 +362,71 @@
                   description: 请填写入院第一次检查结果
                 - type: table
                   list:
-                    - type: list
-                      list:
-                        - label: 检测项
-                        - label: 检测值
-                        - label: 单位
-                        - label: 临床意义判定
+                    - type: table-header
+                      choices: [检测项, 检测值, 单位, 临床意义判定]
                     - type: list
                       list:
                         - label: 白细胞WBC
                         - type: number
                         - label: 10⁹/L
                         - type: choice
-                          list:
-                            - label: 1
-                            - label: 2
-                            - label: 3
-                            - label: 4
+                          choices: ["1", "2", "3", "4"]
                     - type: list
                       list:
                         - label: 中性粒细胞计数N
                         - type: number
                         - label: 10⁹/L
                         - type: choice
-                          list:
-                            - label: 1
-                            - label: 2
-                            - label: 3
-                            - label: 4
+                          choices: ["1", "2", "3", "4"]
                     - type: list
                       list:
                         - label: 中性粒细胞百分比N%
                         - type: number
                         - label: "%"
                         - type: choice
-                          list:
-                            - label: 1
-                            - label: 2
-                            - label: 3
-                            - label: 4
+                          choices: ["1", "2", "3", "4"]
                     - type: list
                       list:
                         - label: 淋巴细胞计数L
                         - type: number
                         - label: 10⁹/L
                         - type: choice
-                          list:
-                            - label: 1
-                            - label: 2
-                            - label: 3
-                            - label: 4
+                          choices: ["1", "2", "3", "4"]
                     - type: list
                       list:
                         - label: 淋巴细胞百分比L%
                         - type: number
                         - label: "%"
                         - type: choice
-                          list:
-                            - label: 1
-                            - label: 2
-                            - label: 3
-                            - label: 4
+                          choices: ["1", "2", "3", "4"]
                     - type: list
                       list:
                         - label: 单核细胞M
                         - type: number
                         - label: 10⁹/L
                         - type: choice
-                          list:
-                            - label: 1
-                            - label: 2
-                            - label: 3
-                            - label: 4
+                          choices: ["1", "2", "3", "4"]
                     - type: list
                       list:
                         - label: 红细胞RBC
                         - type: number
                         - label: 10¹²/L
                         - type: choice
-                          list:
-                            - label: 1
-                            - label: 2
-                            - label: 3
-                            - label: 4
+                          choices: ["1", "2", "3", "4"]
                     - type: list
                       list:
                         - label: 血红蛋白Hb
                         - type: number
                         - label: g/L
                         - type: choice
-                          list:
-                            - label: 1
-                            - label: 2
-                            - label: 3
-                            - label: 4
+                          choices: ["1", "2", "3", "4"]
                     - type: list
                       list:
                         - label: 血小板PLT
                         - type: number
                         - label: 10⁹/L
                         - type: choice
-                          list:
-                            - label: 1
-                            - label: 2
-                            - label: 3
-                            - label: 4
+                          choices: ["1", "2", "3", "4"]
             - label: 肝功能
               type: list
               list:
@@ -590,111 +435,71 @@
                   description: 请填写入院第一次检查结果
                 - type: table
                   list:
-                    - type: list
-                      list:
-                        - label: 检测项
-                        - label: 检测值
-                        - label: 单位
-                        - label: 临床意义判定
+                    - type: table-header
+                      choices: [检测项, 检测值, 单位, 临床意义判定]
                     - type: list
                       list:
                         - label: 谷丙转氨酶ALT
                         - type: number
                         - label: U/L
                         - type: choice
-                          list:
-                            - label: 1
-                            - label: 2
-                            - label: 3
-                            - label: 4
+                          choices: ["1", "2", "3", "4"]
                     - type: list
                       list:
                         - label: 谷草转氨酶AST
                         - type: number
                         - label: U/L
                         - type: choice
-                          list:
-                            - label: 1
-                            - label: 2
-                            - label: 3
-                            - label: 4
+                          choices: ["1", "2", "3", "4"]
                     - type: list
                       list:
                         - label: 碱性磷酸酶ALP
                         - type: number
                         - label: U/L
                         - type: choice
-                          list:
-                            - label: 1
-                            - label: 2
-                            - label: 3
-                            - label: 4
+                          choices: ["1", "2", "3", "4"]
                     - type: list
                       list:
                         - label: 总蛋白TP
                         - type: number
                         - label: g/L
                         - type: choice
-                          list:
-                            - label: 1
-                            - label: 2
-                            - label: 3
-                            - label: 4
+                          choices: ["1", "2", "3", "4"]
                     - type: list
                       list:
                         - label: 白蛋白ALB
                         - type: number
                         - label: g/L
                         - type: choice
-                          list:
-                            - label: 1
-                            - label: 2
-                            - label: 3
-                            - label: 4
+                          choices: ["1", "2", "3", "4"]
                     - type: list
                       list:
                         - label: 球蛋白GLO
                         - type: number
                         - label: g/L
                         - type: choice
-                          list:
-                            - label: 1
-                            - label: 2
-                            - label: 3
-                            - label: 4
+                          choices: ["1", "2", "3", "4"]
                     - type: list
                       list:
                         - label: 总胆红素TB
                         - type: number
                         - label: μmol/L
                         - type: choice
-                          list:
-                            - label: 1
-                            - label: 2
-                            - label: 3
-                            - label: 4
+                          choices: ["1", "2", "3", "4"]
                     - type: list
                       list:
                         - label: 直接胆红素DB
                         - type: number
                         - label: μmol/L
                         - type: choice
-                          list:
-                            - label: 1
-                            - label: 2
-                            - label: 3
-                            - label: 4
+                          choices: ["1", "2", "3", "4"]
                     - type: list
                       list:
                         - label: γ-谷氨酰转肽酶GGT
                         - type: number
                         - label: μmol/L
                         - type: choice
-                          list:
-                            - label: 1
-                            - label: 2
-                            - label: 3
-                            - label: 4
+                          choices: ["1", "2", "3", "4"]
             - label: 肿瘤标志物
               type: list
               list:
@@ -703,56 +508,36 @@
                   description: 请填写入院第一次检查结果
                 - type: table
                   list:
-                    - type: list
-                      list:
-                        - label: 检测项
-                        - label: 检测值
-                        - label: 单位
-                        - label: 临床意义判定
+                    - type: table-header
+                      choices: [检测项, 检测值, 单位, 临床意义判定]
                     - type: list
                       list:
                         - label: 癌胚抗原CEA
                         - type: number
                         - label: μg/L
                         - type: choice
-                          list:
-                            - label: 1
-                            - label: 2
-                            - label: 3
-                            - label: 4
+                          choices: ["1", "2", "3", "4"]
                     - type: list
                       list:
                         - label: 甲胎蛋白AFP
                         - type: number
                         - label: I U/mL
                         - type: choice
-                          list:
-                            - label: 1
-                            - label: 2
-                            - label: 3
-                            - label: 4
+                          choices: ["1", "2", "3", "4"]
                     - type: list
                       list:
                         - label: 癌胚抗原125
                         - type: number
                         - label: U/ml
                         - type: choice
-                          list:
-                            - label: 1
-                            - label: 2
-                            - label: 3
-                            - label: 4
+                          choices: ["1", "2", "3", "4"]
                     - type: list
                       list:
                         - label: 癌胚抗原19-9
                         - type: number
                         - label: U/ml
                         - type: choice
-                          list:
-                            - label: 1
-                            - label: 2
-                            - label: 3
-                            - label: 4
+                          choices: ["1", "2", "3", "4"]
             - label: 免疫学
               type: list
               list:
@@ -761,78 +546,50 @@
                   description: 请填写入院第一次检查结果
                 - type: table
                   list:
-                    - type: list
-                      list:
-                        - label: 检测项
-                        - label: 检测值
-                        - label: 单位
-                        - label: 临床意义判定
+                    - type: table-header
+                      choices: [检测项, 检测值, 单位, 临床意义判定]
                     - type: list
                       list:
                         - label: 乙肝表面抗原HBsAg
                         - type: number
                         - label: /
                         - type: choice
-                          list:
-                            - label: 1
-                            - label: 2
-                            - label: 3
-                            - label: 4
+                          choices: ["1", "2", "3", "4"]
                     - type: list
                       list:
                         - label: 乙肝表面抗体HBsAb
                         - type: number
                         - label: /
                         - type: choice
-                          list:
-                            - label: 1
-                            - label: 2
-                            - label: 3
-                            - label: 4
+                          choices: ["1", "2", "3", "4"]
                     - type: list
                       list:
                         - label: 乙肝e抗原HBeAg
                         - type: number
                         - label: /
                         - type: choice
-                          list:
-                            - label: 1
-                            - label: 2
-                            - label: 3
-                            - label: 4
+                          choices: ["1", "2", "3", "4"]
                     - type: list
                       list:
                         - label: 乙肝e抗体HbeAb
                         - type: number
                         - label: /
                         - type: choice
-                          list:
-                            - label: 1
-                            - label: 2
-                            - label: 3
-                            - label: 4
+                          choices: ["1", "2", "3", "4"]
                     - type: list
                       list:
                         - label: 乙肝核心抗原HBcAg
                         - type: number
                         - label: /
                         - type: choice
-                          list:
-                            - label: 1
-                            - label: 2
-                            - label: 3
-                            - label: 4
+                          choices: ["1", "2", "3", "4"]
                     - type: list
                       list:
                         - label: 丙肝抗体HCVAb
                         - type: number
                         - label: /
                         - type: choice
-                          list:
-                            - label: 1
-                            - label: 2
-                            - label: 3
-                            - label: 4
+                          choices: ["1", "2", "3", "4"]
         - label: 影像学检查
           type: header
           list:
@@ -917,39 +674,32 @@
                   type: text
                 - label: 确诊方法
                   type: choice-multi
-                  list:
-                    - label: 细胞学诊断
-                    - label: 基因学诊断
-                    - label: 其他
-                      list:
-                        - type: text
-                          required: true
+                  customizable: true
+                  choices: [细胞学诊断, 基因学诊断]
             - label: 术前减黄
               type: either
               list:
                 - label: 减黄方式
                   type: choice-multi
-                  list:
-                    - label: 经皮肝穿刺胆道引流（PTCD）
-                    - label: 经内镜鼻胆管引流（ENBD）
-                    - label: 胆道支架
-                    - label: 胆囊造瘘
+                  choices:
+                    - 经皮肝穿刺胆道引流（PTCD）
+                    - 经内镜鼻胆管引流（ENBD）
+                    - 胆道支架
+                    - 胆囊造瘘
             - label: 合并症
               type: either
               yesno: 有/无
               list:
                 - type: choice-multi
-                  list:
-                    - label: 肺心病
-                    - label: 高血压
-                    - label: 心绞痛
-                    - label: 糖尿病
-                    - label: 肝癌
-                    - label: 胰腺癌
-                    - label: 胆管癌
-                    - label: 其他
-                      list:
-                        - type: text
+                  customizable: true
+                  choices:
+                    - 肺心病
+                    - 高血压
+                    - 心绞痛
+                    - 糖尿病
+                    - 肝癌
+                    - 胰腺癌
+                    - 胆管癌
     - label: 随访情况
       type: header
       list:

@@ -1,10 +1,9 @@
 import React, { forwardRef, useState } from "react";
 
 import { Question, QProps } from ".";
+import { Dict } from "@/types";
 
-interface S {
-  [key: string]: string;
-}
+type S = Dict<string>;
 
 export const QList = forwardRef<any, QProps>(({ schema: { id, list }, value, onChange }, ref) => {
 

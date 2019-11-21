@@ -61,7 +61,7 @@ export const Question = forwardRef<any, P>((props, ref) => {
   const { schema, onChange, noDecorator, noFormItem, decorator, value, children, formItemProps } = props;
   const { type, label, id } = schema;
 
-  const { getFieldDecorator } = useContext(FormContext)!;
+  const form = useContext(FormContext);
 
   const layout: FormItemProps = {
     // labelCol: { xs: { span: 24 }, sm: { span: 4 } },
@@ -76,7 +76,7 @@ export const Question = forwardRef<any, P>((props, ref) => {
   const valueProp = noDecorator ? { value } : undefined;
   let body: ReactNode = <Renderer schema={schema} ref={ref} onChange={onChange} {...valueProp} />;
   if(!noDecorator)
-    body = getFieldDecorator(id.toString(), { ...rules, ...decorator})(body);
+    body = form?.getFieldDecorator(id.toString(), { ...rules, ...decorator})(body);
 
   if(noFormItem)
     return <div>{body}{children}</div>;

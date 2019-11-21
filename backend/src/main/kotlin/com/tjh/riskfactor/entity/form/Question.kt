@@ -53,6 +53,7 @@ enum class QuestionType(@get:JsonValue val value: String) {
     MULTI_SELECT("select-multi"), // 多项下拉选择
 
     TABLE("table"),
+    TABLE_HEADER("table-header"),
 
     HEADER("header");
 }

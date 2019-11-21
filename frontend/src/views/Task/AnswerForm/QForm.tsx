@@ -1,5 +1,7 @@
 import React, { FC, useState } from "react";
 
+import { assign } from "lodash";
+
 import {Button, Form} from "antd";
 import { FormComponentProps, FormItemProps } from "antd/lib/form";
 
@@ -8,9 +10,13 @@ import { FormContext, QSchema, Question } from "./Question";
 interface P extends FormComponentProps {
   layout?: QSchema[];
   answer?: any;
-  onChange?: (changedValues: any, allValues: any) => void;
+  onChange?: (changedValues: any) => void;
   onSubmit?: (values: any) => Promise<void>;
 }
+
+const filteredEntries = (obj: any) =>
+  Object.entries(obj).filter(([k]) => !k.startsWith("$"))
+    .reduce((obj: any, [k, v]) => assign(obj, { [k]: v }), {});
 
 const QFormD: FC<P> = ({ layout, onSubmit, form }) => {
 
@@ -22,7 +28,7 @@ const QFormD: FC<P> = ({ layout, onSubmit, form }) => {
     form.validateFieldsAndScroll((errors, values) => {
       if(errors || !onSubmit) return;
       setPosting(true);
-      onSubmit(values).then(() => setPosting(false));
+      onSubmit(filteredEntries(values)).then(() => setPosting(false));
     });
   };
 
@@ -45,6 +51,6 @@ export const QForm = Form.create<P>({
   },
 
   onValuesChange({ onChange }, changed, all) {
-    onChange?.(changed, all);
+    onChange?.(filteredEntries(changed));
   }
 })(QFormD);
