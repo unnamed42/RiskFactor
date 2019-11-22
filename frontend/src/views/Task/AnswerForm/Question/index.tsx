@@ -1,4 +1,4 @@
-import React, { forwardRef, createContext, useContext, ReactNode } from "react";
+import React, { forwardRef, createContext } from "react";
 
 import { Form } from "antd";
 import { WrappedFormUtils, GetFieldDecoratorOptions } from "antd/lib/form/Form";
@@ -9,17 +9,13 @@ import { QSelect } from "./QSelect";
 import { QDate } from "./QDate";
 import { QList } from "./QList";
 import { QYesNo } from "./QYesNo";
-import { QChoice } from "./QChoice";
-import { QCheckbox } from "./QCheckbox";
+import { QChoices } from "./QChoices";
 import { QDynamic } from "./QDynamic";
 import { QImmutable } from "./QImmutable";
 import { QTable } from "./QTable";
 
-import { validationRules } from "./util";
-
-import { Question as QSchema } from "@/types/task";
-
-import { assign } from "lodash";
+import { useForm, validationRules } from "@/utils";
+import { Question as QSchema } from "@/types";
 
 import "./index.less";
 
@@ -30,8 +26,7 @@ const renderer = (type: QSchema["type"]) => {
     case "number": case "text": return QInput;
     case "select": case "select-multi": return QSelect;
     case "list": return QList;
-    case "choice": return QChoice;
-    case "choice-multi": return QCheckbox;
+    case "choice": case "choice-multi": return QChoices;
     case "either": return QYesNo;
     case "template": return QDynamic;
     case "table": return QTable;
@@ -45,6 +40,7 @@ export { QSchema };
 
 export interface QProps {
   schema: QSchema;
+  fieldPrefix?: string;
   value?: string;
   onChange?: (value: string) => void;
 }
@@ -53,36 +49,38 @@ interface P extends QProps {
   formItemProps?: FormItemProps;
   decorator?: GetFieldDecoratorOptions;
   noFormItem?: boolean;
-  noDecorator?: boolean;
 }
+
+const layout: FormItemProps = {
+  // labelCol: { xs: { span: 24 }, sm: { span: 4 } },
+  // wrapperCol: { xs: { span: 24 }, sm: { span: 20 } }
+};
 
 export const Question = forwardRef<any, P>((props, ref) => {
 
-  const { schema, onChange, noDecorator, noFormItem, decorator, value, children, formItemProps } = props;
-  const { type, label, id } = schema;
+  const { schema, onChange, noFormItem, decorator, value, formItemProps, fieldPrefix } = props;
+  const { type, label, id, isEnabler, list } = schema;
 
-  const form = useContext(FormContext);
-
-  const layout: FormItemProps = {
-    // labelCol: { xs: { span: 24 }, sm: { span: 4 } },
-    // wrapperCol: { xs: { span: 24 }, sm: { span: 20 } }
-  };
-
-  const rules = validationRules(schema);
+  const form = useForm();
 
   const Renderer = renderer(type);
+  const rendered = <Renderer schema={schema} ref={ref} onChange={onChange} />;
 
-  // value 属性有些需要经过setFieldValue有些（当noDecorator为true时）直接设置
-  const valueProp = noDecorator ? { value } : undefined;
-  let body: ReactNode = <Renderer schema={schema} ref={ref} onChange={onChange} {...valueProp} />;
-  if(!noDecorator)
-    body = form?.getFieldDecorator(id.toString(), { ...rules, ...decorator})(body);
+  const fieldId = fieldPrefix ? `${fieldPrefix}->$${id}` : `$${id}`;
 
+  const body = type === "list" || type === "template" ? rendered : form.getFieldDecorator(fieldId, {
+    ...validationRules(schema), initialValue: value, ...decorator
+  })(rendered);
+
+  const enabled = () => isEnabler && form.getFieldValue(fieldId) !== undefined ? <>
+    {list?.map(q => <Question schema={q} noFormItem={noFormItem} fieldPrefix={`${id}`} />)}
+  </> : null;
+  if(isEnabler) console.log(isEnabler, id, fieldId, form.getFieldValue(fieldId));
   if(noFormItem)
-    return <div>{body}{children}</div>;
+    return <>{body}{enabled()}</>;
 
-  return <Form.Item label={label} {...assign(layout, formItemProps)}>
+  return <Form.Item label={label} {...layout} {...formItemProps}>
     {body}
-    {children}
+    {enabled()}
   </Form.Item>;
 });

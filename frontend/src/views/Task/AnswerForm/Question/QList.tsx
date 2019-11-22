@@ -1,29 +1,13 @@
-import React, { forwardRef, useState } from "react";
+import React, { forwardRef } from "react";
 
 import { Question, QProps } from ".";
-import { Dict } from "@/types";
 
-type S = Dict<string>;
-
-export const QList = forwardRef<any, QProps>(({ schema: { id, list }, value, onChange }, ref) => {
-
-  const [values, setValues] = useState<S>(value ? JSON.parse(value) : {});
+export const QList = forwardRef<any, QProps>(({ schema: { id, list } }, ref) => {
 
   if(list === undefined)
     throw new Error(`list ${id} has no associated list`);
 
-  const itemChanged = (v: string, idx: number) => {
-    const newValues: S = { ...values, [idx]: v };
-    setValues(newValues);
-    onChange?.(JSON.stringify(newValues));
-  };
-
-  return <div>
-    {
-      list.map((q, idx) =>
-         <Question noDecorator={true} schema={q} key={q.id} value={values[idx]}
-                   onChange={v => itemChanged(v, idx)} />
-      )
-    }
-  </div>;
+  return <>
+    {list.map(q => <Question schema={q} key={q.id} fieldPrefix={`$${id}`}/>)}
+  </>;
 });

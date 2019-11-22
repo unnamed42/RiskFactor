@@ -1,9 +1,10 @@
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 
 import { ApiError } from "@/types";
 import { nonNil } from "./utils";
+import { FormContext } from "@/views/Task/AnswerForm/Question";
 
-export const useStateAsync = <T>(init?: T): [T | undefined, (x: T) => Promise<T>] => {
+export const useStateAsync = <T extends any>(init?: T): [T | undefined, (x: T) => Promise<T>] => {
   const [value, setValue] = useState(init);
   return [value, async (x: T) => { setValue(x); return x; }];
 };
@@ -21,7 +22,7 @@ type OnError = (error: ApiError) => void;
  *         loaded === false: 正在加载
  *         loaded === null: 加载时发生错误
  */
-export const usePromise = <State>(fetch: () => Promise<State>, onError?: OnError)
+export const usePromise = <State extends any>(fetch: () => Promise<State>, onError?: OnError)
   : [LoadableState<State>, (s: Partial<State>) => void] => {
   const [state, setState] = useState<LoadableState<State>>({ loaded: false });
 
@@ -37,3 +38,14 @@ export const usePromise = <State>(fetch: () => Promise<State>, onError?: OnError
 
   return [state, updateState];
 };
+
+export const useForm = () => useContext(FormContext)!;
+
+export function useFormData<T = any>(id: string): [T | undefined, (value: T) => void];
+export function useFormData<T = any>(id: string, init: T): [T, (value: T) => void];
+export function useFormData<T = any>(id: string, init?: T) {
+  const form = useForm();
+  const field = form.getFieldValue(id) ?? init;
+  form.getFieldDecorator(id, { initialValue: field });
+  return [field, (value: T) => form.setFieldsValue({ [id]: value })];
+}

@@ -1,31 +1,15 @@
-import React, { forwardRef, useState } from "react";
-
-import { omit } from "lodash";
+import React, { forwardRef } from "react";
 
 import { Table } from "antd";
 
 import { QProps, QSchema, Question } from ".";
 
-interface S {
-  [idx: number]: string;
-}
-
-export const QTable = forwardRef<any, QProps>(({ schema: { id, list }, value, onChange }, ref) => {
-  const [values, setValues] = useState<S>(value ? JSON.parse(value) : {});
-
+export const QTable = forwardRef<any, QProps>(({ schema: { id, list } }, ref) => {
   if (!list)
     throw new Error(`Question ${id} has no list`);
   const [columns, ...rows] = list;
   if(columns.choices === undefined)
     throw new Error(`Question ${id} is incorrectly configured - no table header`);
-
-  const changed = (value: string, idx: number) => {
-    if(!value)
-      setValues(omit(values, idx.toString()));
-    else
-      setValues({ ...values, [idx]: value });
-    onChange?.(JSON.stringify(values));
-  };
 
   const renderRow = ({ type, id, list }: QSchema, idx: number) => {
     if (type !== "list")
@@ -36,8 +20,7 @@ export const QTable = forwardRef<any, QProps>(({ schema: { id, list }, value, on
     const cell = list[idx];
     if (!cell.type)
       return <>{cell.label}</>;
-    return <Question schema={cell} onChange={v => changed(v, idx)}
-                     value={values[idx]} />;
+    return <Question schema={cell} fieldPrefix={`${id}`}/>;
   };
 
   return <Table bordered={true} dataSource={rows} pagination={false} rowKey="id">

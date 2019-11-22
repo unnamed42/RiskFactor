@@ -1,7 +1,5 @@
 import React, { FC, useState } from "react";
 
-import { assign } from "lodash";
-
 import {Button, Form} from "antd";
 import { FormComponentProps, FormItemProps } from "antd/lib/form";
 
@@ -14,10 +12,6 @@ interface P extends FormComponentProps {
   onSubmit?: (values: any) => Promise<void>;
 }
 
-const filteredEntries = (obj: any) =>
-  Object.entries(obj).filter(([k]) => !k.startsWith("$"))
-    .reduce((obj: any, [k, v]) => assign(obj, { [k]: v }), {});
-
 const QFormD: FC<P> = ({ layout, onSubmit, form }) => {
 
   const style: FormItemProps = { labelCol: { span: 4 }, wrapperCol: { span: 14 } };
@@ -28,7 +22,7 @@ const QFormD: FC<P> = ({ layout, onSubmit, form }) => {
     form.validateFieldsAndScroll((errors, values) => {
       if(errors || !onSubmit) return;
       setPosting(true);
-      onSubmit(filteredEntries(values)).then(() => setPosting(false));
+      onSubmit(values).then(() => setPosting(false));
     });
   };
 
@@ -45,12 +39,14 @@ const QFormD: FC<P> = ({ layout, onSubmit, form }) => {
 export const QForm = Form.create<P>({
   mapPropsToFields({ answer }) {
     if(!answer) return {};
-    return Object.assign({}, ...(Object.entries(answer).map(([k, value]) =>
+    const ret = Object.assign({}, ...(Object.entries(answer).map(([k, value]) =>
       ({ [k]: Form.createFormField({ value }) })
     )));
+    console.log("answer-recover", ret);
+    return ret;
   },
 
-  onValuesChange({ onChange }, changed, all) {
-    onChange?.(filteredEntries(changed));
+  onValuesChange({ onChange }, changed, _) {
+    onChange?.(changed);
   }
 })(QFormD);

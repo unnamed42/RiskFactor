@@ -2,10 +2,11 @@ import React, { forwardRef, useState } from "react";
 
 import { Radio } from "antd";
 import { RadioChangeEvent } from "antd/lib/radio";
+import RadioGroup from "antd/lib/radio/group";
 
 import { Question, QProps } from ".";
 
-export const QYesNo = forwardRef<any, QProps>(({ schema, value, onChange }, ref) => {
+export const QYesNo = forwardRef<RadioGroup, QProps>(({ schema, value, onChange }, ref) => {
 
   const [choice, setChoice] = useState(value);
 

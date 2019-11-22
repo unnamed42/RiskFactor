@@ -40,6 +40,11 @@ const putAnswers = (layout: Dict<Question[]>, values: Dict<string>): Dict<Dict<s
     return assign(obj, { [title]: sectionAnswers });
   }, {});
 
+// Form中，其id以“$”开头的是动态创建的项目，不应该包含在最终的结果提交上去
+const filteredEntries = (obj: any) =>
+  Object.entries(obj).filter(([k]) => !k.startsWith("$"))
+    .reduce((obj: any, [k, v]) => assign(obj, { [k]: v }), {});
+
 interface P extends RouteComponentProps {
   taskId: number | string;
   answerId?: number | string;
@@ -54,10 +59,10 @@ export const AnswerForm = withRouter<P, FC<P>>(({ taskId, history, ...props }) =
   const [patches, setPatches] = useState<Dict<string>>({});
 
   const [state, updateState] = usePromise(async () => {
-    // 问卷样式，之后再获取
-    const layout = await cachedLayout(taskId);
-    // 问卷大纲结构
-    const struct = await cachedStructure(taskId);
+    // [问卷样式, 问卷大纲结构]
+    const [layout, struct] = await Promise.all([
+      cachedLayout(taskId), cachedStructure(taskId)
+    ]);
     // 当前选中的 [一级标题(h1)]/[二级标题(h2)]/...
     const header: string = firstKey(layout) ?? "";
     // 该项目的所有回答，按照 { "[一级标题]/[二级标题]": { "问题id": "问题回复" } } 形式组织
@@ -77,6 +82,7 @@ export const AnswerForm = withRouter<P, FC<P>>(({ taskId, history, ...props }) =
   const { layout, struct, answers, header } = state;
 
   const valuesChanged = (changes: any) => {
+    // console.log(changes);
     const currAnswer = answers[header];
     const newAnswers = Object.assign(answers, {
       [header]: { ...currAnswer, ...changes }
@@ -93,12 +99,12 @@ export const AnswerForm = withRouter<P, FC<P>>(({ taskId, history, ...props }) =
     }
     try {
       if (answerId === undefined) {
-        const { id } = await postAnswer(taskId, values);
+        const { id } = await postAnswer(taskId, filteredEntries(values));
         setAnswerId(id); setPatches({});
         message.success("提交成功");
         history.replace(`${history.location.pathname}/${id}`);
       } else {
-        await updateAnswer(answerId, patches);
+        await updateAnswer(answerId, filteredEntries(patches));
         setPatches({});
         message.success("更新成功");
       }
@@ -118,7 +124,7 @@ export const AnswerForm = withRouter<P, FC<P>>(({ taskId, history, ...props }) =
     </Menu.SubMenu>;
   });
 
-  const parts = header.split("/");
+  const parts = header.split("/");console.log("answers", answers[header]);
 
   return <Layout>
     <Layout.Sider style={{ width: 200, background: "#fff" }}>
