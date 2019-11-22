@@ -7,7 +7,7 @@ import RadioGroup from "antd/lib/radio/group";
 
 import { QProps } from ".";
 import { text } from "@/config";
-import { useForm } from "@/utils";
+import { tuple, useForm } from "@/utils";
 
 const { other, required } = text;
 
@@ -27,14 +27,14 @@ export const QChoices = forwardRef<Ref, QProps>(({ schema, onChange, value }, re
   const multi = type?.includes("multi");
 
   // 决定渲染控件类型
-  const { ChoiceGroup, Choice } = (() => {
-    let Choice = multi ? Checkbox : Radio;
-    return { Choice: Choice as React.ElementType, ChoiceGroup: Choice.Group };
+  const [Choice, ChoiceGroup] = (() => {
+    const ChoiceType = multi ? Checkbox : Radio;
+    return tuple(ChoiceType as React.ElementType, ChoiceType.Group);
   })();
 
-  const { initChosen, initInput } = (() => {
+  const [initChosen, initInput] = (() => {
     if(value === undefined)
-      return { initChosen: undefined, initInput: selected };
+      return tuple(undefined, selected);
     // 如果用户输入值中含有分隔符，在这里split，之后join在一起，内容不变
     const inputValue: string[] = [];
     const indexes = value.split(sep).map(s => {
@@ -47,7 +47,7 @@ export const QChoices = forwardRef<Ref, QProps>(({ schema, onChange, value }, re
       } else
         throw new Error(`unexpected choice ${s} in question ${id}`);
     });
-    return { initChosen: indexes, initInput: inputValue.length ? inputValue.join(sep) : undefined };
+    return tuple(indexes, inputValue.length ? inputValue.join(sep) : undefined);
   })();
 
   const [chosen, setChosen] = useState(initChosen);

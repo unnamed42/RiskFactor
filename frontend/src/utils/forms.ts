@@ -1,4 +1,4 @@
-import { GetFieldDecoratorOptions } from "antd/lib/form/Form";
+import { GetFieldDecoratorOptions, WrappedFormUtils } from "antd/lib/form/Form";
 
 import { Question as QSchema } from "@/types/task";
 import { numberRegex, text } from "@/config";
@@ -13,3 +13,10 @@ export const validationRules = ({ required, type }: QSchema): GetFieldDecoratorO
 
   return { rules };
 };
+
+export const validateAndScrollAsync = <T = any>(form: WrappedFormUtils<T>) => new Promise((resolve, reject) => {
+  form.validateFieldsAndScroll((errors, values) => {
+    if(errors) reject(errors);
+    else resolve(values);
+  });
+});

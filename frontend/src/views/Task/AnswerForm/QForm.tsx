@@ -9,7 +9,7 @@ interface P extends FormComponentProps {
   layout?: QSchema[];
   answer?: any;
   onChange?: (changedValues: any) => void;
-  onSubmit?: (values: any) => Promise<void>;
+  onSubmit?: () => Promise<void>;
 }
 
 const QFormD: FC<P> = ({ layout, onSubmit, form }) => {
@@ -19,10 +19,10 @@ const QFormD: FC<P> = ({ layout, onSubmit, form }) => {
   const [posting, setPosting] = useState(false);
 
   const validated = () => {
-    form.validateFieldsAndScroll((errors, values) => {
+    form.validateFieldsAndScroll((errors, _) => {
       if(errors || !onSubmit) return;
       setPosting(true);
-      onSubmit(values).then(() => setPosting(false));
+      onSubmit().then(() => setPosting(false));
     });
   };
 

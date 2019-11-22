@@ -28,3 +28,5 @@ export const appendArray = <T>(dest: T[], src: T[]) => {
     dest[dstLen + i] = src[i];
   return dest;
 };
+
+export const tuple = <T extends any[]>(...args: T) => args;

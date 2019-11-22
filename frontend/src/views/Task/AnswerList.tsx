@@ -45,17 +45,16 @@ export const AnswerList: FC<P> = ({ taskId }) => {
     return <span>
       <Link to={`/task/${taskId}/form/${answer.id}`}>查看</Link>
       &nbsp;
-      <Link to="#" onClick={() => downloadAnswer(answer.id)}>导出</Link>
+      <Button type="link" onClick={() => downloadAnswer(answer.id)}>导出</Button>
       &nbsp;
-      <Link to="#" onClick={() => delAnswer(answer)}>删除</Link>
+      <Button type="link" onClick={() => delAnswer(answer)}>删除</Button>
     </span>;
   };
 
   const importAnswers = (buffer: ArrayBuffer) => {
     setParsing(true);
     parsedExcel(taskId, buffer)
-      .catch(e => message.error(e.message))
-      .then(() => setParsing(false));
+      .then(() => setParsing(false), e => message.error(e.message));
   };
 
   return <div>

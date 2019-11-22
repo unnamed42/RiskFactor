@@ -25,7 +25,8 @@
       "@/*": ["src/*"]
     },
     "lib": [
-      "dom"
+      "dom",
+      "esnext"
     ]
   },
   "include": [

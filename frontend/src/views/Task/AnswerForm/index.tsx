@@ -92,7 +92,7 @@ export const AnswerForm = withRouter<P, FC<P>>(({ taskId, history, ...props }) =
     setPatches(newPatches);
   };
 
-  const post = async (values: any) => {
+  const post = async () => {
     if(isEmpty(patches)) {
       message.info("没有更新内容，无需提交");
       return;
@@ -124,7 +124,7 @@ export const AnswerForm = withRouter<P, FC<P>>(({ taskId, history, ...props }) =
     </Menu.SubMenu>;
   });
 
-  const parts = header.split("/");console.log("answers", answers[header]);
+  const parts = header.split("/");
 
   return <Layout>
     <Layout.Sider style={{ width: 200, background: "#fff" }}>
