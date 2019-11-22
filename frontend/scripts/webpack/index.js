@@ -21,6 +21,11 @@ const config = {
       "@": `${root}/src`
     }
   },
+  module: {
+    rules: [{
+      sideEffects: false
+    }]
+  },
   plugins: [
     new CleanWebpackPlugin(),
     new HtmlWebpackPlugin({
@@ -29,7 +34,7 @@ const config = {
     new FriendlyErrorsWebpackPlugin(),
   ],
   optimization: {
-    runtimeChunk: "single",
+    // runtimeChunk: "single",
     moduleIds: "hashed",
     splitChunks: {
       cacheGroups: {
@@ -46,7 +51,7 @@ const config = {
           chunks: "async",
           priority: 10,
           reuseExistingChunk: true,
-          // enforce: true
+          enforce: true
         }
       }
     }

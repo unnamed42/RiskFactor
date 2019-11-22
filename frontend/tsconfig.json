@@ -1,8 +1,8 @@
 {
   "compilerOptions": {
     "experimentalDecorators": true,
-    "target": "es5",
-    "module": "esNext",
+    "target": "esnext",
+    "module": "esnext",
     "outDir": "./dist/",
     "strictNullChecks": true,
     "moduleResolution": "node",
@@ -25,7 +25,6 @@
       "@/*": ["src/*"]
     },
     "lib": [
-      "es6",
       "dom"
     ]
   },

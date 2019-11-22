@@ -4,8 +4,8 @@ import { Switch } from "react-router-dom";
 import { PrivateRoute, PageLoading } from "@/components";
 
 import { TaskList } from "@/views/Task/TaskList";
-import { AnswerList } from "@/views/Task/AnswerList";
 
+const AnswerList = lazy(() => import(/* webpackChunkName: "answer-list" */ "@/views/Task/AnswerList"));
 const AnswerForm = lazy(() => import(/* webpackChunkName: "answer-form" */ "@/views/Task/AnswerForm"));
 
 export const Routes: FC = () =>

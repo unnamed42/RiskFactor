@@ -1,7 +1,7 @@
 const merge = require("webpack-merge");
 const common = require("./scripts/webpack");
 // const WebpackCdnPlugin = require("webpack-cdn-plugin");
-const { BundleAnalyzerPlugin } = require("webpack-bundle-analyzer");
+// const { BundleAnalyzerPlugin } = require("webpack-bundle-analyzer");
 const CopyPlugin = require("copy-webpack-plugin");
 
 module.exports = merge(common, {
@@ -17,5 +17,5 @@ module.exports = merge(common, {
     //   }]
     // }),
     // new BundleAnalyzerPlugin()
-  ]
+  ],
 });

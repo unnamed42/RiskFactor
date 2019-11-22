@@ -86,3 +86,5 @@ export const AnswerList: FC<P> = ({ taskId }) => {
     </Table>
   </div>;
 };
+
+export default AnswerList;
