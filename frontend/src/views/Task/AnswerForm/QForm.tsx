@@ -29,7 +29,7 @@ const QFormD: FC<P> = ({ layout, onSubmit, form }) => {
   };
 
   // 预设变量：当前问题id
-  form.getFieldDecorator("#vars.$id");
+  form.getFieldDecorator("#vars.answerId");
 
   return <Form layout="horizontal">
     <FormContext.Provider value={form}>

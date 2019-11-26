@@ -45,6 +45,4 @@ abstract class IDBService<T: IEntity>(@PublishedApi internal val entityName: Str
             throw notFound(entityName, id.toString())
     }
 
-    fun emptyObject() = repo.save(findLazy(0))
-
 }

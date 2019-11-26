@@ -61,7 +61,7 @@ export const AnswerForm = withRouter<P, FC<P>>(({ taskId, history, ...props }) =
     // 当前选中的 [一级标题(h1)]/[二级标题(h2)]/...
     const header = firstKey(layout) ?? "";
     // 该项目的所有回答，按照 { "[一级标题]/[二级标题]": { "问题id": "问题回复" } } 形式组织
-    let answers: Dict = { "#vars": { $id: answerId } };
+    let answers: Dict = { "#vars": { answerId } };
     if(answerId !== undefined) {
       const values = await answer(answerId);
       answers = assign(answers, putAnswers(layout, values));

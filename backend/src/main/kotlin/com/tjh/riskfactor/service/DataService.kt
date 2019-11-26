@@ -48,19 +48,44 @@ class DataService(
         val type = object: TypeReference<List<Task>>() {}
 
         javaClass.getResourceAsStream("/data/task.yml").use { mapper.readValue(it, type) }.forEach { task ->
+            // 带有ref的Question的ref -> Question的id
             val refQuestions = mutableMapOf<String, Int>()
+            // 需要将placeholder中ref替换成具体id的Question的id
             val replaceQuestions = mutableListOf<Int>()
+            // task下所有id -> Question
             val taskQuestions = mutableMapOf<Int, Question>()
 
             fun traverseQuestion(q: Question): Question {
-                val empty = questions.emptyObject()
-                taskQuestions[empty.id] = q
-                q.list?.forEach {
-                    taskQuestions[]
-                }
-                return empty
+                val empty = questions.save(Question())
+                val nextId = empty.id
+                taskQuestions[nextId] = q
+                q.ref?.also { refQuestions[it] = nextId }
+                q.options?.placeholder?.takeIf { it.contains(':') }?.also { replaceQuestions.add(nextId) }
+                // 无视options，之后再更新
+                return questions.save(empty.apply {
+                    this.list = q.list?.map { traverseQuestion(it) }?.toMutableList()
+                    this.label = q.label; this.type = q.type
+                })
             }
 
+            task.group = groups.findChecked(task.center)
+            task.list = task.list.map { traverseQuestion(it) }.toMutableList()
+
+            tasks.save(task)
+
+            // 将placeholder中的ref引用替换成真正的id
+            replaceQuestions.forEach {
+                val entity = taskQuestions[it]!!
+                val re = Regex("\\$(\\w+)")
+                entity.options!!.placeholder = entity.options!!.placeholder!!.replace(re) { match ->
+                    val (ref) = match.destructured
+                    val id = refQuestions[ref] ?: throw RuntimeException("has no ref $ref")
+                    "$$id"
+                }
+            }
+            taskQuestions.entries.filter { (_, v) -> v.options != null }.forEach { (id, q) ->
+                questions.updateChecked(id) { it.options = q.options }
+            }
         }
     }
 

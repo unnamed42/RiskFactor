@@ -35,8 +35,12 @@ export const evalExpr = (expr: string, { getFieldValue }: WrappedFormUtils<any>)
   if(elements.length === 0)
     return undefined;
   let value = parseOperand(elements[0]);
+  if(isNaN(value))
+    return undefined;
   for(let i=1; i<elements.length; i+=2) {
     const rhs = parseOperand(elements[i]), op = elements[i+1];
+    if(isNaN(rhs))
+      return undefined;
     switch(op) {
       case "+": value += rhs; break;
       case "-": value -= rhs; break;

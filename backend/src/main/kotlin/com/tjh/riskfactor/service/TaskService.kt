@@ -58,6 +58,4 @@ class TaskService(
     fun exportAnswer(taskId: Int, answerId: Int) /*: ResponseEntity<ByteArray>*/ {
     }
 
-    internal fun saveQuestions(questions: Iterable<Question>) = this.questions.saveAll(questions)
-
 }
