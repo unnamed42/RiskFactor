@@ -20,7 +20,7 @@ export const QTable = forwardRef<any, QProps>(({ schema: { id, list } }, ref) =>
     const cell = list[idx];
     if (!cell.type)
       return <>{cell.label}</>;
-    return <Question schema={cell} fieldPrefix={`${id}`}/>;
+    return <Question schema={cell} fieldPrefix={`$${id}`}/>;
   };
 
   return <Table bordered={true} dataSource={rows} pagination={false} rowKey="id">

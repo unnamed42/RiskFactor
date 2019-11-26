@@ -1,10 +1,13 @@
 package com.tjh.riskfactor.service
 
-import com.tjh.riskfactor.error.notFound
 import org.springframework.data.jpa.repository.JpaRepository
+
 import javax.persistence.EntityNotFoundException
 
-abstract class IDBService<T>(@PublishedApi internal val entityName: String) {
+import com.tjh.riskfactor.entity.IEntity
+import com.tjh.riskfactor.error.notFound
+
+abstract class IDBService<T: IEntity>(@PublishedApi internal val entityName: String) {
 
     protected abstract val repo: JpaRepository<T, Int>
 
@@ -41,5 +44,7 @@ abstract class IDBService<T>(@PublishedApi internal val entityName: String) {
         if(!has(id))
             throw notFound(entityName, id.toString())
     }
+
+    fun emptyObject() = repo.save(findLazy(0))
 
 }

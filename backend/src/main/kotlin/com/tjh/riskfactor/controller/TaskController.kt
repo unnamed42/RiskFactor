@@ -54,12 +54,4 @@ class TaskController(
     fun postAnswer(@PathVariable id: Int, @AuthenticationPrincipal details: JwtUserDetails,
                    @RequestBody body: Map<String, Any>) =
         service.createAnswer(id, details.user, body)
-
-    @PostMapping(value = ["/tasks/{id}/answers/file"], consumes = ["application/vnd.ms-excel", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"])
-    fun importAnswer(@PathVariable id: Int, @AuthenticationPrincipal details: JwtUserDetails,
-                     @RequestParam("file") file: MultipartFile) {
-        val task = service.findChecked(id)
-        answers.importExcel(task, details.user, file.inputStream)
-    }
-
 }

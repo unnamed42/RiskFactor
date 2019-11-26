@@ -19,6 +19,7 @@ class DataService(
     private val tasks: TaskService,
     private val users: UserService,
     private val groups: GroupService,
+    private val questions: QuestionService,
     private val guards: SaveGuardRepository,
     builder: Jackson2ObjectMapperBuilder
 ) {
@@ -45,14 +46,21 @@ class DataService(
     @Transactional
     fun loadTasks() {
         val type = object: TypeReference<List<Task>>() {}
-        TypeReference::class.java.getResourceAsStream("/data/task.yml").use { stream ->
-            mapper.readValue(stream, type).forEach{ task ->
-                val group = groups.findChecked(task.center)
-                val list = tasks.saveQuestions(task.list.map { prepareQuestion(it) })
-                tasks.save(task.apply {
-                    this.group = group; this.list = list
-                })
+
+        javaClass.getResourceAsStream("/data/task.yml").use { mapper.readValue(it, type) }.forEach { task ->
+            val refQuestions = mutableMapOf<String, Int>()
+            val replaceQuestions = mutableListOf<Int>()
+            val taskQuestions = mutableMapOf<Int, Question>()
+
+            fun traverseQuestion(q: Question): Question {
+                val empty = questions.emptyObject()
+                taskQuestions[empty.id] = q
+                q.list?.forEach {
+                    taskQuestions[]
+                }
+                return empty
             }
+
         }
     }
 
@@ -61,7 +69,7 @@ class DataService(
         val userListType = object: TypeReference<List<User>>() {}
         val groupListType = object: TypeReference<List<Group>>() {}
 
-        TypeReference::class.java.getResourceAsStream("/data/user.yml").use { stream ->
+        javaClass.getResourceAsStream("/data/user.yml").use { stream ->
             val node = mapper.readTree(stream); assert(node.isObject)
             val root = node as ObjectNode
 
@@ -73,10 +81,6 @@ class DataService(
                 users.encoded(it.apply { group = groups[groupName] ?: throw Exception("group $groupName not found") })
             })
         }
-    }
-
-    private fun prepareQuestion(q: Question): Question = q.apply {
-        list = tasks.saveQuestions(list.map { prepareQuestion(it) })
     }
 
     private fun guarded(func: () -> Unit, guard: Int) {

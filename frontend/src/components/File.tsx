@@ -17,6 +17,6 @@ export const File = forwardRef<HTMLInputElement, P>(({ onLoaded, accept }, ref) 
     reader.readAsArrayBuffer(file);
   };
 
-  return <input type="file" accept={accept} ref={ref}
-                onChange={fileChosen} style={{ visibility: "hidden", width: 0 }} />;
+  return <input type="file" accept={accept} ref={ref} onChange={fileChosen}
+                style={{ visibility: "hidden", width: 0 }} />;
 });

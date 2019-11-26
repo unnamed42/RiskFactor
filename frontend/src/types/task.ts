@@ -10,7 +10,7 @@ export interface Question {
   label?: string;
   list?: Question[];
 
-  isEnabler?: boolean;
+  enabler?: boolean;
   customizable?: boolean;
   choices?: string[];
   required?: boolean;

@@ -8,8 +8,8 @@
 #    filterKey: 用于下拉选择类的选项，在下拉选择问题上设置则代表启用“输入时筛选选项”功能，在选项上设置则代表此选项的筛选用key
 #               “输入时筛选选项”的含义是，筛选出所有 key.startsWith(input) 的选项
 #    selected: 用于指定多选类问题（下拉选择，多项单/多选）的初始值，为 string （针对单项选择类）或者以`,`分隔的string（多项选择类）
-#    isEnabler: 用于指定联动性，如果该问题被填写了内容，那么渲染出其 list 下的内容作为联动问题
-#               type为空的也可以设置 isEnabler，代表如果选中这个选项那么联动它的list
+#    enabler: 用于指定联动性，如果该问题被填写了内容，那么渲染出其 list 下的内容作为联动问题
+#               type为空的也可以设置 enabler，代表如果选中这个选项那么联动它的list
 # 数据采集：
 #    指前端提交给后端的数据格式。所有的问题提交过来都应当是 string 类型的数据，其实际含义根据 type 来解析
 #    整个表单提交过来应当是如下格式的内容：{ [问题的id]: [问题收集到的string], ... }
@@ -32,10 +32,10 @@
 #   该项被渲染为datepicker，在本项目中，所有的日期均是年月日选择器（没有单独选择月或者选择年的情况）
 #   该类问题收集到的数据为 yyyy-MM-dd 格式的string
 # type: select
-#   该项被渲染为单项下拉菜单选择。单选的下属选项不允许设置 isEnabler
+#   该项被渲染为单项下拉菜单选择。单选的下属选项不允许设置 enabler
 #   该类问题收集到的数据为 string，即为选项的label
 # type: choice
-#   该类问题被渲染为多项单选（Radio）。选项可以设置 isEnabler，表示该选项被选中时联动list，其值为其作为 list 类型问题收集到的数据
+#   该类问题被渲染为多项单选（Radio）。选项可以设置 enabler，表示该选项被选中时联动list，其值为其作为 list 类型问题收集到的数据
 #   该类问题收集到的数据为 string，即为选项的label或者收集到的数据
 # type: either
 #   该类问题被渲染成二选一类型。两个标签由 yesno 属性指定，按照 [意为“是”的分支]/[意为“否”的分支] 格式（比如 有/无）
@@ -55,6 +55,7 @@
           list:
             - label: 中心编号
               type: disabled
+              placeholder: "var:answerId"
             - label: 研究编号
               type: text
             - label: 出生日期
@@ -164,10 +165,12 @@
                   type: text
                   required: true
             - label: 身高（m）
+              ref: "height"
               type: number
               required: true
               placeholder: 身高
             - label: 体重（Kg）
+              ref: "weight"
               type: number
               required: true
               placeholder: 体重
@@ -183,7 +186,7 @@
               description: 精确到年，月份或日期未知用1月1日代替
             - label: 就诊症状
               type: choice-multi
-              isEnabler: true
+              enabler: true
               customizable: true
               choices:
                 - 腹痛
@@ -230,24 +233,22 @@
               list:
                 - type: either
                   required: true
-                  placeholder: 急性/慢性
                   yesno: 急性/慢性
                 - label: 大小
                   type: number
                   required: true
-                  yesno: 大小请填写二维值，单位：毫米
+                  description: 大小请填写二维值，单位：毫米
             - label: 胆囊息肉
               type: either
               yesno: 有/无
               list:
                 - type: either
                   required: true
-                  placeholder: 急性/慢性
                   yesno: 急性/慢性
                 - label: 大小
                   type: number
                   required: true
-                  yesno: 大小请填写二维值，单位：毫米
+                  description: 大小请填写二维值，单位：毫米
             - label: 胆管结石
               type: either
               yesno: 有/无
@@ -328,6 +329,7 @@
               choices: [高脂, 普通, 素食]
             - label: BMI（体重/身高²）
               type: disabled
+              placeholder: "expr:$weight $height / $height /"
         - label: 家族史
           type: header
           list:
@@ -707,7 +709,7 @@
           type: text
         - label: 随访时间
           type: date
-          isEnabler: true
+          enabler: true
           list:
             - label: 随访结果
 - name: 项目一

@@ -5,12 +5,13 @@ import { RadioChangeEvent } from "antd/lib/radio";
 import RadioGroup from "antd/lib/radio/group";
 
 import { Question, QProps } from ".";
+import { enablerFId } from "@/utils";
 
 export const QYesNo = forwardRef<RadioGroup, QProps>(({ schema, value, onChange }, ref) => {
 
   const [choice, setChoice] = useState(value);
 
-  const { list, yesno } = schema;
+  const { list, yesno, id } = schema;
 
   const [yes, no] = (yesno ?? "是/否").split("/");
 
@@ -27,7 +28,7 @@ export const QYesNo = forwardRef<RadioGroup, QProps>(({ schema, value, onChange 
     <Radio value={no}>{no}</Radio>
     {
       list && choice === yes ?
-        list.map(q => <Question key={q.id} schema={q} />) :
+        list.map(q => <Question key={q.id} schema={q} fieldPrefix={enablerFId(id)} />) :
         null
     }
   </Radio.Group>;

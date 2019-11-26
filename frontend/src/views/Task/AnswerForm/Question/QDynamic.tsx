@@ -6,7 +6,7 @@ import { Form, Icon, Button } from "antd";
 import { FormItemProps } from "antd/lib/form";
 
 import { QProps, Question } from ".";
-import { useForm, useFormData } from "@/utils";
+import { useFormData } from "@/utils";
 
 type P = QProps;
 
@@ -21,8 +21,7 @@ export const QDynamic = forwardRef<any, P>(({ schema: { id, list } }, ref) => {
   if (!list)
     throw new Error(`template list ${id} is invalid - no list`);
 
-  const form = useForm();
-  const [keys, setKeys] = useFormData<number[]>(`$${id}->#keys`, []);
+  const [keys, setKeys] = useFormData<number[]>(`#keys.$${id}`, []);
   const [next, setNext] = useState((max(keys) ?? -1) + 1);
 
   const remove = (key: number) => {
@@ -39,10 +38,9 @@ export const QDynamic = forwardRef<any, P>(({ schema: { id, list } }, ref) => {
     {
       keys.map(key => <Fragment key={key}>
         <Icon className="q-dynamic-delete" type="minus-circle-o" onClick={() => remove(key)}/>
-        {list.map(q => <Question key={`${q.id}-${key}`} schema={q} fieldPrefix={`$${id}@$${key}`}/>)}
+        {list.map(q => <Question key={`${q.id}-${key}`} schema={q} fieldPrefix={`$${id}.@${key}`}/>)}
       </Fragment>)
     }
-    <button onClick={() => console.log(form.getFieldsValue())} />
     <Form.Item {...noLabel}>
       <Button type="dashed" onClick={add} style={{ width: "60%" }}>
         <Icon type="plus"/>&nbsp;添加

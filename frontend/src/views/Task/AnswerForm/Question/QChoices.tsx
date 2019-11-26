@@ -1,13 +1,13 @@
-import React, { forwardRef, useState, Fragment } from "react";
+import React, { forwardRef, useState } from "react";
 
-import { Form, Checkbox, Radio, Input } from "antd";
+import { Form, Checkbox, Radio, Input, Row } from "antd";
 import CheckboxGroup, { CheckboxValueType } from "antd/lib/checkbox/Group";
 import { RadioChangeEvent } from "antd/lib/radio";
 import RadioGroup from "antd/lib/radio/group";
 
 import { QProps } from ".";
 import { text } from "@/config";
-import { tuple, useForm } from "@/utils";
+import { enablerFId, tuple, useForm } from "@/utils";
 
 const { other, required } = text;
 
@@ -21,7 +21,7 @@ type Ref = CheckboxGroup | RadioGroup;
  */
 export const QChoices = forwardRef<Ref, QProps>(({ schema, onChange, value }, ref) => {
 
-  const { selected, choices, id, customizable, type } = schema;
+  const { choices, id, customizable, type } = schema;
   if (!choices)
     throw new Error(`${type} ${id} is incorrectly configured - no choices`);
   const multi = type?.includes("multi");
@@ -29,12 +29,13 @@ export const QChoices = forwardRef<Ref, QProps>(({ schema, onChange, value }, re
   // 决定渲染控件类型
   const [Choice, ChoiceGroup] = (() => {
     const ChoiceType = multi ? Checkbox : Radio;
+    // 必须转成React.ElementType，否则报 no constructor 错误
     return tuple(ChoiceType as React.ElementType, ChoiceType.Group);
   })();
 
   const [initChosen, initInput] = (() => {
     if(value === undefined)
-      return tuple(undefined, selected);
+      return tuple(undefined, undefined);
     // 如果用户输入值中含有分隔符，在这里split，之后join在一起，内容不变
     const inputValue: string[] = [];
     const indexes = value.split(sep).map(s => {
@@ -57,8 +58,10 @@ export const QChoices = forwardRef<Ref, QProps>(({ schema, onChange, value }, re
   const valueChanged = (chosenIdx: number[] | undefined, inputValue: string | undefined) => {
     const values = [...choices, inputValue];
     if(chosenIdx) {
-      const result = chosenIdx.map(i => values[i]);
-      onChange?.(result.join(sep));
+      if(chosenIdx?.length)
+        onChange?.(chosenIdx.map(i => values[i]).join(sep));
+      else
+        onChange?.(undefined);
     }
   };
 
@@ -85,10 +88,10 @@ export const QChoices = forwardRef<Ref, QProps>(({ schema, onChange, value }, re
 
   return <ChoiceGroup ref={ref} value={selectedValue()} onChange={changed}>
     {
-      choices.map((choice, idx) => <Fragment key={idx}>
-        <Choice value={idx}>{choice}</Choice>
-        { multi && <br/> }
-      </Fragment>)
+      choices.map((choice, idx) => {
+        const item = <Choice value={idx} key={`i-${idx}`}>{choice}</Choice>;
+        return multi ? <Row key={idx}>{item}</Row> : item;
+      })
     }
     {
       customizable && <Choice key={choices.length} value={choices.length}>
@@ -96,7 +99,7 @@ export const QChoices = forwardRef<Ref, QProps>(({ schema, onChange, value }, re
         {
           chosen?.includes(choices.length) && <Form.Item className="form-item-generated">
             {
-              form?.getFieldDecorator(`$${id}->#other`, {
+              form?.getFieldDecorator(`${enablerFId(id)}.#other`, {
                 rules: [{ required: true, message: required }],
                 initialValue: input
               })(<Input type="text" onChange={e => inputChanged(e.target.value)} />)

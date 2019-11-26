@@ -12,7 +12,7 @@ export interface IdResponse {
   id: string | number;
 }
 
-export interface Dict<T> {
+export interface Dict<T = any> {
   [key: string]: T | undefined;
 }
 

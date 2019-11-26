@@ -14,12 +14,12 @@ import { QDynamic } from "./QDynamic";
 import { QImmutable } from "./QImmutable";
 import { QTable } from "./QTable";
 
-import { useForm, validationRules } from "@/utils";
-import { Question as QSchema } from "@/types";
+import { enablerFId, useForm, validationRules } from "@/utils";
+import { Question as QSchema, QType } from "@/types";
 
 import "./index.less";
 
-const renderer = (type: QSchema["type"]) => {
+const renderer = (type: QType | undefined) => {
   switch (type) {
     case "disabled": return QImmutable;
     case "date": return QDate;
@@ -34,18 +34,25 @@ const renderer = (type: QSchema["type"]) => {
   }
 };
 
+const isCollection = (type: QType | undefined) => {
+  switch (type) {
+    case "list": case "template": return true;
+    default: return false;
+  }
+};
+
 export const FormContext = createContext<WrappedFormUtils | null>(null);
 
 export { QSchema };
 
-export interface QProps {
+export interface QProps<T = string> {
   schema: QSchema;
   fieldPrefix?: string;
-  value?: string;
-  onChange?: (value: string) => void;
+  value?: T;
+  onChange?: (value: T | undefined) => void;
 }
 
-interface P extends QProps {
+interface P<T = string> extends QProps<T> {
   formItemProps?: FormItemProps;
   decorator?: GetFieldDecoratorOptions;
   noFormItem?: boolean;
@@ -56,26 +63,26 @@ const layout: FormItemProps = {
   // wrapperCol: { xs: { span: 24 }, sm: { span: 20 } }
 };
 
-export const Question = forwardRef<any, P>((props, ref) => {
+export const Question = forwardRef<any, P<any>>(({ schema, onChange, value, ...props }, ref) => {
 
-  const { schema, onChange, noFormItem, decorator, value, formItemProps, fieldPrefix } = props;
-  const { type, label, id, isEnabler, list } = schema;
+  const { noFormItem, decorator, formItemProps, fieldPrefix } = props;
+  const { type, label, id, enabler, list, selected } = schema;
 
   const form = useForm();
 
   const Renderer = renderer(type);
   const rendered = <Renderer schema={schema} ref={ref} onChange={onChange} />;
 
-  const fieldId = fieldPrefix ? `${fieldPrefix}->$${id}` : `$${id}`;
+  const fieldId = fieldPrefix ? `${fieldPrefix}.$${id}` : `$${id}`;
 
-  const body = type === "list" || type === "template" ? rendered : form.getFieldDecorator(fieldId, {
-    ...validationRules(schema), initialValue: value, ...decorator
+  const body = isCollection(type) ? rendered : form.getFieldDecorator(fieldId, {
+    ...validationRules(schema), initialValue: value ?? selected, ...decorator
   })(rendered);
 
-  const enabled = () => isEnabler && form.getFieldValue(fieldId) !== undefined ? <>
-    {list?.map(q => <Question schema={q} noFormItem={noFormItem} fieldPrefix={`${id}`} />)}
+  const enabled = () => enabler && form.getFieldValue(fieldId) !== undefined ? <>
+    {list?.map(q => <Question schema={q} key={q.id} noFormItem={noFormItem} fieldPrefix={enablerFId(id)} />)}
   </> : null;
-  if(isEnabler) console.log(isEnabler, id, fieldId, form.getFieldValue(fieldId));
+
   if(noFormItem)
     return <>{body}{enabled()}</>;
 

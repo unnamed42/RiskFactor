@@ -45,7 +45,7 @@ export function useFormData<T = any>(id: string): [T | undefined, (value: T) => 
 export function useFormData<T = any>(id: string, init: T): [T, (value: T) => void];
 export function useFormData<T = any>(id: string, init?: T) {
   const form = useForm();
-  const field = form.getFieldValue(id) ?? init;
+  const [field, setField] = useState(init);
   form.getFieldDecorator(id, { initialValue: field });
-  return [field, (value: T) => form.setFieldsValue({ [id]: value })];
+  return [field, (value: T) => { setField(value); form.setFieldsValue({ [id]: value }); }];
 }

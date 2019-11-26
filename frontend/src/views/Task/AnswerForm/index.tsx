@@ -40,11 +40,6 @@ const putAnswers = (layout: Dict<Question[]>, values: Dict<string>): Dict<Dict<s
     return assign(obj, { [title]: sectionAnswers });
   }, {});
 
-// Form中，其id以“$”开头的是动态创建的项目，不应该包含在最终的结果提交上去
-const filteredEntries = (obj: any) =>
-  Object.entries(obj).filter(([k]) => !k.startsWith("$"))
-    .reduce((obj: any, [k, v]) => assign(obj, { [k]: v }), {});
-
 interface P extends RouteComponentProps {
   taskId: number | string;
   answerId?: number | string;
@@ -64,12 +59,12 @@ export const AnswerForm = withRouter<P, FC<P>>(({ taskId, history, ...props }) =
       cachedLayout(taskId), cachedStructure(taskId)
     ]);
     // 当前选中的 [一级标题(h1)]/[二级标题(h2)]/...
-    const header: string = firstKey(layout) ?? "";
+    const header = firstKey(layout) ?? "";
     // 该项目的所有回答，按照 { "[一级标题]/[二级标题]": { "问题id": "问题回复" } } 形式组织
-    let answers: Dict<Dict<string>> = {};
+    let answers: Dict = { "#vars": { $id: answerId } };
     if(answerId !== undefined) {
       const values = await answer(answerId);
-      answers = putAnswers(layout, values);
+      answers = assign(answers, putAnswers(layout, values));
     }
     return { layout, struct, header, answers };
   }, e => message.error(e.message));
@@ -81,14 +76,11 @@ export const AnswerForm = withRouter<P, FC<P>>(({ taskId, history, ...props }) =
 
   const { layout, struct, answers, header } = state;
 
-  const valuesChanged = (changes: any) => {
-    // console.log(changes);
-    const currAnswer = answers[header];
-    const newAnswers = Object.assign(answers, {
-      [header]: { ...currAnswer, ...changes }
-    });
-    const newPatches = Object.assign(patches, changes);
+  const valuesChanged = (changes: any, allValues: any) => {
+    const newAnswers = { ...answers, ...allValues };
+    const newPatches = { ...patches, ...changes };
     updateState({ answers: newAnswers });
+    console.log(newAnswers);
     setPatches(newPatches);
   };
 
@@ -99,12 +91,12 @@ export const AnswerForm = withRouter<P, FC<P>>(({ taskId, history, ...props }) =
     }
     try {
       if (answerId === undefined) {
-        const { id } = await postAnswer(taskId, filteredEntries(values));
+        const { id } = await postAnswer(taskId, (patches));
         setAnswerId(id); setPatches({});
         message.success("提交成功");
         history.replace(`${history.location.pathname}/${id}`);
       } else {
-        await updateAnswer(answerId, filteredEntries(patches));
+        await updateAnswer(answerId, (patches));
         setPatches({});
         message.success("更新成功");
       }
@@ -136,7 +128,7 @@ export const AnswerForm = withRouter<P, FC<P>>(({ taskId, history, ...props }) =
     <Layout>
       <Layout.Content style={{ padding: "20px 24px", minHeight: 280 }}>
         <PageHeader title="返回数据页" onBack={() => window.location.hash = `/task/${taskId}/answers`}/>
-        <QForm layout={layout[header]} answer={answers[header]}
+        <QForm layout={layout[header]} answer={answers}
                onChange={valuesChanged} onSubmit={post} />
       </Layout.Content>
     </Layout>

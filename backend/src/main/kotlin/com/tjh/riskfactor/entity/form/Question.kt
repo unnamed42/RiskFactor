@@ -11,10 +11,10 @@ import javax.persistence.*
 class Question(
     @get:Column
     @get:Enumerated
-    var type: QuestionType?,
+    var type: QuestionType? = null,
 
     @get:Column
-    var label: String?,
+    var label: String? = null,
 
     @get:ManyToMany(fetch = FetchType.EAGER, cascade = [CascadeType.REMOVE])
     @get:JoinTable(name = "question_list",
@@ -23,7 +23,11 @@ class Question(
     )
     @get:OrderColumn(name = "sequence", nullable = false)
     @get:JsonInclude(JsonInclude.Include.NON_EMPTY)
-    var list: MutableList<Question> = mutableListOf()
+    var list: MutableList<Question>? = null,
+
+    @get:Transient
+    @get:JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+    var ref: String? = null
 ): IEntity() {
     @get:Column(length = 102400)
     @get:Convert(converter = QuestionOptionsConverter::class)
