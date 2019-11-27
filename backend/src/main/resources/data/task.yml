@@ -813,7 +813,7 @@
                           type: choice
                           choices: [高分化, 中分化, 低分化, 中-低分化, 中-高分化]
                         - label: 淋巴结转移
-                          type: yesno
+                          type: either
                           yesno: 有/无
                           list:
                             - label: 所取淋巴结个数，阳性个数
