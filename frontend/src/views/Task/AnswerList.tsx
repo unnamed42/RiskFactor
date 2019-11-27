@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 
 import { Button, PageHeader, message, Table } from "antd";
 
-import { taskAnswers, task, deleteAnswer, downloadAnswer } from "@/api/task";
+import { taskAnswers, task, deleteAnswer, downloadAnswer, postAnswer } from "@/api/task";
 import { AnswerBrief } from "@/types";
 import { usePromise, cachedStructure, parsedExcel } from "@/utils";
 import { PageLoading, File } from "@/components";
@@ -53,8 +53,8 @@ export const AnswerList: FC<P> = ({ taskId }) => {
 
   const importAnswers = (buffer: ArrayBuffer) => {
     setParsing(true);
-    parsedExcel(taskId, buffer)
-      .then(() => setParsing(false), e => message.error(e.message));
+    parsedExcel(taskId, buffer).then(result => Promise.all(result.map(r => postAnswer(taskId, r))))
+      .catch(e => message.error(e.message)).finally(() => setParsing(false));
   };
 
   return <div>
