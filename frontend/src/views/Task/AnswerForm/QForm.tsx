@@ -1,6 +1,6 @@
 import React, { FC, useState } from "react";
 
-import { assign, isArray } from "lodash";
+import { assign, isPlainObject } from "lodash";
 
 import { Button, Form } from "antd";
 import { FormComponentProps, FormItemProps } from "antd/lib/form";
@@ -42,12 +42,14 @@ const QFormD: FC<P> = ({ layout, onSubmit, form }) => {
 };
 
 const transform = <T extends any = any>(obj: T): any =>
-  Object.entries(obj).filter(([_, v]) => v !== undefined).reduce((acc, [k, v]) => {
-    return assign(acc, {
-      [k]: typeof v === "object" ?
-        isArray(v) ? Form.createFormField({ value: v }) : transform(v) :
-        Form.createFormField({ value: v })
-    });
+  Object.entries(obj).reduce((acc, [k, v]) => {
+    if(v === undefined) return acc;
+    const asignee = (() => {
+      if(isPlainObject(v))
+        return transform(v);
+      return Form.createFormField({ value: v });
+    })();
+    return assign(acc, { [k]: asignee });
   }, {});
 
 export const QForm = Form.create<P>({

@@ -11,6 +11,8 @@ import com.tjh.riskfactor.repo.QuestionRepository
 @Service
 class QuestionService(override val repo: QuestionRepository): IDBService<Question>("question") {
 
+    fun typeOf(id: Int) = repo.typeOf(id)
+
     /**
      * 描述Section（type为header的Question）的简略情况，即给出名称（label）
      * 如果其下属list还有Section，返回对象的list中也包含下属Section的简略情况

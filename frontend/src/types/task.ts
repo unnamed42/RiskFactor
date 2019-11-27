@@ -43,3 +43,9 @@ export interface AnswerBrief {
   creator: string;
   mtime: string;
 }
+
+export interface AnswerEntry {
+  value: string;
+  index?: number;
+  questionId: string | number;
+}

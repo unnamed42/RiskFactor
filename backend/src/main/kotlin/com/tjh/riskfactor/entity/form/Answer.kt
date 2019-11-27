@@ -22,6 +22,6 @@ class Answer(
     @get:JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     var mtime: Date = Date()
 
-    @get:OneToMany(mappedBy = "answer", cascade = [CascadeType.REMOVE])
-    var answers: MutableSet<AnswerEntry> = mutableSetOf()
+    @get:Column(length = 512000)
+    var body: String? = null
 }

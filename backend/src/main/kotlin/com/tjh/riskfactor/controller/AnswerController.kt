@@ -14,9 +14,6 @@ class AnswerController(private val service: AnswerService) {
     @GetMapping("/answers/{id}")
     fun exportAnswer(@PathVariable id: Int) = service.export(id)
 
-    @PutMapping("/answers/{id}/body")
-    fun updateAnswer(@PathVariable id: Int, @RequestBody body: Map<String, String>) = service.updateAnswer(id, body)
-
     /**
      * 删除回答
      * @param id 回答id

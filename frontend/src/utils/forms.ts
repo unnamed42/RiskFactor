@@ -7,9 +7,9 @@ import { numberRegex, text } from "@/config";
 export const validationRules = ({ required, type }: QSchema): GetFieldDecoratorOptions => {
   const rules: GetFieldDecoratorOptions["rules"] = [];
 
-  if(required)
+  if (required)
     rules.push({ required: true, message: text.required });
-  if(type === "number")
+  if (type === "number")
     rules.push({ pattern: numberRegex, message: text.numberRequired });
 
   return { rules };
@@ -19,7 +19,7 @@ export const validationRules = ({ required, type }: QSchema): GetFieldDecoratorO
 // 没什么卵用，先放在这里
 export const validateAndScrollAsync = <T = any>(form: WrappedFormUtils<T>) => new Promise((resolve, reject) => {
   form.validateFieldsAndScroll((errors, values) => {
-    if(errors) reject(errors);
+    if (errors) reject(errors);
     else resolve(values);
   });
 });
@@ -30,24 +30,28 @@ export const enablerFId = (parentId: string | number) => `#enabler.$${parentId}`
 export const evalExpr = (expr: string, { getFieldValue }: WrappedFormUtils<any>) => {
   const parseOperand = (operand: string) =>
     Number(operand.startsWith("$") ? getFieldValue(operand) : operand);
-
-  const elements = expr.split(" ");
-  if(elements.length === 0)
-    return undefined;
-  let value = parseOperand(elements[0]);
-  if(isNaN(value))
-    return undefined;
-  for(let i=1; i<elements.length; i+=2) {
-    const rhs = parseOperand(elements[i]), op = elements[i+1];
-    if(isNaN(rhs))
-      return undefined;
-    switch(op) {
-      case "+": value += rhs; break;
-      case "-": value -= rhs; break;
-      case "*": value *= rhs; break;
-      case "/": value /= rhs; break;
-      default: return undefined;
+  const isDigit = (ch: number) =>
+    "0".charCodeAt(0) <= ch && ch <= "9".charCodeAt(0);
+  const op = (ch: string): ((lhs: number, rhs: number) => number) | undefined => {
+    switch (ch) {
+      case "+": return (a, b) => a + b;
+      case "-": return (a, b) => a - b;
+      case "*": return (a, b) => a * b;
+      case "/": return (a, b) => a / b;
+      default:  return undefined;
     }
+  };
+
+  const stack: number[] = [];
+  for (const s of expr.split(" ")) {
+    if(s.length === 1 && !isDigit(s.charCodeAt(0))) {
+      const rhs = stack.pop(); const lhs = stack.pop();
+      const operator = op(s);
+      if(operator === undefined || lhs === undefined || rhs === undefined)
+        return undefined;
+      stack.push(operator(lhs, rhs));
+    } else
+      stack.push(parseOperand(s));
   }
-  return value;
+  return stack.length === 1 && !isNaN(stack[0]) ? stack[0].toString(): undefined;
 };

@@ -52,8 +52,8 @@ export const downloadAnswer = (answerId: number | string) =>
   request<Blob>({ url: `/answers/${answerId}/file`, responseType: "blob" })
     .then(data => downloadAsFile(data, "export.json"));
 
-export const postAnswer = (taskId: number | string, value: any) =>
-  request<IdResponse>({ url: `/tasks/${taskId}/answers`, data: value, method: "POST" });
+export const postAnswer = (taskId: number | string, body: any) =>
+  request<IdResponse>({ url: `/tasks/${taskId}/answers`, data: body, method: "POST" });
 
-export const updateAnswer = (answerId: number | string, patches: any) =>
-  request<IdResponse>({ url: `/answers/${answerId}/body`, data: patches, method: "PUT" });
+export const updateAnswer = (taskId: number | string, answerId: number | string, patches: any) =>
+  request<IdResponse>({ url: `/tasks/${taskId}/answers/${answerId}`, data: patches, method: "PUT" });

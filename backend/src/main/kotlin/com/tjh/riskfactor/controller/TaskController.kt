@@ -52,6 +52,12 @@ class TaskController(
 
     @PostMapping("/tasks/{id}/answers")
     fun postAnswer(@PathVariable id: Int, @AuthenticationPrincipal details: JwtUserDetails,
-                   @RequestBody body: Map<String, Any>) =
-        service.createAnswer(id, details.user, body)
+                   @RequestBody body: String) =
+        answers.postAnswer(null, id, details.user, body)
+
+    @PutMapping("/tasks/{id}/answers/{answerId}")
+    fun updateAnswer(@PathVariable id: Int, @PathVariable answerId: Int,
+                     @AuthenticationPrincipal details: JwtUserDetails, @RequestBody body: String) =
+        answers.postAnswer(answerId, id, details.user, body)
+
 }

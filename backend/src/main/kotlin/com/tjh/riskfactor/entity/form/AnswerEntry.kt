@@ -16,6 +16,12 @@ class AnswerEntry(
     var value: String,
 
     /**
+     * 可重复回答的问题的排号index，不一定连续，组成数组时需要排序
+     */
+    @get:Column
+    var index: Int? = null,
+
+    /**
      * 回答的问题的id
      */
     @get:ManyToOne

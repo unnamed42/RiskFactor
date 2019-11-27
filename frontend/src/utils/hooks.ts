@@ -40,12 +40,3 @@ export const usePromise = <State extends any>(fetch: () => Promise<State>, onErr
 };
 
 export const useForm = () => useContext(FormContext)!;
-
-export function useFormData<T = any>(id: string): [T | undefined, (value: T) => void];
-export function useFormData<T = any>(id: string, init: T): [T, (value: T) => void];
-export function useFormData<T = any>(id: string, init?: T) {
-  const form = useForm();
-  const [field, setField] = useState(init);
-  form.getFieldDecorator(id, { initialValue: field });
-  return [field, (value: T) => { setField(value); form.setFieldsValue({ [id]: value }); }];
-}

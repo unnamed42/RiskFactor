@@ -1,4 +1,4 @@
-import React, { Fragment, forwardRef, useState } from "react";
+import React, { Fragment, forwardRef } from "react";
 
 import { max } from "lodash";
 
@@ -6,7 +6,7 @@ import { Form, Icon, Button } from "antd";
 import { FormItemProps } from "antd/lib/form";
 
 import { QProps, Question } from ".";
-import { useFormData } from "@/utils";
+import { useForm } from "@/utils";
 
 type P = QProps;
 
@@ -17,26 +17,32 @@ const noLabel: FormItemProps = {
   }
 };
 
+const keyId = (questionId: number | string) => `#keys.$${questionId}`;
+
 export const QDynamic = forwardRef<any, P>(({ schema: { id, list } }, ref) => {
   if (!list)
     throw new Error(`template list ${id} is invalid - no list`);
 
-  const [keys, setKeys] = useFormData<number[]>(`#keys.$${id}`, []);
-  const [next, setNext] = useState((max(keys) ?? -1) + 1);
+  const form = useForm();
+
+  const keys = (): number[] | undefined => form.getFieldValue(keyId(id));
 
   const remove = (key: number) => {
-    const newKeys = keys.filter(k => k !== key);
-    setKeys(newKeys);
+    const newKeys = keys()?.filter(k => k !== key);
+    form.setFieldsValue({ [keyId(id)]: newKeys });
   };
 
   const add = () => {
-    setKeys([...keys, next]);
-    setNext(next + 1);
+    const currKeys = keys();
+    const next = currKeys ? (max(currKeys) ?? -1) + 1 : 0;
+    const newKeys = [...(currKeys ?? []), next];
+    form.setFieldsValue({ [keyId(id)]: newKeys });
   };
 
   return <>
+    {form.getFieldDecorator(keyId(id))(<Fragment />)}
     {
-      keys.map(key => <Fragment key={key}>
+      keys()?.map(key => <Fragment key={key}>
         <Icon className="q-dynamic-delete" type="minus-circle-o" onClick={() => remove(key)}/>
         {list.map(q => <Question key={`${q.id}-${key}`} schema={q} fieldPrefix={`$${id}.@${key}`}/>)}
       </Fragment>)

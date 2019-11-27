@@ -12,6 +12,9 @@ private const val ANSWER_BRIEF = "select a.id as id, c.username as creator, a.mt
 @Repository
 interface AnswerRepository: JpaRepository<Answer, Int> {
 
+    @Query("select body from Answer where id = :id")
+    fun bodyOf(id: Int): String?
+
     @Query(ANSWER_BRIEF + "inner join a.creator c on c.id = :uid")
     fun findTaskAnswersCreatedBy(taskId: Int, uid: Int): List<AnswerView>
 

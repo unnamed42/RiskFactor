@@ -8,37 +8,8 @@ import { PageLoading } from "@/components";
 import { QForm } from "./QForm";
 
 import { answer, postAnswer, updateAnswer } from "@/api/task";
-import { appendArray, firstKey, usePromise, cachedLayout, cachedStructure } from "@/utils";
-import { Dict, Question } from "@/types";
-
-// 收集所有Question的id。如果有list，递归进行
-const collectQId = (qs: Question[]) => {
-  const result = new Set<string>();
-  for(let arr = qs; arr.length !== 0; ) {
-    let next: Question[] = [];
-    arr.forEach(({ id, list }) => {
-      result.add(id.toString());
-      if(list) next = appendArray(next, list);
-    });
-    arr = next;
-  }
-  return result;
-};
-
-// 在控件中的answer state是按照 { "[一级标题]/[二级标题]": { "问题id": "问题回复" } } 的格式组织的，而
-// 后端api中返回的回答是 { "问题id": "问题回复" } 格式，即所有Section下的回答合并到一起。
-// 该函数将后端api的格式转化为控件需要的按Section分隔的格式
-const putAnswers = (layout: Dict<Question[]>, values: Dict<string>): Dict<Dict<string>> =>
-  Object.entries(layout).reduce((obj: Dict<Dict<string>>, [title, list]) => {
-    const sectionAnswers: Dict<string> = {};
-    if(list === undefined)
-      return obj;
-    collectQId(list).forEach(id => {
-      if(id in values)
-        sectionAnswers[id] = values[id];
-    });
-    return assign(obj, { [title]: sectionAnswers });
-  }, {});
+import { firstKey, usePromise, cachedLayout, cachedStructure } from "@/utils";
+import { Dict } from "@/types";
 
 interface P extends RouteComponentProps {
   taskId: number | string;
@@ -62,10 +33,8 @@ export const AnswerForm = withRouter<P, FC<P>>(({ taskId, history, ...props }) =
     const header = firstKey(layout) ?? "";
     // 该项目的所有回答，按照 { "[一级标题]/[二级标题]": { "问题id": "问题回复" } } 形式组织
     let answers: Dict = { "#vars": { answerId } };
-    if(answerId !== undefined) {
-      const values = await answer(answerId);
-      answers = assign(answers, putAnswers(layout, values));
-    }
+    if(answerId !== undefined)
+      assign(answers, await answer(answerId));
     return { layout, struct, header, answers };
   }, e => message.error(e.message));
 
@@ -91,12 +60,13 @@ export const AnswerForm = withRouter<P, FC<P>>(({ taskId, history, ...props }) =
     }
     try {
       if (answerId === undefined) {
-        const { id } = await postAnswer(taskId, (patches));
+        const { id } = await postAnswer(taskId, answers);
         setAnswerId(id); setPatches({});
-        message.success("提交成功");
+        updateState({ answers: { ...answers, "#vars": { answerId: id } } });
         history.replace(`${history.location.pathname}/${id}`);
+        message.success("提交成功");
       } else {
-        await updateAnswer(answerId, (patches));
+        await updateAnswer(taskId, answerId, answers);
         setPatches({});
         message.success("更新成功");
       }
@@ -127,7 +97,7 @@ export const AnswerForm = withRouter<P, FC<P>>(({ taskId, history, ...props }) =
     </Layout.Sider>
     <Layout>
       <Layout.Content style={{ padding: "20px 24px", minHeight: 280 }}>
-        <PageHeader title="返回数据页" onBack={() => window.location.hash = `/task/${taskId}/answers`}/>
+        <PageHeader title="返回数据页" onBack={() => history.replace(`/task/${taskId}/answers`)}/>
         <QForm layout={layout[header]} answer={answers}
                onChange={valuesChanged} onSubmit={post} />
       </Layout.Content>
