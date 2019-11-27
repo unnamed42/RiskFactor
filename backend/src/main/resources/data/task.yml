@@ -45,7 +45,7 @@
 # type:
 - name: 胆胰危险因素采集
   center: users
-  mtime: 2019-10-29
+  mtime: 2019-11-27
   list:
     - label: 基本信息
       type: header
@@ -670,14 +670,12 @@
         - label: 术前诊断
           type: header
           list:
-            - type: list
-              list:
-                - label: 术前诊断
-                  type: text
-                - label: 确诊方法
-                  type: choice-multi
-                  customizable: true
-                  choices: [细胞学诊断, 基因学诊断]
+            - label: 术前诊断
+              type: text
+            - label: 确诊方法
+              type: choice-multi
+              customizable: true
+              choices: [细胞学诊断, 基因学诊断]
             - label: 术前减黄
               type: either
               list:
@@ -712,6 +710,185 @@
           enabler: true
           list:
             - label: 随访结果
+              type: list
+              list:
+                - label: 影像学检查结果
+                  list:
+                    - label: B超
+                      type: either
+                      yesno: 有/无
+                      list:
+                        - label: 检查日期
+                          type: date
+                          required: true
+                        - type: template
+                          list:
+                            - label: 检查结果
+                              type: text
+                              required: true
+                    - label: CT
+                      type: either
+                      yesno: 有/无
+                      list:
+                        - label: 检查日期
+                          type: date
+                          required: true
+                        - type: template
+                          list:
+                            - label: 检查结果
+                              type: text
+                              required: true
+                    - label: MRI
+                      type: either
+                      yesno: 有/无
+                      list:
+                        - label: 检查日期
+                          type: date
+                          required: true
+                        - type: template
+                          list:
+                            - label: 检查结果
+                              type: text
+                              required: true
+                    - label: 经皮肝穿刺胆管造影（PTC）
+                      type: either
+                      yesno: 有/无
+                      list:
+                        - label: 检查日期
+                          type: date
+                          required: true
+                        - type: template
+                          list:
+                            - label: 检查结果
+                              type: text
+                              required: true
+                    - label: 超声内镜（EUS）
+                      type: either
+                      yesno: 有/无
+                      list:
+                        - label: 检查日期
+                          type: date
+                          required: true
+                        - type: template
+                          list:
+                            - label: 检查结果
+                              type: text
+                              required: true
+                    - label: PET/CT
+                      type: either
+                      yesno: 有/无
+                      list:
+                        - label: 检查日期
+                          type: date
+                          required: true
+                        - type: template
+                          list:
+                            - label: 检查结果
+                              type: text
+                              required: true
+                - label: 治疗情况
+                  type: either
+                  yesno: 手术/非手术
+                  list:
+                    - label: 病理诊断
+                      type: list
+                      list:
+                        - label: 病理诊断日期
+                          type: date
+                        - label: 肿瘤大小
+                          type: text
+                        - label: 肿瘤部位
+                          type: choice-multi
+                          choices: [胆囊管部, 胆囊颈部, 胆囊体部, 胆囊底部]
+                        - label: 侵及深度
+                          type: choice
+                          choices: [粘膜层, 固有肌层, 肌层周围结缔组织层, 浆膜层]
+                        - label: 侵及胆管
+                          type: either
+                        - label: 病理类型
+                          type: choice
+                          customizable: true
+                          choices: [腺癌, 腺鳞癌, 鳞癌, 粘液腺癌, 未分化癌]
+                        - label: 分化程度
+                          type: choice
+                          choices: [高分化, 中分化, 低分化, 中-低分化, 中-高分化]
+                        - label: 淋巴结转移
+                          type: yesno
+                          yesno: 有/无
+                          list:
+                            - label: 所取淋巴结个数，阳性个数
+                              type: choice
+                              customizable: true
+                              choices:
+                                - 肝动脉周围淋巴结（8组）
+                                - 腹腔干周围淋巴结（9组）
+                                - 肝十二指肠韧带淋巴结（12组）
+                                - 胰头周围淋巴结（13组）
+                                - 肠系膜上动脉周围淋巴结（14组）
+                                - 腹主动脉旁淋巴结（16组）
+                    - label: TNM分期
+                      type: list
+                      list:
+                        - label: T分期
+                          type: choice
+                          choices: [Tis, T1, T2, T3, T4]
+                        - label: N分期
+                          type: choice
+                          choices: [N0, N1, N2]
+                        - label: M分期
+                          type: choice
+                          choices: [M0, M1, M2]
+                    - label: 术后并发症
+                      type: choice-multi
+                      customizable: true
+                      choices:
+                        - 腹腔内出血
+                        - 胆漏
+                        - 梗阻性黄疸
+                        - 吻合口瘘
+                        - 肝衰竭
+                        - 感染
+                        - 肠梗阻
+                        - 多器官衰竭（MOF）
+                    - label: 综合治疗
+                      type: list
+                      list:
+                        - label: 化疗
+                          type: either
+                          yesno: 有/无
+                          list:
+                            - type: choice
+                              choices: [术前, 术后, 区域性]
+                            - label: 化疗方案
+                              type: choice-multi
+                              customizable: true
+                              choices: [吉西他滨, 顺铂, 丝裂霉素, 氟尿嘧啶]
+                        - label: 放疗
+                          type: either
+                          yesno: 有/无
+                          list:
+                            - type: choice
+                              choices: [术前, 术后, 区域性]
+                        - label: 免疫治疗
+                          type: either
+                          yesno: 有/无
+                        - label: 基因治疗
+                          type: either
+                          yesno: 有/无
+                    - label: 医疗成本
+                    - label: 随访状态
+                      type: either
+                      yesno: 生存/死亡
+                    - label: 院内死亡
+                      type: either
+                    - label: 院外死亡
+                      type: either
+                      list:
+                        - label: 死亡时间
+                          type: date
+                        - label: 死亡原因
+                          type: choice
+                          choices: [与原发肿瘤有关, 与原发肿瘤无关]
 - name: 项目一
   center: users
   mtime: 2019-11-12
