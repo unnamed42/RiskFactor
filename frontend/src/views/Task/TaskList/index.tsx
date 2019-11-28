@@ -6,7 +6,7 @@ import { List, Avatar, message } from "antd";
 import { tasks } from "@/api/task";
 import { TaskView } from "@/types";
 import { usePromise } from "@/utils";
-import { PageLoading } from "@/components";
+import { Loading } from "@/components";
 
 import "./index.less";
 
@@ -20,7 +20,7 @@ export const TaskList: FC = () => {
   if(state.loaded === null)
     return null;
   if(!state.loaded)
-    return <PageLoading/>;
+    return <Loading/>;
 
   const { list } = state;
 

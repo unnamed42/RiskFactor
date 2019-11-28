@@ -1,20 +1,15 @@
-import { useContext, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
+
+import { omitBy, isNil } from "lodash";
 
 import { ApiError } from "@/types";
-import { nonNil } from "./utils";
-import { FormContext } from "@/views/Task/AnswerForm/Question";
-
-export const useStateAsync = <T extends any>(init?: T): [T | undefined, (x: T) => Promise<T>] => {
-  const [value, setValue] = useState(init);
-  return [value, async (x: T) => { setValue(x); return x; }];
-};
 
 type LoadableState<State> = { loaded: false } | { loaded: null } | ({ loaded: true } & State);
 type OnError = (error: ApiError) => void;
 
 /**
- * 将异步获取到的数据作为初始state，等同于在{@code componentDidMount}中从异步动作中获取初始状态。
- * 提供的更改接口是合并state而非原{@link useState}提供的直接覆盖
+ * 将异步获取到的数据作为初始state，等同于在`componentDidMount`中从异步动作中获取初始状态。
+ * 提供的更改接口是合并state而非原`useState`提供的直接覆盖
  * @param fetch 获取数据的异步api。需要做成函数是因为直接传入promise的话每次组件渲染都会请求一遍这个promise
  * @param onError 发生错误时的处理回调
  * @return loaded + 数据。
@@ -27,7 +22,7 @@ export const usePromise = <State extends any>(fetch: () => Promise<State>, onErr
   const [state, setState] = useState<LoadableState<State>>({ loaded: false });
 
   const updateState = (changes: Partial<State>) => {
-    const nextState = { ...state, ...nonNil(changes) };
+    const nextState = { ...state, ...omitBy(changes, isNil) };
     setState(nextState);
   };
 
@@ -39,4 +34,3 @@ export const usePromise = <State extends any>(fetch: () => Promise<State>, onErr
   return [state, updateState];
 };
 
-export const useForm = () => useContext(FormContext)!;

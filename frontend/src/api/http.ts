@@ -23,15 +23,7 @@ http.interceptors.request.use(config => {
 /**
  * 向REST API请求数据的通用工具函数
  * @param config 传递给Axios的配置
+ * @typeparam <T> 请求返回的数据类型
  */
-export const request = <T>(config: AxiosRequestConfig) =>
+export const request = <T>(config: AxiosRequestConfig): Promise<T> =>
   http.request<T>({ method: "GET", ...config }).then(({ data }) => data);
-
-export const downloadAsFile = (data: BlobPart, filename: string) => {
-  const url = window.URL.createObjectURL(new Blob([data]));
-  const link = document.createElement("a");
-  link.href = url;
-  link.setAttribute("download", filename);
-  document.body.appendChild(link);
-  link.click();
-};

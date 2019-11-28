@@ -1,4 +1,5 @@
-import { request, downloadAsFile } from "./http";
+import { request } from "./http";
+import { downloadAsFile } from "@/utils";
 
 import {
   IdResponse,

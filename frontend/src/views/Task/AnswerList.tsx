@@ -6,7 +6,7 @@ import { Button, PageHeader, message, Table } from "antd";
 import { taskAnswers, task, deleteAnswer, downloadAnswer, postAnswer } from "@/api/task";
 import { AnswerBrief } from "@/types";
 import { usePromise, cachedStructure, parsedExcel } from "@/utils";
-import { PageLoading, File } from "@/components";
+import { Loading, File } from "@/components";
 
 interface P {
   taskId: string | number;
@@ -28,7 +28,7 @@ export const AnswerList: FC<P> = ({ taskId }) => {
   if(state.loaded == null)
     return null;
   if(!state.loaded || state.struct === undefined)
-    return <PageLoading/>;
+    return <Loading/>;
   const { taskView, struct, answers } = state;
 
   const names = struct.map(s => s.name);

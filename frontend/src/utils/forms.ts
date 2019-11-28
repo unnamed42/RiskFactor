@@ -2,6 +2,10 @@ import { GetFieldDecoratorOptions, WrappedFormUtils } from "antd/lib/form/Form";
 
 import { Question as QSchema } from "@/types/task";
 import { numberRegex, text } from "@/config";
+import { useContext } from "react";
+import { FormContext } from "@/views/Task/AnswerForm/Question";
+
+export const useForm = () => useContext(FormContext)!;
 
 // 生成 getFieldDecorator 的options参数
 export const validationRules = ({ required, type }: QSchema): GetFieldDecoratorOptions => {
@@ -15,21 +19,16 @@ export const validationRules = ({ required, type }: QSchema): GetFieldDecoratorO
   return { rules };
 };
 
-// 将form.validateXXX的回调风格转换成Promise风格
-// 没什么卵用，先放在这里
-export const validateAndScrollAsync = <T = any>(form: WrappedFormUtils<T>) => new Promise((resolve, reject) => {
-  form.validateFieldsAndScroll((errors, values) => {
-    if (errors) reject(errors);
-    else resolve(values);
-  });
-});
-
 export const enablerFId = (parentId: string | number) => `#enabler.$${parentId}`;
 
-// 用来给依赖其他项的值进行计算的动态表单项目求值
-export const evalExpr = (expr: string, { getFieldValue }: WrappedFormUtils<any>) => {
+/**
+ * 将表达式求值
+ * @param expr 后缀表达式
+ * @param form ant design form实例
+ */
+export const evalExpr = (expr: string, form: WrappedFormUtils<any>) => {
   const parseOperand = (operand: string) =>
-    Number(operand.startsWith("$") ? getFieldValue(operand) : operand);
+    Number(operand.startsWith("$") ? form.getFieldValue(operand) : operand);
   const isDigit = (ch: number) =>
     "0".charCodeAt(0) <= ch && ch <= "9".charCodeAt(0);
   const op = (ch: string): ((lhs: number, rhs: number) => number) | undefined => {
@@ -53,5 +52,5 @@ export const evalExpr = (expr: string, { getFieldValue }: WrappedFormUtils<any>)
     } else
       stack.push(parseOperand(s));
   }
-  return stack.length === 1 && !isNaN(stack[0]) ? stack[0].toString(): undefined;
+  return stack.length === 1 && !isNaN(stack[0]) ? stack[0].toPrecision(3): undefined;
 };

@@ -4,7 +4,7 @@ import { RouteComponentProps, withRouter } from "react-router-dom";
 import { Icon, Layout, Menu, message, PageHeader } from "antd";
 import { assign, isEmpty } from "lodash";
 
-import { PageLoading } from "@/components";
+import { Loading } from "@/components";
 import { QForm } from "./QForm";
 
 import { answer, postAnswer, updateAnswer } from "@/api/task";
@@ -41,7 +41,7 @@ export const AnswerForm = withRouter<P, FC<P>>(({ taskId, history, ...props }) =
   if (state.loaded === null)
     return null;
   if (!state.loaded)
-    return <PageLoading/>;
+    return <Loading/>;
 
   const { layout, struct, answers, header } = state;
 

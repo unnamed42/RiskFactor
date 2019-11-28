@@ -6,7 +6,7 @@ import { Provider } from "react-redux";
 import "@/plugins";
 
 import { persistor, store } from "@/redux";
-import { PageLoading, PrivateRoute } from "@/components";
+import { Loading, PrivateRoute } from "@/components";
 import { PersistGate } from "redux-persist/integration/react";
 
 const Login = lazy(() => import(/* webpackChunkName: 'login' */ "@/views/Login"));
@@ -16,7 +16,7 @@ render(
   <Provider store={store}>
     <PersistGate persistor={persistor}>
       <Router>
-        <Suspense fallback={<PageLoading />}>
+        <Suspense fallback={<Loading />}>
           <Switch>
             <Route exact path="/login" component={Login} />
             <PrivateRoute path="/" component={App} />

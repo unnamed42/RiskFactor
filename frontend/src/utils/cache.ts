@@ -7,6 +7,12 @@ import { Dict, Question } from "@/types";
 
 type State = NonNullable<TaskState[keyof TaskState]>;
 
+/**
+ * 自redux store中获取缓存的api数据。不存在或失效时重新获取（要求后端提供一个`mtime`修改时间的api）
+ * @param taskId 项目id
+ * @param prop 要获取的缓存的属性名称
+ * @param fetch 缓存不存在时，获取数据的异步操作（一般是从api GET）
+ */
 export const cacheSelector = async <K extends keyof State, T extends State[K]>
 (taskId: number | string, prop: K, fetch: () => Promise<T>): Promise<T> => {
   const { mtime } = await taskMtime(taskId);

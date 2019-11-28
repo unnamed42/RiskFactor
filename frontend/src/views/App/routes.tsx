@@ -1,7 +1,7 @@
 import React, { FC, lazy, Suspense } from "react";
 import { Switch } from "react-router-dom";
 
-import { PrivateRoute, PageLoading } from "@/components";
+import { PrivateRoute, Loading } from "@/components";
 
 import { TaskList } from "@/views/Task/TaskList";
 
@@ -9,7 +9,7 @@ const AnswerList = lazy(() => import(/* webpackChunkName: "answer-list" */ "@/vi
 const AnswerForm = lazy(() => import(/* webpackChunkName: "answer-form" */ "@/views/Task/AnswerForm"));
 
 export const Routes: FC = () =>
-  <Suspense fallback={<PageLoading />}>
+  <Suspense fallback={<Loading />}>
     <Switch>
       <PrivateRoute exact path="/" component={TaskList} />
       <PrivateRoute path="/task/:id/answers"
