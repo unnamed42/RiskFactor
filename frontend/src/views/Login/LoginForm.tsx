@@ -22,7 +22,7 @@ interface P extends FormComponentProps<Fields> {
   onLoginSuccess?: () => void;
 }
 
-const LoginFormD: FC<P> = ({ form , onLoginSuccess }) => {
+const LoginFormD: FC<P> = ({ form: { validateFields, getFieldDecorator } , onLoginSuccess }) => {
 
   const auth = useSelector((store: StoreType) => store.auth);
 
@@ -34,7 +34,7 @@ const LoginFormD: FC<P> = ({ form , onLoginSuccess }) => {
   const doLogin = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if(tab !== "1") return;
-    form.validateFields(["username", "password", "remember"], (error, values) => {
+    validateFields(["username", "password", "remember"], (error, values) => {
       if (error || !("username" in values)) return;
       const { username, password } = values;
       setLogging(true);
@@ -49,8 +49,6 @@ const LoginFormD: FC<P> = ({ form , onLoginSuccess }) => {
     //   });
     // }
   };
-
-  const { getFieldDecorator } = form;
 
   return <Form onSubmit={doLogin} className="login-form">
     <Tabs defaultActiveKey={tab} onChange={setTab} animated={{ inkBar: true, tabPane: false }}

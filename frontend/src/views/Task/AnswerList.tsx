@@ -5,7 +5,7 @@ import { Button, PageHeader, message, Table } from "antd";
 
 import { taskAnswers, task, deleteAnswer, downloadAnswer, postAnswer } from "@/api/task";
 import { AnswerBrief } from "@/types";
-import { usePromise, cachedStructure, parsedExcel } from "@/utils";
+import { usePromise, cachedStructure } from "@/utils";
 import { Loading, File } from "@/components";
 
 interface P {
@@ -19,6 +19,7 @@ export const AnswerList: FC<P> = ({ taskId }) => {
   const file = useRef<HTMLInputElement>(null);
 
   const [parsing, setParsing] = useState(false);
+  const [loading, setLoading] = useState(false);
   const [state, updateState] = usePromise(async () => {
     const [taskView, answers] = await Promise.all([task(taskId), taskAnswers(taskId)]);
     const struct = await cachedStructure(taskId);
@@ -51,10 +52,19 @@ export const AnswerList: FC<P> = ({ taskId }) => {
     </span>;
   };
 
-  const importAnswers = (buffer: ArrayBuffer) => {
+  const importAnswers = async (buffer: ArrayBuffer) => {
+    setLoading(true);
+    const { parsedExcel } = await import(/* webpackChunkName: "exceljs" */ "@/utils/excel");
     setParsing(true);
-    parsedExcel(taskId, buffer).then(result => Promise.all(result.map(r => postAnswer(taskId, r))))
-      .catch(e => message.error(e.message)).finally(() => setParsing(false));
+    try {
+      const excel = await parsedExcel(taskId, buffer);
+      await Promise.all(excel.map(item => postAnswer(taskId, item)));
+    } catch (e) {
+      message.error(e.message);
+    } finally {
+      setLoading(false);
+      setParsing(false);
+    }
   };
 
   return <div>
@@ -65,7 +75,7 @@ export const AnswerList: FC<P> = ({ taskId }) => {
         </Button>,
         <div key="_2" style={{ display: "inline-block" }}>
           <File ref={file} accept=".xlsx" onLoaded={importAnswers}/>
-          <Button key="2" type="link" icon="import" disabled={parsing} loading={parsing}
+          <Button key="2" type="link" icon="import" disabled={parsing} loading={loading}
                   onClick={() => file.current?.click()}>批量导入</Button>
         </div>
       ]}
@@ -85,5 +95,3 @@ export const AnswerList: FC<P> = ({ taskId }) => {
     </Table>
   </div>;
 };
-
-export default AnswerList;

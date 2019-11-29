@@ -1,6 +1,5 @@
 import React, { FC } from "react";
-import { withRouter } from "react-router";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 
 import { Layout, Menu, Icon, Dropdown, Avatar } from "antd";
@@ -29,7 +28,7 @@ const UserDropdown: FC = () => {
   return <Layout.Header className="main-header">
     <div className="main-navbar">
       <Dropdown overlay={dropdown} trigger={["click"]}>
-        <span>
+        <span style={{ display: "inline-block" }}>
           <Avatar icon="user" className="main-navbar-avatar"/>
           {auth.token !== null ? auth.username : ""}
           <Icon type="down" className="navbar-icon"/>
@@ -63,10 +62,10 @@ const Sidebar: FC = () => <Layout.Sider className="main-sider">
 /**
  * 主窗口组件
  */
-export const MainPanel = withRouter(({ location, children }) => {
-  const rootPage = location.pathname === "/";
+export const MainPanel: FC = ({ children }) => {
+  const { pathname } = useLocation();
 
-  if(rootPage)
+  if(pathname === "/")
     return <Layout className="main-panel">
       <UserDropdown/>
       {children}
@@ -81,4 +80,4 @@ export const MainPanel = withRouter(({ location, children }) => {
       </Layout.Content>
     </Layout>
   </Layout>;
-});
+};

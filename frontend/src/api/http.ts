@@ -6,6 +6,13 @@ import { baseUrl } from "@/config";
 import { store } from "@/redux";
 import { now } from "@/utils";
 
+const authentication = () => {
+  const state = store.getState().auth;
+  if(state.token !== null)
+    return state;
+  return null;
+};
+
 export const http = Axios.create({
   baseURL: baseUrl,
   headers: {
@@ -13,17 +20,36 @@ export const http = Axios.create({
   }
 });
 
-http.interceptors.request.use(config => {
-  const auth = store.getState().auth;
-  if(auth.token !== null && auth.expiry > now())
-    assign(config.headers, { Authorization: `Bearer ${auth.token}` });
-  return config;
+// 当快要过期时刷新token
+http.interceptors.request.use(async req => {
+  const auth: string = req.headers?.Authorization;
+  if(auth.startsWith("Bearer ")) {
+
+  }
+  return req;
 }, Promise.reject);
+
+// 当401时提示跳转
+http.interceptors.response.use(resp => resp, error => {
+  const { response: { status }, code } = error;
+  if(code !== "ECONNABORTED" && status === 401)
+    ;
+  return Promise.reject(error);
+});
 
 /**
  * 向REST API请求数据的通用工具函数
  * @param config 传递给Axios的配置
- * @typeparam <T> 请求返回的数据类型
+ * @param withToken 当token可用时是否携带token数据，默认为`true`
+ * @template T 请求返回的数据类型
  */
-export const request = <T>(config: AxiosRequestConfig): Promise<T> =>
-  http.request<T>({ method: "GET", ...config }).then(({ data }) => data);
+export const request = <T>(config: AxiosRequestConfig, withToken = true): Promise<T> => {
+  if(!config.method)
+    config.method = "GET";
+  if(withToken) {
+    const auth = authentication();
+    if(auth !== null && auth.expiry > now())
+      assign(config.headers, { Authorization: `Bearer ${auth.token}` });
+  }
+  return http.request(config).then(({ data }) => data);
+};

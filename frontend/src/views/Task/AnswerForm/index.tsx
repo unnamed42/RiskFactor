@@ -1,5 +1,5 @@
 import React, { FC, useState } from "react";
-import { RouteComponentProps, withRouter } from "react-router-dom";
+import { useHistory } from "react-router-dom";
 
 import { Icon, Layout, Menu, message, PageHeader } from "antd";
 import { assign, isEmpty } from "lodash";
@@ -11,13 +11,14 @@ import { answer, postAnswer, updateAnswer } from "@/api/task";
 import { firstKey, usePromise, cachedLayout, cachedStructure } from "@/utils";
 import { Dict } from "@/types";
 
-interface P extends RouteComponentProps {
+interface P {
   taskId: number | string;
   answerId?: number | string;
   sectionId?: number | string;
 }
 
-export const AnswerForm = withRouter<P, FC<P>>(({ taskId, history, ...props }) => {
+export const AnswerForm: FC<P> = ({ taskId, sectionId, ...props }) => {
+  const history = useHistory();
 
   // 创建新answer时此项为undefined，其余情况应该均有值
   const [answerId, setAnswerId] = useState(props.answerId);
@@ -103,7 +104,6 @@ export const AnswerForm = withRouter<P, FC<P>>(({ taskId, history, ...props }) =
       </Layout.Content>
     </Layout>
   </Layout>;
-
-});
+};
 
 export default AnswerForm;
