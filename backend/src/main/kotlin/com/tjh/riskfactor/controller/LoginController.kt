@@ -36,14 +36,18 @@ class LoginController(
 
     /**
      * 请求登录，返回JWT。请求JSON格式为：
+     * <pre><code>
      * {
      *     "username": [username],
      *     "password": [password]
      * }
+     * </code></pre>
      * 给予应答内容的JSON格式为：
+     * <pre><code>
      * {
      *     "token": [token]
      * }
+     * </code></pre>
      * 不需要包含多余信息，因为token中已经编码了用户名和用户id
      *
      * @param body 请求体，格式如上
@@ -54,6 +58,14 @@ class LoginController(
         val username = require(body, "username")
         val password = require(body, "password")
         val auth = authenticate(username, password)
+        return mapOf("token" to provider.generateToken(auth))
+    }
+
+    /**
+     * 已登录用户用这个请求来刷新自己的token以避免token过时失效
+     */
+    @GetMapping("/login/refresh")
+    fun refreshToken(auth: Authentication): Map<String, String> {
         return mapOf("token" to provider.generateToken(auth))
     }
 

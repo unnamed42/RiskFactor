@@ -22,15 +22,17 @@ class JwtTokenProvider(private val userDetailsService: JwtUserDetailsService) {
     @Value("\${security.jwt.expiry-hours}")
     private lateinit var expiryHours: Number
 
-    fun generateToken(auth: Authentication): String {
-        val id = (auth.principal as JwtUserDetails).id
+    fun generateToken(id: Int, username: String): String {
         val expiryMs = expiryHours.toLong() * 3600000L
         val now = Date(); val expiry = Date(now.time + expiryMs)
-        return Jwts.builder().setSubject(auth.name)
+        return Jwts.builder().setSubject(username)
             .signWith(key(), SignatureAlgorithm.HS256)
             .setIssuedAt(now).setExpiration(expiry)
             .claim("idt", id).compact()
     }
+
+    fun generateToken(auth: Authentication) =
+        generateToken((auth.principal as JwtUserDetails).id, auth.name)
 
     internal fun getAuthentication(token: String): Authentication {
         val username = parseClaims(token).subject
