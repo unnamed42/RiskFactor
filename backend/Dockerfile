@@ -4,6 +4,12 @@ WORKDIR /app
 COPY gradlew gradlew.bat ./
 COPY gradle gradle
 
+ENV GRADLE_USER_HOME /cache
+
+RUN ls /cache
+
+VOLUME /cache
+
 RUN ./gradlew --version
 
 COPY build.gradle ./
