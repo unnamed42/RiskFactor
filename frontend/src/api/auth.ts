@@ -8,3 +8,9 @@ import { ApiToken } from "@/types/auth";
 export const login = (username: string, password: string) =>
   request<ApiToken>({ url: "/login", data: { username, password }, method: "POST" })
     .then(({ token }) => token);
+
+/**
+ * 刷新token
+ */
+export const refresh = (token: string) =>
+  request<ApiToken>({ url: "/login/refresh", data: { token } }).then(({ token }) => token);

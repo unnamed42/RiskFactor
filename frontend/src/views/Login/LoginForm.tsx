@@ -7,7 +7,7 @@ import { FormComponentProps } from "antd/lib/form";
 import { TimedButton } from "@/components";
 import { StoreType } from "@/redux";
 import * as authStore from "@/redux/auth";
-import { login } from "@/api/login";
+import { login } from "@/api/auth";
 import { phoneRegex } from "@/config";
 
 import "./index.less";

@@ -19,6 +19,7 @@ export type State = { token: null } | {
   username: string;
   userId: number;
   expiry: number;
+  issuedAt: number;
 };
 
 interface ActionType {
@@ -31,7 +32,7 @@ interface ActionType {
  */
 const parseToken = (token: string) => {
   const jwt = jwt_decode<JWT>(token);
-  return { username: jwt.sub, userId: jwt.idt, expiry: jwt.exp };
+  return { username: jwt.sub, userId: jwt.idt, expiry: jwt.exp, issuedAt: jwt.iat };
 };
 
 export const login = (token: string) =>

@@ -975,10 +975,10 @@
     "@types/prop-types" "*"
     csstype "^2.2.0"
 
-"@types/react@^16.9.13":
-  version "16.9.13"
-  resolved "https://registry.npm.taobao.org/@types/react/download/@types/react-16.9.13.tgz#b3ea5dd443f4a680599e2abba8cc66f5e1ce0059"
-  integrity sha1-s+pd1EP0poBZniq7qMxm9eHOAFk=
+"@types/react@^16.9.15":
+  version "16.9.15"
+  resolved "https://registry.npm.taobao.org/@types/react/download/@types/react-16.9.15.tgz?cache=0&sync_timestamp=1575503687389&other_urls=https%3A%2F%2Fregistry.npm.taobao.org%2F%40types%2Freact%2Fdownload%2F%40types%2Freact-16.9.15.tgz#aeabb7a50f96c9e31a16079ada20ede9ed602977"
+  integrity sha1-rqu3pQ+WyeMaFgea2iDt6e1gKXc=
   dependencies:
     "@types/prop-types" "*"
     csstype "^2.2.0"
@@ -1277,10 +1277,10 @@ ansi-styles@^3.2.0, ansi-styles@^3.2.1:
   dependencies:
     color-convert "^1.9.0"
 
-antd@^3.25.3:
-  version "3.25.3"
-  resolved "https://registry.npm.taobao.org/antd/download/antd-3.25.3.tgz?cache=0&sync_timestamp=1574657754430&other_urls=https%3A%2F%2Fregistry.npm.taobao.org%2Fantd%2Fdownload%2Fantd-3.25.3.tgz#284cbf83cf5ab6c26dffb6066576f202ea60af50"
-  integrity sha1-KEy/g89atsJt/7YGZXbyAupgr1A=
+antd@^3.26.0:
+  version "3.26.0"
+  resolved "https://registry.npm.taobao.org/antd/download/antd-3.26.0.tgz#0a6a43fdd8577e61708932b7bc34ba0234d0f138"
+  integrity sha1-CmpD/dhXfmFwiTK3vDS6AjTQ8Tg=
   dependencies:
     "@ant-design/create-react-context" "^0.2.4"
     "@ant-design/icons" "~2.1.1"
@@ -1299,7 +1299,7 @@ antd@^3.25.3:
     prop-types "^15.7.2"
     raf "^3.4.1"
     rc-animate "^2.10.2"
-    rc-calendar "~9.15.5"
+    rc-calendar "~9.15.7"
     rc-cascader "~0.17.4"
     rc-checkbox "~2.1.6"
     rc-collapse "~1.11.3"
@@ -1312,7 +1312,7 @@ antd@^3.25.3:
     rc-mentions "~0.4.0"
     rc-menu "~7.5.1"
     rc-notification "~3.3.1"
-    rc-pagination "~1.20.5"
+    rc-pagination "~1.20.11"
     rc-progress "~2.5.0"
     rc-rate "~2.5.0"
     rc-resize-observer "^0.1.0"
@@ -2497,23 +2497,23 @@ css-declaration-sorter@^4.0.1:
     postcss "^7.0.1"
     timsort "^0.3.0"
 
-css-loader@^3.2.0:
-  version "3.2.0"
-  resolved "https://registry.npm.taobao.org/css-loader/download/css-loader-3.2.0.tgz#bb570d89c194f763627fcf1f80059c6832d009b2"
-  integrity sha1-u1cNicGU92Nif88fgAWcaDLQCbI=
+css-loader@^3.2.1:
+  version "3.2.1"
+  resolved "https://registry.npm.taobao.org/css-loader/download/css-loader-3.2.1.tgz#62849b45a414b7bde0bfba17325a026471040eae"
+  integrity sha1-YoSbRaQUt73gv7oXMloCZHEEDq4=
   dependencies:
     camelcase "^5.3.1"
     cssesc "^3.0.0"
     icss-utils "^4.1.1"
     loader-utils "^1.2.3"
     normalize-path "^3.0.0"
-    postcss "^7.0.17"
+    postcss "^7.0.23"
     postcss-modules-extract-imports "^2.0.0"
     postcss-modules-local-by-default "^3.0.2"
-    postcss-modules-scope "^2.1.0"
+    postcss-modules-scope "^2.1.1"
     postcss-modules-values "^3.0.0"
-    postcss-value-parser "^4.0.0"
-    schema-utils "^2.0.0"
+    postcss-value-parser "^4.0.2"
+    schema-utils "^2.6.0"
 
 css-select-base-adapter@^0.1.1:
   version "0.1.1"
@@ -5969,10 +5969,10 @@ postcss-modules-local-by-default@^3.0.2:
     postcss-selector-parser "^6.0.2"
     postcss-value-parser "^4.0.0"
 
-postcss-modules-scope@^2.1.0:
-  version "2.1.0"
-  resolved "https://registry.npm.taobao.org/postcss-modules-scope/download/postcss-modules-scope-2.1.0.tgz#ad3f5bf7856114f6fcab901b0502e2a2bc39d4eb"
-  integrity sha1-rT9b94VhFPb8q5AbBQLiorw51Os=
+postcss-modules-scope@^2.1.1:
+  version "2.1.1"
+  resolved "https://registry.npm.taobao.org/postcss-modules-scope/download/postcss-modules-scope-2.1.1.tgz?cache=0&sync_timestamp=1574937017293&other_urls=https%3A%2F%2Fregistry.npm.taobao.org%2Fpostcss-modules-scope%2Fdownload%2Fpostcss-modules-scope-2.1.1.tgz#33d4fc946602eb5e9355c4165d68a10727689dba"
+  integrity sha1-M9T8lGYC616TVcQWXWihBydonbo=
   dependencies:
     postcss "^7.0.6"
     postcss-selector-parser "^6.0.0"
@@ -6146,15 +6146,24 @@ postcss-value-parser@^3.0.0, postcss-value-parser@^3.3.1:
   resolved "https://registry.npm.taobao.org/postcss-value-parser/download/postcss-value-parser-3.3.1.tgz#9ff822547e2893213cf1c30efa51ac5fd1ba8281"
   integrity sha1-n/giVH4okyE88cMO+lGsX9G6goE=
 
-postcss-value-parser@^4.0.0:
+postcss-value-parser@^4.0.0, postcss-value-parser@^4.0.2:
   version "4.0.2"
   resolved "https://registry.npm.taobao.org/postcss-value-parser/download/postcss-value-parser-4.0.2.tgz#482282c09a42706d1fc9a069b73f44ec08391dc9"
   integrity sha1-SCKCwJpCcG0fyaBptz9E7Ag5Hck=
 
-postcss@^7.0.0, postcss@^7.0.1, postcss@^7.0.14, postcss@^7.0.16, postcss@^7.0.17, postcss@^7.0.5, postcss@^7.0.6:
+postcss@^7.0.0, postcss@^7.0.1, postcss@^7.0.14, postcss@^7.0.16, postcss@^7.0.5, postcss@^7.0.6:
   version "7.0.18"
   resolved "https://registry.npm.taobao.org/postcss/download/postcss-7.0.18.tgz#4b9cda95ae6c069c67a4d933029eddd4838ac233"
   integrity sha1-S5zala5sBpxnpNkzAp7d1IOKwjM=
+  dependencies:
+    chalk "^2.4.2"
+    source-map "^0.6.1"
+    supports-color "^6.1.0"
+
+postcss@^7.0.23:
+  version "7.0.23"
+  resolved "https://registry.npm.taobao.org/postcss/download/postcss-7.0.23.tgz#9f9759fad661b15964f3cfc3140f66f1e05eadc1"
+  integrity sha1-n5dZ+tZhsVlk88/DFA9m8eBercE=
   dependencies:
     chalk "^2.4.2"
     source-map "^0.6.1"
@@ -6404,10 +6413,10 @@ rc-animate@^3.0.0-rc.1:
     rc-util "^4.5.0"
     react-lifecycles-compat "^3.0.4"
 
-rc-calendar@~9.15.5:
-  version "9.15.6"
-  resolved "https://registry.npm.taobao.org/rc-calendar/download/rc-calendar-9.15.6.tgz#8823236728c3f892a822b9691ce85e1b2b308485"
-  integrity sha1-iCMjZyjD+JKoIrlpHOheGyswhIU=
+rc-calendar@~9.15.7:
+  version "9.15.8"
+  resolved "https://registry.npm.taobao.org/rc-calendar/download/rc-calendar-9.15.8.tgz#6a3dbc2716c5297b46c8442dc2c748a17346111d"
+  integrity sha1-aj28JxbFKXtGyEQtwsdIoXNGER0=
   dependencies:
     babel-runtime "6.x"
     classnames "2.x"
@@ -6582,10 +6591,10 @@ rc-notification@~3.3.1:
     rc-animate "2.x"
     rc-util "^4.0.4"
 
-rc-pagination@~1.20.5:
-  version "1.20.9"
-  resolved "https://registry.npm.taobao.org/rc-pagination/download/rc-pagination-1.20.9.tgz?cache=0&sync_timestamp=1570452275213&other_urls=https%3A%2F%2Fregistry.npm.taobao.org%2Frc-pagination%2Fdownload%2Frc-pagination-1.20.9.tgz#891c5f33b4199c6e0f3616d0656c30fc7f4b726c"
-  integrity sha1-iRxfM7QZnG4PNhbQZWww/H9Lcmw=
+rc-pagination@~1.20.11:
+  version "1.20.11"
+  resolved "https://registry.npm.taobao.org/rc-pagination/download/rc-pagination-1.20.11.tgz#ff8ccbf422e229b0e36039bd33b5c9b619d74ad2"
+  integrity sha1-/4zL9CLiKbDjYDm9M7XJthnXStI=
   dependencies:
     babel-runtime "6.x"
     classnames "^2.2.6"
@@ -7259,10 +7268,18 @@ schema-utils@^1.0.0:
     ajv-errors "^1.0.0"
     ajv-keywords "^3.1.0"
 
-schema-utils@^2.0.0, schema-utils@^2.0.1, schema-utils@^2.5.0:
+schema-utils@^2.0.1, schema-utils@^2.5.0:
   version "2.5.0"
   resolved "https://registry.npm.taobao.org/schema-utils/download/schema-utils-2.5.0.tgz?cache=0&sync_timestamp=1571141000761&other_urls=https%3A%2F%2Fregistry.npm.taobao.org%2Fschema-utils%2Fdownload%2Fschema-utils-2.5.0.tgz#8f254f618d402cc80257486213c8970edfd7c22f"
   integrity sha1-jyVPYY1ALMgCV0hiE8iXDt/Xwi8=
+  dependencies:
+    ajv "^6.10.2"
+    ajv-keywords "^3.4.1"
+
+schema-utils@^2.6.0:
+  version "2.6.1"
+  resolved "https://registry.npm.taobao.org/schema-utils/download/schema-utils-2.6.1.tgz#eb78f0b945c7bcfa2082b3565e8db3548011dc4f"
+  integrity sha1-63jwuUXHvPoggrNWXo2zVIAR3E8=
   dependencies:
     ajv "^6.10.2"
     ajv-keywords "^3.4.1"
@@ -8085,10 +8102,10 @@ typedarray@^0.0.6:
   resolved "https://registry.npm.taobao.org/typedarray/download/typedarray-0.0.6.tgz#867ac74e3864187b1d3d47d996a78ec5c8830777"
   integrity sha1-hnrHTjhkGHsdPUfZlqeOxciDB3c=
 
-typescript@^3.7.2:
-  version "3.7.2"
-  resolved "https://registry.npm.taobao.org/typescript/download/typescript-3.7.2.tgz#27e489b95fa5909445e9fef5ee48d81697ad18fb"
-  integrity sha1-J+SJuV+lkJRF6f717kjYFpetGPs=
+typescript@^3.7.3:
+  version "3.7.3"
+  resolved "https://registry.npm.taobao.org/typescript/download/typescript-3.7.3.tgz?cache=0&sync_timestamp=1575557703512&other_urls=https%3A%2F%2Fregistry.npm.taobao.org%2Ftypescript%2Fdownload%2Ftypescript-3.7.3.tgz#b36840668a16458a7025b9eabfad11b66ab85c69"
+  integrity sha1-s2hAZooWRYpwJbnqv60Rtmq4XGk=
 
 ua-parser-js@^0.7.18:
   version "0.7.20"
