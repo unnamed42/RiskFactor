@@ -35,16 +35,12 @@ class AnswerService(
      */
     @Transactional
     fun postAnswer(answerId: Int?, taskId: Int, creator: User, body: String): Map<String, Int> {
-        val answer =
-            if(answerId == null)
-                Answer(creator = creator, task = tasks.findChecked(taskId))
-                    .apply { this.body = body }
-            else updateChecked(answerId) { it.body = body }
+        val answer = if(answerId == null)
+            Answer(creator = creator, task = tasks.findChecked(taskId)).apply { this.body = body }
+        else
+            updateChecked(answerId) { it.body = body }
         return mapOf("id" to save(answer).id)
     }
-
-    @Transactional
-    fun export(id: Int) {}
 
     fun answersOfTask(taskId: Int) = repo.findAllByTaskId(taskId)
 

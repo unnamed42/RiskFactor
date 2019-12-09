@@ -11,9 +11,6 @@ class AnswerController(private val service: AnswerService) {
     @GetMapping("/answers/{id}/body")
     fun answer(@PathVariable id: Int) = service.answerBody(id)
 
-    @GetMapping("/answers/{id}")
-    fun exportAnswer(@PathVariable id: Int) = service.export(id)
-
     /**
      * 删除回答
      * @param id 回答id
