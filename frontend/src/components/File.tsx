@@ -18,5 +18,5 @@ export const File = forwardRef<HTMLInputElement, P>(({ onLoaded, accept }, ref) 
   };
 
   return <input type="file" accept={accept} ref={ref} onChange={fileChosen}
-                style={{ visibility: "hidden", width: 0 }} />;
+                style={{ display: "none" }} />;
 });

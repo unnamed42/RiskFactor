@@ -13,5 +13,6 @@ export const numberRegex = /^(-?(0|[1-9]\d*)(\.\d*)?)?$/;
 export const text = {
   other: "其他",
   required: "此项必填",
-  numberRequired: "请输入数字"
+  numberRequired: "请输入数字",
+  reLogin: "登录信息失效，请重新登录"
 };

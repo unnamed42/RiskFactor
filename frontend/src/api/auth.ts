@@ -6,7 +6,7 @@ import { ApiToken } from "@/types/auth";
  * 用户名密码登录
  */
 export const login = (username: string, password: string) =>
-  request<ApiToken>({ url: "/login", data: { username, password }, method: "POST" })
+  request<ApiToken>({ url: "/login", data: { username, password }, method: "POST" }, false)
     .then(({ token }) => token);
 
 /**

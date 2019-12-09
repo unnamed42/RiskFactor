@@ -25,8 +25,9 @@ export const enablerFId = (parentId: string | number) => `#enabler.$${parentId}`
  * 将表达式求值
  * @param expr 后缀表达式
  * @param form ant design form实例
+ * @return {number | undefined} 表达式求值无错误发生，且结果不为`NaN`时返回该数值，其他情况返回`undefined`
  */
-export const evalExpr = (expr: string, form: WrappedFormUtils<any>) => {
+export const evalExpr = (expr: string, form: WrappedFormUtils) => {
   const parseOperand = (operand: string) =>
     Number(operand.startsWith("$") ? form.getFieldValue(operand) : operand);
   const isDigit = (ch: number) =>
