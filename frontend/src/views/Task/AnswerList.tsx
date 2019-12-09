@@ -58,7 +58,7 @@ export const AnswerList: FC<P> = ({ taskId }) => {
   });
 
   return <Fetch fetch={() => Promise.all([task(taskId), taskAnswers(taskId), cachedStructure(taskId)])}
-                onLoad={([, ans,]) => setAnswers(ans)}>
+                onLoadEnd={([, ans,]) => setAnswers(ans)}>
     {([taskView, , struct]) => {
       const names = struct.map(s => s.name);
       return <>

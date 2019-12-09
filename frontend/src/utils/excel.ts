@@ -1,6 +1,6 @@
 import { CellRichTextValue, ValueType, Workbook, Worksheet } from "exceljs";
 
-import { isNil, set } from "lodash";
+import { isNil, set, range } from "lodash";
 
 import { cachedLayout, tuple } from "@/utils";
 import { Dict, Question } from "@/types";
@@ -52,12 +52,11 @@ const valueOf = (value: CellRichTextValue) =>
 const parseCells = (sheet: Worksheet, layout: Dict<Question[]>) => {
   const mapping = titleMapping(layout);
   const { rowCount, columnCount } = sheet;
-  const result = [];
 
   console.log(mapping);
 
-  for (let r = 4; r <= rowCount; ++r) {
-    const entry = {};
+  const parseColumn = (r: number) => {
+    const entry: any = {};
     for (let c = 1; c <= columnCount; ++c) {
       const [h1, h2, label] = [1, 2, 3].map(row =>
         sheet.getCell(row, c).value?.toString());
@@ -79,10 +78,12 @@ const parseCells = (sheet: Worksheet, layout: Dict<Question[]>) => {
         strValue = valueOf(value as CellRichTextValue);
       propsOf(qu, strValue).forEach(([k, v]) => set(entry, k, v));
     }
-    result.push(entry);
-  }
+    return entry;
+  };
 
-  return result;
+  return range(4, rowCount + 1).reduce((acc: any[], r) => {
+    acc.push(parseColumn(r)); return acc;
+  }, []);
 };
 
 // NOTE: exceljs index从1开始

@@ -15,7 +15,7 @@ interface P<T> {
   // 异步获取动作
   fetch: () => Promise<T>;
   // 在获取完成时执行的动作
-  onLoad?: (data: T) => void;
+  onLoadEnd?: (data: T) => void;
   // 获取完成后的渲染函数，做成children的形式
   children: (data: T) => ReactNode;
 }
@@ -41,7 +41,7 @@ export class Fetch<T> extends Component<P<T>, S<T>> {
   async componentDidMount() {
     try {
       const data = await this.props.fetch();
-      this.props.onLoad?.(data);
+      this.props.onLoadEnd?.(data);
       this.setState({ data });
     } catch(e) {
       const err = e as AxiosError;
