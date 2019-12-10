@@ -2,10 +2,12 @@ package com.tjh.riskfactor.entity
 
 import javax.persistence.*
 
+typealias ID = Int
+
 @MappedSuperclass
 open class IEntity(
     @get:Id @get:GeneratedValue(strategy = GenerationType.IDENTITY)
-    var id: Int = 0
+    var id: ID = 0
 ) {
     override fun equals(other: Any?): Boolean {
         if(other == null) return false
@@ -17,4 +19,3 @@ open class IEntity(
         return id.hashCode()
     }
 }
-

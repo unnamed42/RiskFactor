@@ -19,9 +19,10 @@ fun fromJson(body: String): Map<String, Any> {
 
 /**
  * 触发Hibernate中lazy fetch集合的获取过程
+ * @receiver 数据库实体lazy fetch的集合property
  */
 fun <T: Collection<*>> T.fetchEager(): T {
     @Suppress("UNUSED_VARIABLE")
-    val unused = this.size
+    val unused = size
     return this
 }
