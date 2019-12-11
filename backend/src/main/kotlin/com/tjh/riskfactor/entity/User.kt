@@ -25,7 +25,7 @@ class User(
     @set:JsonProperty(value = "group")
     var groupName: String = ""
 ): IEntity() {
-    @get:ManyToOne
+    @get:ManyToOne(fetch = FetchType.LAZY)
     @get:JoinColumn(nullable = false)
     @get:JsonIgnore
     lateinit var group: Group

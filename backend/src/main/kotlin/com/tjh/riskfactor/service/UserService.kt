@@ -22,21 +22,7 @@ class UserService(
      * @param userId 用户id
      * @return 用户是否被管理员管理
      */
-    fun isManaging(adminId: Int, userId: Int) = repo.isManaging(adminId, userId)
-
-    /**
-     * 获取用户的组名（非显示用名）
-     * @param uid 用户id
-     * @return 用户组名
-     */
-    fun groupNameOf(uid: Int): String? = repo.findGroupName(uid)
-
-    /**
-     * 获取用户所管理的组id
-     * @param uid 用户id
-     * @return 管理的组id
-     */
-    fun managedGroupId(uid: Int): Int? = repo.findManagedGroupId(uid)
+    fun isManaging(adminId: Int, userId: Int) = repo.managedUserIds(adminId).contains(userId)
 
     /**
      * 将原始密码加密

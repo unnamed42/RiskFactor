@@ -23,8 +23,10 @@ class JwtTokenFilter(
 
     override fun doFilterInternal(req: HttpServletRequest, res: HttpServletResponse, chain: FilterChain) {
         try {
-            provider.resolveToken(req)?.let { provider.getAuthentication(it) }
-                ?.let { SecurityContextHolder.getContext().authentication = it }
+            provider.resolveToken(req)?.let {
+                val auth = provider.getAuthentication(it)
+                SecurityContextHolder.getContext().authentication = auth
+            }
             chain.doFilter(req, res)
         } catch (ex: RuntimeException) {
             when(ex) {

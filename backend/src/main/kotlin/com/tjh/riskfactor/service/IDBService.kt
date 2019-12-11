@@ -9,15 +9,17 @@ import com.tjh.riskfactor.entity.IEntity
 import com.tjh.riskfactor.error.notFound
 
 /**
- * Service的基类，将一些常用接口自[JpaRepository]成员[repo]暴露出来。Service层封装是为了避免Controller层直接使用[JpaRepository]，
- * 直接使用容易产生[org.springframework.transaction.annotation.Transactional]的一些问题。
+ * Service的基类，将一些常用接口自[JpaRepository]成员[repo]暴露出来。Service层封装是将需要[org.springframework.transaction.annotation.Transactional]的
+ * 逻辑封装出来，避免出现hibernate的[org.hibernate.LazyInitializationException], 仅仅调用Repository层的方法的话直接获取[repo].
  *
  * Checked系列接口是在非Checked（实体不存在时返回`null`]）的基础上，如果不存在则抛出[org.springframework.web.server.ResponseStatusException].
- * 该系列是为了方便Controller返回404错误使用，不要在Controller之外的地方使用。
+ * 该系列是为了方便Controller返回404错误使用，不要在Controller逻辑之外的地方（如[javax.servlet.FilterChain]）使用。
+ *
+ * （Controller逻辑是指，由Controller类[org.springframework.web.bind.annotation.RequestMapping]方法所使用到的其他函数和类方法）
  */
-abstract class IDBService<T: IEntity>(@PublishedApi internal val entityName: String) {
+abstract class IDBService<T: IEntity>(val entityName: String) {
 
-    protected abstract val repo: JpaRepository<T, ID>
+    abstract val repo: JpaRepository<T, ID>
 
     /**
      * 删掉数据库表中的全部数据
@@ -44,8 +46,7 @@ abstract class IDBService<T: IEntity>(@PublishedApi internal val entityName: Str
      * 在只需要update的情况下，用这个方法，再set相应属性，以避免直接获取的[find]将所有属性都获取一遍。这个select过程
      * 本可以避免。
      */
-    @PublishedApi
-    internal fun findLazy(id: Int): T = repo.getOne(id)
+    fun findLazy(id: Int): T = repo.getOne(id)
 
     /**
      * 提取实体的一个属性

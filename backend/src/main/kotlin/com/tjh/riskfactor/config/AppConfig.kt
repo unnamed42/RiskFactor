@@ -26,7 +26,9 @@ class AppConfig {
      * 启用Jackson的Hibernates LAZY fetch支持
      */
     @Bean
-    fun hibernate5Module() = Hibernate5Module().disable(Hibernate5Module.Feature.USE_TRANSIENT_ANNOTATION)
+    fun hibernate5Module() = Hibernate5Module().apply {
+        disable(Hibernate5Module.Feature.USE_TRANSIENT_ANNOTATION)
+    }
 
     @Bean
     fun kotlinModule() = KotlinModule()

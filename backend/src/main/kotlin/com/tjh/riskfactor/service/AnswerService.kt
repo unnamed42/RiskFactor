@@ -44,7 +44,8 @@ class AnswerService(
 
     fun answersOfTask(taskId: Int) = repo.findAllByTaskId(taskId)
 
-    fun answersOfTask(taskId: Int, groupId: Int) = repo.findAllByTaskIdCreatedBy(taskId, groups.memberNames(groupId))
+    fun answersOfTask(taskId: Int, groupId: Int) =
+        repo.findAllByTaskIdCreatedBy(taskId, groups.repo.findMemberNames(groupId))
 
     fun answersCreatedBy(taskId: Int, userId: Int) = repo.findTaskAnswersCreatedBy(taskId, userId)
 

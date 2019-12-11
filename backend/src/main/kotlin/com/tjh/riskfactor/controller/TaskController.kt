@@ -46,7 +46,7 @@ class TaskController(
         if(details.isRoot)
             return answers.answersOfTask(id)
         // 根据是否是组管理员，返回所有内容
-        val gid = users.managedGroupId(details.id)
+        val gid = users.repo.findManagedGroupId(details.id)
         return if(gid == null) answers.answersCreatedBy(id, details.id) else answers.answersOfTask(id, gid)
     }
 

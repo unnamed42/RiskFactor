@@ -15,7 +15,7 @@ import com.tjh.riskfactor.service.UserService
 class UserController(private val service: UserService) {
 
     /**
-     * 检查用户名{@code username}是否存在
+     * 检查用户名[username]是否存在
      * @param username 用户名
      * @return 存在时应答OK，不存在时应答NOT_FOUND
      */
@@ -25,10 +25,12 @@ class UserController(private val service: UserService) {
 
     /**
      * 更新用户信息。请求格式如下：
+     * ```
      * {
      *     "username": [新用户名], (可选)
      *     "password": [新密码], (可选)
      * }
+     * ```
      * 只有用户自己、root组成员、用户所属组的管理员可以更改
      * @param id 要更新的用户id
      * @param body 请求内容

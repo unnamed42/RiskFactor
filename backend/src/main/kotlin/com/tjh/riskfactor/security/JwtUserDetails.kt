@@ -5,6 +5,9 @@ import org.springframework.security.core.userdetails.UserDetails
 
 import com.tjh.riskfactor.entity.User
 
+/**
+ * 自定义的[UserDetails]. 不使用自带的builder [org.springframework.security.core.userdetails.User]是因为默认实现中没有用户id.
+ */
 class JwtUserDetails(val user: User, group: String): UserDetails {
 
     private val authorities: List<SimpleGrantedAuthority> = listOf(SimpleGrantedAuthority(group))

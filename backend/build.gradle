@@ -58,7 +58,7 @@ dependencies {
   implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
   implementation("org.jetbrains.kotlin:kotlin-reflect")
   // jackson
-  implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
+  implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.10.1")
   implementation("com.fasterxml.jackson.datatype:jackson-datatype-hibernate5")
   implementation("com.fasterxml.jackson.dataformat:jackson-dataformat-yaml")
   // json web token

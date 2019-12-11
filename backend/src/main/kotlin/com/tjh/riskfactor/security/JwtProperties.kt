@@ -7,6 +7,9 @@ import org.springframework.stereotype.Component
 @ConfigurationProperties("security.jwt")
 class JwtProperties {
 
+    /**
+     * JWT的签名密钥。
+     */
     lateinit var signingKey: String
     lateinit var securityRealm: String
     lateinit var expiryHours: Number
