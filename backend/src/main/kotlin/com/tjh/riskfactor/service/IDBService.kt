@@ -43,8 +43,7 @@ abstract class IDBService<T: IEntity>(val entityName: String) {
      * 获取的实际上是hibernate提供的proxy object因此永远不会是null，同时也要注意，如果属性未获取时一定要在获取它的`@Transactional`中使用，
      * 否则会抛出[org.hibernate.LazyInitializationException]。
      *
-     * 在只需要update的情况下，用这个方法，再set相应属性，以避免直接获取的[find]将所有属性都获取一遍。这个select过程
-     * 本可以避免。
+     * 在只需要update的情况下，用这个方法，再set相应属性，以避免直接获取的[find]将所有属性都获取一遍。这个select过程本可以避免。
      */
     fun findLazy(id: Int): T = repo.getOne(id)
 
