@@ -23,7 +23,7 @@ class JwtProperties {
     lateinit var expiryHours: Number
 
     /**
-     * 新JWT在一段时间之后才能生效（单位：小时）
+     * 新JWT在一段时间之后才能生效（单位：毫秒）
      */
     lateinit var notBefore: Number
 

@@ -41,6 +41,8 @@ class AppConfig {
 
     /**
      * 初始化数据库数据
+     *
+     * 本可以使用lambda，但是kotlin的lambda对应jvm是`final`的，且不能加`open`，只能另外弄一个class
      */
     @Bean
     fun runner(service: DataService) = Runner(service)

@@ -27,7 +27,6 @@ class JwtTokenFilter(
                 val auth = provider.getAuthentication(it)
                 SecurityContextHolder.getContext().authentication = auth
             }
-            chain.doFilter(req, res)
         } catch (ex: RuntimeException) {
             when(ex) {
                 is IllegalArgumentException, is MalformedJwtException
@@ -37,5 +36,6 @@ class JwtTokenFilter(
                 else -> throw ex
             }
         }
+        chain.doFilter(req, res)
     }
 }

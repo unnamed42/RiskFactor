@@ -27,10 +27,16 @@ class AnswerService(
     fun answerBody(id: Int) = repo.bodyOf(id) ?: "undefined"
 
     /**
-     * 创建新的回答
+     * 创建或修改的回答。返回的格式为：
+     * ```
+     * {
+     *      "id": [回答的id]
+     * }
+     * ```
+     * @param answerId 为`null`时代表是要创建一个新的[Answer]，否则是修改id为[answerId]的[Answer]
      * @param taskId 项目id
      * @param creator 创建者（用户）实体
-     * @param body 回答内容
+     * @param body 回答内容，应该是合法的JSON内容
      * @return 新创建的回答id
      */
     @Transactional

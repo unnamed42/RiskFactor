@@ -29,13 +29,13 @@ class WebSecurityConfig: WebSecurityConfigurerAdapter() {
     @Autowired lateinit var e: ErrorResponder
 
     /**
-     * 将其暴露为{@code Bean}
+     * 将其暴露为[Bean]
      */
     @Bean
-    override fun authenticationManager() = super.authenticationManager()
+    override fun authenticationManager() = super.authenticationManager()!!
 
     /**
-     * 配置数据库用户验证功能，主要是为了保留{@link UsernameNotFoundException}
+     * 配置数据库用户验证功能，主要是为了保留[org.springframework.security.core.userdetails.UsernameNotFoundException]
      */
     @Bean
     fun daoAuthenticationProvider() = DaoAuthenticationProvider().apply {
