@@ -1,7 +1,8 @@
 import React, { FC, useState } from "react";
 import { useHistory } from "react-router-dom";
 
-import { Icon, Layout, Menu, message, PageHeader } from "antd";
+import { Layout, Menu, message, PageHeader } from "antd";
+import { BarsOutlined } from "@ant-design/icons";
 import { isEmpty } from "lodash";
 
 import { QForm } from "./QForm";
@@ -80,7 +81,7 @@ export const AnswerForm: FC<P> = ({ taskId, sectionId, ...props }) => {
               style={{ height: "100%", borderRight: 0 }}>
           {struct.map(({ name, list }) => (!list || list.length === 0) ?
             <Menu.Item key={name} onClick={() => setHeader(name)}>{name}</Menu.Item> :
-            <Menu.SubMenu key={name} title={<span><Icon type="bars"/>{name}</span>}>
+            <Menu.SubMenu key={name} title={<span><BarsOutlined/>{name}</span>}>
               {list.map(s2 =>
                 <Menu.Item key={`${name}/${s2.name}`} onClick={() => setHeader(`${name}/${s2.name}`)}>
                   {s2.name}
@@ -93,7 +94,7 @@ export const AnswerForm: FC<P> = ({ taskId, sectionId, ...props }) => {
       <Layout>
         <Layout.Content style={{ padding: "20px 24px", minHeight: 280 }}>
           <PageHeader title="返回数据页" onBack={() => history.replace(`/task/${taskId}/answers`)}/>
-          <QForm layout={layout[header]} answer={answers}
+          <QForm rules={layout[header]!} answer={answers}
                  onChange={valuesChanged} onSubmit={post}/>
         </Layout.Content>
       </Layout>

@@ -39,14 +39,14 @@ export const login = (token: string) =>
   ({ type: Actions.LOGIN, payload: { token, ...parseToken(token) } });
 
 export const logout = () =>
-  ({ type: Actions.LOGOUT, payload: {} });
+  ({ type: Actions.LOGOUT, payload: { token: null } });
 
 export const reducer: Reducer<State, ActionType> = (state: State = { token: null }, action: ActionType) => {
   switch (action.type) {
     case Actions.LOGIN:
       return { ...action.payload };
     case Actions.LOGOUT:
-      return { token: null };
+      return action.payload;
     default:
       return state;
   }

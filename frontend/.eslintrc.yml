@@ -1,4 +1,39 @@
+env:
+  browser: true
+  es6: true
+parser: "@typescript-eslint/parser"
 parserOptions:
-  ecmaVersion: 6
+  project: tsconfig.json
+  sourceType: module
+plugins:
+  - "@typescript-eslint"
+  - "react-hooks"
+extends:
+  - "eslint:recommended"
+  - "plugin:react/recommended"
+  - "plugin:@typescript-eslint/eslint-recommended"
+  - "plugin:@typescript-eslint/recommended"
+  - "plugin:@typescript-eslint/recommended-requiring-type-checking"
+settings:
+  react:
+    version: detect
+    linkComponents:
+      - Hyperlink
+      - name: Link
+        linkAttribute: to
 rules:
-  sort-keys: 0
+  indent: 0
+  "react/prop-types": off
+  "react-hooks/rules-of-hooks": error
+  "react-hooks/exhaustive-deps": warn
+  "@typescript-eslint/indent":
+    - error
+    - 2
+    - ignoredNodes:
+        - JSXAttribute
+      SwitchCase: 1
+  "@typescript-eslint/quotes":
+    - warn
+    - double
+  "@typescript-eslint/explicit-function-return-type": off
+  "@typescript-eslint/no-explicit-any": off

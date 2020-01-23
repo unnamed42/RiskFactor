@@ -31,6 +31,11 @@ interface S<T> {
   data?: T;
 }
 
+/**
+ * 自API获取数据，提供给渲染部件渲染UI
+ *
+ * 需要是class-component，因为functional component不支持TSX的泛型
+ */
 export class Fetch<T> extends Component<P<T>, S<T>> {
 
   constructor(props: P<T>) {

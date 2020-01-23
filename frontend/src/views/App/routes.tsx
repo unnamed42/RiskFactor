@@ -12,7 +12,7 @@ export const Routes: FC = () => <Suspense fallback={<Loading/>}>
   <Switch>
     <PrivateRoute exact path="/" component={TaskList}/>
     <PrivateRoute path="/task/:id/answers"
-      render={({ match }) => <AnswerList taskId={match.params.id}/>}/>
+      render={({ match: { params } }) => <AnswerList taskId={params.id}/>}/>
     <PrivateRoute path="/task/:id/form"
       render={({ match: { params } }) => <AnswerForm taskId={params.id}/>}/>
     <PrivateRoute path="/task/:id/form/:ansId"

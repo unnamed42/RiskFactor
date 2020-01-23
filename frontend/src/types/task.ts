@@ -17,7 +17,7 @@ export interface Question {
   yesno?: string;
   addonPosition?: "prefix" | "postfix";
   labelPosition?: "prefix" | "postfix";
-  selected?: string;
+  init?: string;
   description?: string;
   placeholder?: string;
 }
