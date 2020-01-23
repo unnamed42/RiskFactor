@@ -111,11 +111,11 @@ open class QuestionOptions {
     open var addonPosition: String? = null
 
     /**
-     * 指定列表/多选类问题默认选项，默认是未选择
+     * 问题的初始值
      *
      * 对于单项选择来说，只有一个条目；对于多项选择来说，有多个条目，由半角逗号分隔
      */
-    open var selected: String? = null
+    open var init: String? = null
 
     /**
      * 额外说明
@@ -125,7 +125,8 @@ open class QuestionOptions {
     /**
      * 占位文字，一般是输入类控件需要
      *
-     * 对于[QuestionType.IMMUTABLE]类型来说，则是填充字符串
+     *
+     * 对于[QuestionType.IMMUTABLE]类型来说，则是填充字符串。不使用[init]是因为初始值原则上是不变化的
      */
     open var placeholder: String? = null
 }

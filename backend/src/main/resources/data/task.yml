@@ -209,7 +209,7 @@
                   list:
                     - type: select
                       addonPosition: postfix
-                      selected: 天
+                      init: 天
                       choices: [天, 月, 年]
             - label: 入院体征
               type: choice-multi

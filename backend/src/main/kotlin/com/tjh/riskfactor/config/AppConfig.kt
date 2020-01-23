@@ -52,4 +52,3 @@ class AppConfig {
         override fun run(vararg args: String?) = service.init()
     }
 }
-

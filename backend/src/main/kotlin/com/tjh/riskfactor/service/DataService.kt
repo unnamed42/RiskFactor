@@ -56,12 +56,16 @@ class DataService(
             val taskQuestions = mutableMapOf<Int, Question>()
 
             fun traverseQuestion(q: Question): Question {
+                // 存储空对象是为了获得一个id
                 val empty = questions.save(Question())
                 val nextId = empty.id
                 taskQuestions[nextId] = q
+                // 记录带有ref的Question，之后替换成真正的id
                 q.ref?.also { refQuestions[it] = nextId }
-                q.options?.placeholder?.takeIf { it.contains(':') }?.also { replaceQuestions.add(nextId) }
-                // 无视options，之后再更新
+                // 表达式类型的placeholder，记录具有此类特征的Question的id，之后将操作数ref名替换成真正的id
+                q.options?.placeholder?.takeIf { it.startsWith("expr:") }?.also { replaceQuestions.add(nextId) }
+                // 由于存在ref的前后依赖关系不能直接在此替换option内容，当所有Question被赋予一个id之后再进行真正的替换
+                // 由于这个原因，在此忽略options值，在所有id赋予完成之后更新
                 return questions.save(empty.apply {
                     this.list = q.list?.map { traverseQuestion(it) }?.toMutableList()
                     this.label = q.label; this.type = q.type
@@ -73,7 +77,7 @@ class DataService(
 
             tasks.save(task)
 
-            // 将placeholder中的ref引用替换成真正的id
+            // 将placeholder中的ref引用替换成真正的id。格式为 $id
             replaceQuestions.forEach {
                 val entity = taskQuestions[it]!!
                 val re = Regex("\\$(\\w+)")
@@ -83,6 +87,7 @@ class DataService(
                     "$$id"
                 }
             }
+            // 存储options
             taskQuestions.entries.filter { (_, v) -> v.options != null }.forEach { (id, q) ->
                 questions.updateChecked(id) { it.options = q.options }
             }
