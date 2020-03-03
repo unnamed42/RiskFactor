@@ -15,7 +15,7 @@ export const QInput: FC<P> = ({ rule: { placeholder, list, id }, namePath }) => 
       return { addonBefore: dom };
     else
       return { addonAfter: dom };
-  }, [list]);
+  }, [list, id, namePath]);
 
   return <Form.Item name={namePath} noStyle>
     <Input type="text" placeholder={placeholder} {...addon} />

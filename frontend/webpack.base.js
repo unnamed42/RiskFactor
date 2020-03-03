@@ -1,25 +1,24 @@
 const { join, resolve } = require("path");
 
 const HtmlWebpackPlugin = require("html-webpack-plugin");
-const {CleanWebpackPlugin} = require("clean-webpack-plugin");
+const { CleanWebpackPlugin } = require("clean-webpack-plugin");
 const FriendlyErrorsWebpackPlugin = require("friendly-errors-webpack-plugin");
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
-const OptimizeCSSAssetsPlugin = require("optimize-css-assets-webpack-plugin");
 
 const root = resolve("./");
 
 module.exports = {
   mode: process.env.NODE_ENV,
   stats: {children: false},
-  entry: [join(root, "/src/index")],
+  entry: join(root, "/src/index.tsx"),
   output: {
-    path: join(root, "/dist"),
+    path: join(root, "/dist/static"),
     filename: "[name].[hash:5].js",
     chunkFilename: "[name].[hash:5].js",
-    publicPath: "/"
+    publicPath: "/static/"
   },
   resolve: {
-    extensions: [".ts", ".tsx", ".js", ".jsx"],
+    extensions: [".ts", ".tsx", ".js"],
     alias: {
       "@": join(root, "/src")
     }
@@ -27,16 +26,10 @@ module.exports = {
   module: {
     rules: [
       {
-        sideEffects: false
-      },
-      {
-        test: /\.[tj]sx?$/,
+        test: /\.tsx?$/,
         exclude: /node_modules/,
-        use: ["babel-loader"]
-      }, {
-        enforce: "pre",
-        test: /\.js$/,
-        loader: "source-map-loader"
+        loader: "babel-loader",
+        options: { cacheDirectory: true },
       },
       {
         test: /\.(le|c)ss$/,
@@ -44,41 +37,41 @@ module.exports = {
           {
             loader: MiniCssExtractPlugin.loader,
             options: {
-              hmr: process.env.NODE_ENV === "development"
+              hmr: process.env.NODE_ENV === "development",
+              esModule: true
             },
           },
           "css-loader",
           {
             loader: "less-loader",
-            options: {javascriptEnabled: true}
+            options: { javascriptEnabled: true }
           }
         ]
       },
       {
-        test: /\.(png|svg|jpe?g|gif)$/,
-        use: ["file-loader"]
-      },
-      {
-        test: /\.(woff2?|eot|ttf|otf)$/,
-        use: ["file-loader"]
+        test: /\.(png|svg|jpe?g|gif|woff2?|eot|ttf|otf)$/,
+        use: "file-loader"
       }
     ]
+  },
+  performance: {
+    hints: process.env.NODE_ENV === "production" ? "warning" : false,
   },
   plugins: [
     new CleanWebpackPlugin(),
     new HtmlWebpackPlugin({
-      template: `${root}/src/index.html`
+      filename: join(root, "/dist/index.html"),
+      template: join(root, "/src/index.html")
     }),
     new FriendlyErrorsWebpackPlugin(),
     new MiniCssExtractPlugin({
       filename: "[name].[hash:5].css",
       chunkFilename: "[name].[hash:5].css",
       ignoreOrder: true,
-    })
+    }),
   ],
   optimization: {
     // runtimeChunk: "single",
-    minimizer: [new OptimizeCSSAssetsPlugin({})],
     moduleIds: "hashed",
     splitChunks: {
       cacheGroups: {

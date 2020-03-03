@@ -9,7 +9,7 @@ export const QSelect: FC<P> = ({ rule: { id, choices, placeholder, type }, nameP
     throw new Error(`下拉菜单选择 ${id} 未配置选项`);
 
   // 是否开启“输入时筛选”功能
-  const filterable = choices[0].indexOf("/") !== -1;
+  const filterable = choices[0].includes("/");
 
   return <Form.Item name={namePath} noStyle>
     <Select<string> showSearch={filterable} placeholder={placeholder} optionLabelProp="label" allowClear

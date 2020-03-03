@@ -28,7 +28,7 @@ export const QForm: FC<P> = ({ rules, onChange, onSubmit }) => {
 
   return <Form layout="horizontal" labelCol={{ span: 4 }} wrapperCol={{ span: 14 }} form={form}
                onValuesChange={onChange} validateMessages={{ required: "'${name}' 是必选字段" }}>
-    <Form.Item noStyle style={{ display: "none" }} name="#vars.answerId" children={<></>}/>
+    <Form.Item noStyle style={{ display: "none" }} name="#vars.answerId"><></></Form.Item>
     {rules.map(rule => <Renderer rule={rule} key={rule.id} />)}
     <Form.Item>
       <Button onClick={validated} style={{ marginLeft: 5 }} disabled={posting} loading={posting}>提交</Button>

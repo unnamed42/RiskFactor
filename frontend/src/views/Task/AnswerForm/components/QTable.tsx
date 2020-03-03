@@ -15,9 +15,9 @@ export const QTable: FC<P> = ({ rule: { id, list }, namePath }) => {
   const renderRow = (schema: Question, idx: number) => {
     const { type, list, id } = schema;
     if (type !== "list")
-      throw new Error(`表格行　${id} 规则错误 - 类型必须为 list`);
+      throw new Error(`表格行 ${id} 规则错误 - 类型必须为 list`);
     if (!list)
-      throw new Error(`表格行　${id} 规则错误 - 未配置内容`);
+      throw new Error(`表格行 ${id} 规则错误 - 未配置内容`);
     const cell = list[idx];
     if (cell.type === undefined)
       return <>{cell.label}</>;

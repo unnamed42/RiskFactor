@@ -32,13 +32,14 @@ export const invalidate = (taskId: number | string): ReducerAction =>
 
 export const reducer: Reducer<State, ReducerAction> = (state: State = {}, action: ReducerAction) => {
   switch(action.type) {
-    case Actions.UPDATE:
+    case Actions.UPDATE: {
       const { taskId, ...data } = action.payload;
       const savedData = state[taskId];
-      if(savedData?.mtime === data.mtime)
+      if (savedData?.mtime === data.mtime)
         return merge(state, { [taskId]: data });
       else
         return Object.assign(state, { [taskId]: data });
+    }
     case Actions.INVALIDATE:
       return omit(state, action.payload.taskId.toString());
     default:

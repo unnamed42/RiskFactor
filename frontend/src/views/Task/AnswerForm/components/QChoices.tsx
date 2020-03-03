@@ -6,7 +6,7 @@ import { FormInstance } from "rc-field-form/es";
 
 import { QProps as P } from ".";
 import { text } from "@/config";
-import { tuple } from "@/utils";
+import { tuple, shouldUpdate } from "@/utils";
 
 /**
  * 将多项单选（Radio）和多项多选（Checkbox）合并在一起，因为大量代码是相同的
@@ -34,7 +34,7 @@ export const QChoices: FC<P> = ({ rule: { choices, id, type, customizable }, nam
   };
 
   return <Form.Item name={namePath} noStyle>
-    {form => <ChoiceGroup>
+    <ChoiceGroup>
       {
         choices.map((choice, idx) => {
           const item = <Choice value={idx} key={`i-${idx}`}>{choice}</Choice>;
@@ -44,13 +44,17 @@ export const QChoices: FC<P> = ({ rule: { choices, id, type, customizable }, nam
       {
         customizable && <Choice key={choices.length} value={choices.length}>
           {text.other}
-          {
-            otherSelected(form) && <Form.Item name={[...namePath, "other"]} noStyle required>
-              <Input type="text" />
-            </Form.Item>
-          }
+          <Form.Item noStyle shouldUpdate={shouldUpdate(namePath)}>
+            {
+              form => otherSelected(form) ?
+                <Form.Item name={[...namePath, "other"]} noStyle required>
+                  <Input type="text" />
+                </Form.Item> :
+                null
+            }
+          </Form.Item>
         </Choice>
       }
-    </ChoiceGroup>}
+    </ChoiceGroup>
   </Form.Item>;
 };

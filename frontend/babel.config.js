@@ -1,5 +1,7 @@
-module.exports = {
-  presets: [
+module.exports = api => {
+  api.cache(true);
+
+  const presets = [
     ["@babel/preset-env", {
       targets: {
         ie: "11"
@@ -7,14 +9,12 @@ module.exports = {
     }],
     "@babel/preset-react",
     "@babel/preset-typescript"
-  ],
-  plugins: [
+  ];
+
+  const plugins = [
     ["@babel/plugin-transform-typescript", { allowDeclareFields: true }],
-    "@babel/plugin-proposal-optional-chaining",
-    "@babel/plugin-proposal-nullish-coalescing-operator",
-    "@babel/plugin-syntax-dynamic-import",
-    ["@babel/plugin-proposal-decorators", {legacy: true}],
-    ["@babel/plugin-proposal-class-properties", {loose: true}],
+    ["@babel/plugin-proposal-decorators", { legacy: true }],
+    ["@babel/plugin-proposal-class-properties", { loose: true }],
     "@babel/proposal-object-rest-spread",
     "babel-plugin-transform-async-to-promises",
     // enables this to use more modern features
@@ -25,5 +25,7 @@ module.exports = {
     }],
     "lodash",
     ["import", { libraryName: "antd", libraryDirectory: "es", style: true }, "antd"]
-  ]
-};
+  ];
+
+  return { presets, plugins };
+}

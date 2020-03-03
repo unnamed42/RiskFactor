@@ -1,25 +1,37 @@
 {
   "compilerOptions": {
-    "experimentalDecorators": true,
-    "target": "esnext",
-    "module": "esnext",
-    "outDir": "./dist/",
-    "strictNullChecks": true,
+    // basic
+    "jsx": "react",
+    "isolatedModules": true,
+
+    // module resolution
+    "esModuleInterop": true,
     "moduleResolution": "node",
+    "resolveJsonModule": true,
     "allowSyntheticDefaultImports": true,
-    "removeComments": true,
-    "allowJs": true,
-    "noEmit": true,
+    "target": "es2020",
+    "module": "esnext",
+
+    // code checking
     "strict": true,
     "alwaysStrict": true,
+    "strictNullChecks": true,
+    "strictBindCallApply": true,
+    "strictFunctionTypes": true,
+    "strictPropertyInitialization": true,
     "allowUnreachableCode": false,
-    "noUnusedLocals": true,
-    "noImplicitReturns": true,
-    "noFallthroughCasesInSwitch": true,
+    "skipLibCheck": true,
+
+    // emissions
+    "removeComments": true,
+    "allowJs": true,
     "forceConsistentCasingInFileNames": true,
-    "downlevelIteration": true,
-    "importHelpers": true,
-    "jsx": "react",
+
+    // decorator
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true,
+
+    "outDir": "./dist/",
     "baseUrl": ".",
     "paths": {
       "@/*": ["src/*"]
@@ -30,6 +42,8 @@
     ]
   },
   "include": [
+    "*.ts",
+    "scripts/*.ts",
     "src/**/*.ts",
     "src/**/*.tsx",
     "tests/**/*.ts",
@@ -38,7 +52,6 @@
   "exclude": [
     "node_modules",
     "dist",
-    "scripts",
     "public"
   ]
 }

@@ -41,7 +41,7 @@ http.interceptors.request.use(async config => {
     }
   }
   return config;
-}, Promise.reject);
+}, e => Promise.reject(e));
 
 /**
  * 向REST API请求数据的通用工具函数
@@ -49,7 +49,7 @@ http.interceptors.request.use(async config => {
  * @param withToken 当token可用时是否携带token数据，默认为`true`
  * @template T 请求返回的数据类型
  */
-export const request = <T>(config: AxiosRequestConfig, withToken = true) => {
+export const request = async <T>(config: AxiosRequestConfig, withToken = true) => {
   if(!config.method)
     config.method = "GET";
   if(withToken) {
@@ -57,5 +57,5 @@ export const request = <T>(config: AxiosRequestConfig, withToken = true) => {
     if(auth !== null && auth.expiry > now())
       withBearerToken(config, auth.token);
   }
-  return http.request<T>(config).then(({ data }) => data);
+  return (await http.request<T>(config)).data;
 };

@@ -23,7 +23,7 @@ export interface QProps {
   itemProps?: FormItemProps;
 }
 
-const QNothing: FC<QProps> = () => <></>;
+const QNothing: FC<QProps> = () => null;
 
 export const renderer = (type: Question["type"]): FC<QProps> => {
   switch (type) {
@@ -40,7 +40,7 @@ export const renderer = (type: Question["type"]): FC<QProps> => {
   }
 };
 
-export const pushPath = <T extends any>(arr: T[] | undefined, elem: T) =>
+const pushPath = <T extends any>(arr: T[] | undefined, elem: T) =>
   arr ? [...arr, elem] : [elem];
 
 interface P {
