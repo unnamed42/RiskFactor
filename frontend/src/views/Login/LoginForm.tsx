@@ -1,4 +1,4 @@
-import React, { FC, useState } from "react";
+import React, { FC, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 
 import { Form, Input, Button, Checkbox, Tabs, message } from "antd";
@@ -8,33 +8,9 @@ import { Store } from "rc-field-form/es/interface";
 import { StoreType } from "@/redux";
 import * as authStore from "@/redux/auth";
 import { login } from "@/api/auth";
+import { useAsync } from "@/utils";
 
 import "./index.less";
-
-interface Fields {
-  username: string;
-  password: string;
-  remember: boolean;
-}
-
-interface P {
-  onLoginSuccess?: () => void;
-}
-
-const UsernamePasswordPane: FC = () => <>
-  <Form.Item name="username" rules={[{
-    required: true, message: "请输入用户名！",
-    validateTrigger: ["onChange", "onBlur"]
-  }]}>
-    <Input placeholder="用户名" prefix={<UserOutlined className="login-form-icon" />} />
-  </Form.Item>
-  <Form.Item name="password" rules={[{
-    required: true, message: "请输入密码！",
-    validateTrigger: ["onChange", "onBlur"]
-  }]}>
-    <Input.Password prefix={<LockOutlined className="login-form-icon" />} type="password" placeholder="密码" />
-  </Form.Item>
-</>;
 
 // import { MobileFilled, MailOutlined } from "@ant-design/icons";
 // import { phoneRegex } from "@/config";
@@ -54,40 +30,56 @@ const UsernamePasswordPane: FC = () => <>
 //   </Form.Item>
 // </>;
 
-export const LoginForm: FC<P> = ({ onLoginSuccess }) => {
+export const LoginForm: FC = () => {
   const auth = useSelector((store: StoreType) => store.auth);
-  const [logging, setLogging] = useState(false);
   const dispatch = useDispatch();
-  const [form] = Form.useForm();
 
-  const doLogin = async (values: Store) => {
+  const [state, requestLogin] = useAsync(login, []);
+
+  const doLogin = (values: Store) => {
     const { username, password } = values;
-    setLogging(true);
-    try {
-      const token = await login(username, password);
-      dispatch(authStore.login(token));
-      onLoginSuccess?.();
-    } catch (err) {
-      message.error(err.message);
-    } finally {
-      setLogging(false);
-    }
+    requestLogin(username, password);
   };
 
-  return <Form onFinish={doLogin} className="login-form" form={form}
-    initialValues={{ username: auth.token !== null ? auth.username : undefined, remember: false }}>
+  useEffect(() => {
+    if (state && !state.loading) {
+      if (state.error !== undefined)
+        message.error(state.error.message);
+      else
+        // 外层根据token的更新会重定向至Referer页面
+        dispatch(authStore.login(state.data));
+    }
+  }, [state]);
+
+  const initialValues = {
+    username: auth.token !== null ? auth.username : undefined,
+    remember: false
+  };
+
+  return <Form onFinish={doLogin} className="login-form" initialValues={initialValues}>
     <Tabs defaultActiveKey="1" animated={{ inkBar: true, tabPane: false }} tabBarStyle={{ textAlign: "center" }}>
       <Tabs.TabPane tab="用户名密码登录" key="1">
-        <UsernamePasswordPane/>
+        <Form.Item name="username" rules={[{
+          required: true, message: "请输入用户名！",
+          validateTrigger: ["onChange", "onBlur"]
+        }]}>
+          <Input placeholder="用户名" prefix={<UserOutlined className="login-form-icon" />} />
+        </Form.Item>
+        <Form.Item name="password" rules={[{
+          required: true, message: "请输入密码！",
+          validateTrigger: ["onChange", "onBlur"]
+        }]}>
+          <Input.Password prefix={<LockOutlined className="login-form-icon" />} type="password" placeholder="密码" />
+        </Form.Item>
       </Tabs.TabPane>
     </Tabs>
-    <Form.Item>
+    <Form.Item noStyle>
       <Form.Item noStyle valuePropName="checked" name="remember">
         <Checkbox className="login-form-remember">保持登录</Checkbox>
       </Form.Item>
       <a className="login-form-forget" href="">忘记密码？</a>
       <Button type="primary" htmlType="submit" className="login-form-submit"
-        disabled={logging} loading={logging}>登录</Button>
+        disabled={state?.loading} loading={state?.loading}>登录</Button>
     </Form.Item>
   </Form>;
 };

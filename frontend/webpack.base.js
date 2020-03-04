@@ -9,13 +9,20 @@ const root = resolve("./");
 
 module.exports = {
   mode: process.env.NODE_ENV,
-  stats: {children: false},
+  stats: {
+    modules: false,
+    reasons: false,
+    chunks: false,
+    chunkModules: false,
+    hash: false,
+    children: false,
+  },
   entry: join(root, "/src/index.tsx"),
   output: {
-    path: join(root, "/dist/static"),
-    filename: "[name].[hash:5].js",
-    chunkFilename: "[name].[hash:5].js",
-    publicPath: "/static/"
+    path: join(root, "/dist"),
+    filename: "static/[name].[hash:5].js",
+    chunkFilename: "static/[name].[hash:5].js",
+    publicPath: ""
   },
   resolve: {
     extensions: [".ts", ".tsx", ".js"],
@@ -60,13 +67,14 @@ module.exports = {
   plugins: [
     new CleanWebpackPlugin(),
     new HtmlWebpackPlugin({
-      filename: join(root, "/dist/index.html"),
-      template: join(root, "/src/index.html")
+      filename: "index.html",
+      template: join(root, "/src/index.html"),
+      minify: true
     }),
     new FriendlyErrorsWebpackPlugin(),
     new MiniCssExtractPlugin({
-      filename: "[name].[hash:5].css",
-      chunkFilename: "[name].[hash:5].css",
+      filename: "static/[name].[hash:5].css",
+      chunkFilename: "static/[name].[hash:5].css",
       ignoreOrder: true,
     }),
   ],
