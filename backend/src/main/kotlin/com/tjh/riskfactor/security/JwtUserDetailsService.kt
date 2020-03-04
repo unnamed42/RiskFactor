@@ -6,14 +6,14 @@ import org.springframework.security.core.userdetails.UserDetailsService
 import org.springframework.security.core.userdetails.UsernameNotFoundException
 import org.springframework.transaction.annotation.Transactional
 
-import com.tjh.riskfactor.service.UserService
+import com.tjh.riskfactor.repo.UserRepository
 
 @Service
-class JwtUserDetailsService(private val service: UserService): UserDetailsService {
+class JwtUserDetailsService(private val repo: UserRepository): UserDetailsService {
 
     @Transactional
     override fun loadUserByUsername(username: String): UserDetails {
-        val user = service.find(username) ?: throw UsernameNotFoundException("user [$username] not found")
+        val user = repo.findByName(username) ?: throw UsernameNotFoundException("user [$username] not found")
         return JwtUserDetails(user, user.group.name)
     }
 

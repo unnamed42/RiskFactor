@@ -9,7 +9,8 @@ import com.tjh.riskfactor.entity.User
 @Repository
 interface UserRepository: JpaRepository<User, Int> {
 
-    fun findByUsername(username: String): User?
+    @Query("select u from User u where u.username = :username")
+    fun findByName(username: String): User?
 
     fun existsByUsername(username: String): Boolean
 

@@ -4,15 +4,19 @@ import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 import org.springframework.security.access.prepost.PreAuthorize
+import org.springframework.security.crypto.password.PasswordEncoder
 
-import com.tjh.riskfactor.service.UserService
+import com.tjh.riskfactor.repo.*
 
 /**
  * 用户相关操作，比如设置用户信息，检查用户名重名等
  */
 @CrossOrigin
 @RestController
-class UserController(private val service: UserService) {
+class UserController(
+    private val repo: UserRepository,
+    private val encoder: PasswordEncoder
+) {
 
     /**
      * 检查用户名[username]是否存在
@@ -21,7 +25,7 @@ class UserController(private val service: UserService) {
      */
     @RequestMapping(path = ["/username/{username}"], method = [RequestMethod.HEAD])
     fun usernameExists(@PathVariable username: String) =
-        ResponseEntity<Any>(if(service.has(username)) HttpStatus.OK else HttpStatus.NOT_FOUND)
+        ResponseEntity<Any>(if(repo.existsByUsername(username)) HttpStatus.OK else HttpStatus.NOT_FOUND)
 
     /**
      * 更新用户信息。请求格式如下：
@@ -39,9 +43,9 @@ class UserController(private val service: UserService) {
     @PreAuthorize("@e.canWriteUser(#id)")
     fun updateInfo(@PathVariable id: Int, @RequestBody body: Map<String, String>) {
         if(body.isEmpty()) return
-        service.save(service.updateChecked(id) { user ->
+        repo.save(repo.updateChecked(id) { user ->
             body["username"]?.let { user.username = it }
-            body["password"]?.let { user.password = service.encode(it) }
+            body["password"]?.let { user.password = encoder.encode(it) }
         })
     }
 

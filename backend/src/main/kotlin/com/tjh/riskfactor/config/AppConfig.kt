@@ -11,7 +11,7 @@ import org.springframework.context.annotation.Primary
 import org.springframework.transaction.annotation.Transactional
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 
-import com.tjh.riskfactor.service.DataService
+import com.tjh.riskfactor.component.InitialDataLoader
 
 /**
  * 一些乱七八糟的Bean都放在这里
@@ -45,9 +45,9 @@ class AppConfig {
      * 本可以使用lambda，但是kotlin的lambda对应jvm是`final`的，且不能加`open`，只能另外弄一个class
      */
     @Bean
-    fun runner(service: DataService) = Runner(service)
+    fun runner(service: InitialDataLoader) = Runner(service)
 
-    open class Runner(val service: DataService): CommandLineRunner {
+    open class Runner(val service: InitialDataLoader): CommandLineRunner {
         @Transactional
         override fun run(vararg args: String?) = service.init()
     }

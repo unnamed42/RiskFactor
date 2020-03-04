@@ -6,7 +6,7 @@ COPY gradle gradle
 
 RUN ./gradlew --version
 
-COPY build.gradle ./
+COPY build.gradle.bak ./
 
 RUN ./gradlew build --no-daemon --console=rich || return 0
 

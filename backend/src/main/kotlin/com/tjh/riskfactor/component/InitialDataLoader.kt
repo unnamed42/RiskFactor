@@ -1,4 +1,4 @@
-package com.tjh.riskfactor.service
+package com.tjh.riskfactor.component
 
 import com.fasterxml.jackson.core.TreeNode
 import com.fasterxml.jackson.core.type.TypeReference
@@ -9,18 +9,20 @@ import com.fasterxml.jackson.dataformat.yaml.YAMLFactory
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder
+import org.springframework.security.crypto.password.PasswordEncoder
 
 import com.tjh.riskfactor.entity.*
 import com.tjh.riskfactor.entity.form.*
-import com.tjh.riskfactor.repo.SaveGuardRepository
+import com.tjh.riskfactor.repo.*
 
 @Service
-class DataService(
-    private val tasks: TaskService,
-    private val users: UserService,
-    private val groups: GroupService,
-    private val questions: QuestionService,
+class InitialDataLoader(
+    private val tasks: TaskRepository,
+    private val users: UserRepository,
+    private val groups: GroupRepository,
+    private val questions: QuestionRepository,
     private val guards: SaveGuardRepository,
+    private val encoder: PasswordEncoder,
     builder: Jackson2ObjectMapperBuilder
 ) {
 
@@ -72,7 +74,7 @@ class DataService(
                 })
             }
 
-            task.group = groups.findChecked(task.center)
+            task.group = groups.findByName(task.center) ?: throw groups.notFound(task.center)
             task.list = task.list.map { traverseQuestion(it) }.toMutableList()
 
             tasks.save(task)
@@ -107,13 +109,16 @@ class DataService(
             val groupList = readTreeAs(root.get("groups"), groupListType)
 
             val groups = this.groups.saveAll(groupList).associateBy { it.name }
+
             this.users.saveAll(userList.map {
-                users.encoded(it.apply { group = groups[groupName] ?: throw Exception("group $groupName not found") })
+                it.password = encoder.encode(it.password)
+                it.group = groups[it.groupName] ?: throw Exception("group ${it.groupName} not found")
+                it
             })
         }
     }
 
-    private fun guarded(func: () -> Unit, guard: Int) {
+    private inline fun guarded(func: () -> Unit, guard: Int) {
         if(guards.existsById(guard))
             return
         func(); guards.insert(guard)
