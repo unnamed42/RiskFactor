@@ -1,12 +1,17 @@
-import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
-
 buildscript {
   ext {
     kotlinVersion = "1.3.61"
-    springBootVersion = "2.2.4.RELEASE"
+    springBootVersion = "2.2.5.RELEASE"
+
+    jacksonKotlinVersion = "2.10.2"
+    kotlinLoggingVersion = "1.7.8"
+    jjwtVersion = "0.11.0"
+
+    kotlinJpaDslVersion = "2.0.0-rc.1"
+    JpaDslProjectionVersion = "2.0.0"
   }
   repositories {
-    maven { url "http://maven.aliyun.com/nexus/content/groups/public/" }
+    jcenter()
   }
   dependencies {
     classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion")
@@ -16,6 +21,24 @@ buildscript {
   }
 }
 
+allprojects {
+  repositories {
+    maven {
+      url "https://maven.aliyun.com/repository/jcenter"
+    }
+    maven {
+      url "https://maven.aliyun.com/repository/central"
+    }
+    maven {
+      url "https://maven.aliyun.com/repository/google"
+    }
+    jcenter()
+    mavenCentral()
+    google()
+  }
+}
+
+apply plugin: "idea"
 apply plugin: "kotlin"
 apply plugin: "kotlin-spring"
 apply plugin: "kotlin-kapt"
@@ -28,21 +51,26 @@ version = "0.0.1-SNAPSHOT"
 sourceCompatibility = JavaVersion.VERSION_11
 targetCompatibility = JavaVersion.VERSION_11
 
-tasks.withType(KotlinCompile) {
+idea {
+  module {
+    def kaptMain = file("build/generated/source/kapt/main")
+    sourceDirs += kaptMain
+    generatedSourceDirs += kaptMain
+  }
+}
+
+compileKotlin {
   kotlinOptions {
     jvmTarget = JavaVersion.VERSION_11
     freeCompilerArgs = ["-Xjsr305=strict"]
   }
 }
 
-allprojects {
-  repositories {
-    maven { url "http://maven.aliyun.com/nexus/content/groups/public/" }
+compileTestKotlin {
+  kotlinOptions {
+    jvmTarget = JavaVersion.VERSION_11
+    freeCompilerArgs = ["-Xjsr305=strict"]
   }
-}
-
-repositories {
-  maven { url "http://maven.aliyun.com/nexus/content/groups/public/" }
 }
 
 test {
@@ -56,21 +84,24 @@ dependencies {
   kapt("org.springframework.boot:spring-boot-configuration-processor")
   runtimeOnly("org.springframework.boot:spring-boot-devtools")
   // jdbc
-  runtimeOnly("mysql:mysql-connector-java:8.0.13")
+  runtimeOnly("mysql:mysql-connector-java")
+  // query dsl and projections
+  compile("au.com.console:kotlin-jpa-specification-dsl:$kotlinJpaDslVersion")
+  implementation("th.co.geniustree.springdata.jpa:specification-with-projections:$JpaDslProjectionVersion")
   // logging wrapper
-  implementation("io.github.microutils:kotlin-logging:1.7.8")
+  implementation("io.github.microutils:kotlin-logging:$kotlinLoggingVersion")
   // kotlin
   implementation("org.jetbrains.kotlin:kotlin-stdlib:$kotlinVersion")
   implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
   implementation("org.jetbrains.kotlin:kotlin-reflect")
   // jackson
-  implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.10.1")
+  implementation("com.fasterxml.jackson.module:jackson-module-kotlin:$jacksonKotlinVersion")
   implementation("com.fasterxml.jackson.datatype:jackson-datatype-hibernate5")
   implementation("com.fasterxml.jackson.dataformat:jackson-dataformat-yaml")
   // json web token
-  compileOnly("io.jsonwebtoken:jjwt-api:0.10.7")
-  runtimeOnly("io.jsonwebtoken:jjwt-impl:0.10.7")
-  runtimeOnly("io.jsonwebtoken:jjwt-jackson:0.10.7")
+  compileOnly("io.jsonwebtoken:jjwt-api:$jjwtVersion")
+  runtimeOnly("io.jsonwebtoken:jjwt-impl:$jjwtVersion")
+  runtimeOnly("io.jsonwebtoken:jjwt-jackson:$jjwtVersion")
 
   testImplementation("org.springframework.boot:spring-boot-starter-test") {
     // 排除 junit 4
@@ -82,4 +113,6 @@ dependencies {
   testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine")
   testImplementation("org.junit.platform:junit-platform-launcher")
   testImplementation("org.mockito:mockito-junit-jupiter")
+  // h2 database
+  testRuntimeOnly("com.h2database:h2")
 }

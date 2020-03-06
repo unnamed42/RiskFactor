@@ -2,7 +2,6 @@ package com.tjh.riskfactor.config
 
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
-import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpMethod
 import org.springframework.http.HttpStatus
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider
@@ -10,23 +9,27 @@ import org.springframework.security.config.annotation.authentication.builders.Au
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter
+import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity
 import org.springframework.security.config.http.SessionCreationPolicy
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.security.web.authentication.HttpStatusEntryPoint
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter
 
-import com.tjh.riskfactor.error.ErrorResponder
-import com.tjh.riskfactor.security.JwtTokenFilter
-import com.tjh.riskfactor.security.JwtUserDetailsService
+import com.tjh.riskfactor.api.error.ErrorHandler
+import com.tjh.riskfactor.api.token.TokenFilter
+import com.tjh.riskfactor.api.account.AccountDetailsService
 
 @Configuration
 @EnableWebSecurity
-class WebSecurityConfig: WebSecurityConfigurerAdapter() {
-
-    @Autowired lateinit var userDetailsService: JwtUserDetailsService
-    @Autowired lateinit var encoder: PasswordEncoder
-    @Autowired lateinit var jwtTokenFilter: JwtTokenFilter
-    @Autowired lateinit var e: ErrorResponder
+@EnableGlobalMethodSecurity(
+    prePostEnabled = true
+)
+class WebSecurityConfig(
+    private val userDetailsService: AccountDetailsService,
+    private val encoder: PasswordEncoder,
+    private val tokenFilter: TokenFilter,
+    private val handler: ErrorHandler
+): WebSecurityConfigurerAdapter() {
 
     /**
      * 将其暴露为[Bean]
@@ -55,13 +58,13 @@ class WebSecurityConfig: WebSecurityConfigurerAdapter() {
             .formLogin().disable()
             .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
             .authorizeRequests()
-                .antMatchers(HttpMethod.POST, "/login").permitAll()
+                .antMatchers(HttpMethod.POST, "/token").permitAll()
                 .antMatchers("/test", "/test/**").permitAll()
                 .anyRequest().authenticated().and()
             .exceptionHandling()
                 .authenticationEntryPoint(HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED))
-                .accessDeniedHandler { req, res, ex -> e.response(req, res, ex, HttpStatus.FORBIDDEN); }.and()
-            .addFilterBefore(jwtTokenFilter, UsernamePasswordAuthenticationFilter::class.java)
+                .accessDeniedHandler { req, res, ex -> handler.respondException(req, res, ex, HttpStatus.FORBIDDEN); }.and()
+            .addFilterBefore(tokenFilter, UsernamePasswordAuthenticationFilter::class.java)
     }
 
 }

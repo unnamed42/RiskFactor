@@ -1,0 +1,53 @@
+debug: false
+
+server:
+  port: 8090
+  error:
+    whitelabel:
+      enabled: false
+    include-stacktrace: on_trace_param
+
+logging:
+  level:
+    org.springframework.boot.autoconfigure: ERROR
+
+spring:
+  jackson:
+    default-property-inclusion: non_null
+    visibility:
+      field: none
+      getter: public_only
+      setter: public_only
+      is-getter: public_only
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/riskfactor?createDatabaseIfNotExist=true&useSSL=false
+    username: root
+    password: root
+    platform: mysql
+  jpa:
+    database: mysql
+    database-platform: org.hibernate.dialect.MySQL8Dialect
+    properties:
+      hibernate:
+        dialect: ${spring.jpa.database-platform}
+        storage_engine: innodb
+        connection:
+          characterEncoding: utf8
+          charSet: utf8
+        globally_quoted_identifiers: true
+        jdbc:
+          batch_size: 50
+          order_inserts: true
+          order_updates: true
+    hibernate:
+      ddl-auto: update
+    show-sql: ${debug}
+    open-in-view: false
+
+jwt:
+  encoding-strength: 12
+  not-before: 3000
+  expiry-hours: 168 # 7 days
+  security-realm: Spring Boot JWT Example Realm
+  signing-key: "y$B&E)H@McQfTjWmZq4t7w!z%C*F-JaNdRgUkXp2r5u8x/A?D(G+KbPeShVmYq3t"

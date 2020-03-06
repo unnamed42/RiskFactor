@@ -1,0 +1,26 @@
+groups:
+  - ref: users
+    name: 华中科技大学
+  - ref: doctor
+    name: 同济医学院
+users:
+  - username: admin
+    password: admin
+    email: admin@example.com
+    group: root
+    isAdmin: true
+  - username: user
+    password: user
+    email: user@example.com
+    group: users
+    isAdmin: true
+  - username: doctor
+    password: doctor
+    email: doctor@example.com
+    group: doctor
+  - username: doctor2
+    password: doctor2
+    group: doctor
+  - username: user4
+    password: user4
+    group: users
