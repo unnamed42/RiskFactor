@@ -1,4 +1,4 @@
-package com.tjh.riskfactor.api.account
+package com.tjh.riskfactor.controller
 
 import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.security.core.annotation.AuthenticationPrincipal
@@ -6,6 +6,11 @@ import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.web.bind.annotation.*
 
 import com.tjh.riskfactor.common.*
+import com.tjh.riskfactor.service.AccountDetails
+import com.tjh.riskfactor.service.AccountService
+import com.tjh.riskfactor.service.UserInfo
+import com.tjh.riskfactor.repository.User
+import com.tjh.riskfactor.repository.updateIf
 
 @CrossOrigin
 @RestController
@@ -20,7 +25,8 @@ class AccountController(
      * @return 存在时应答OK，不存在时应答NOT_FOUND
      */
     @RequestMapping(path = ["/users/{username}"], method = [RequestMethod.HEAD])
-    fun usernameExists(@PathVariable username: String) = service.hasUser(username).to404()
+    fun usernameExists(@PathVariable username: String) =
+        service.hasUser(username).to404()
 
     /**
      * 更新用户信息。请求格式如下：
@@ -35,10 +41,10 @@ class AccountController(
      * @param body 请求内容
      */
     @PutMapping("/users/{targetId}")
-    @PreAuthorize("@e.canWriteUser(#targetId)")
-    fun updateInfo(@PathVariable targetId: Int, @RequestBody body: UserInfo?) {
+    @PreAuthorize("@checker.isUserWritable(#targetId)")
+    fun updateInfo(@PathVariable targetId: Int, @RequestBody body: UpdateUserRequest?) {
         if(body == null) return
-        service.users.updateChecked(targetId) { user ->
+        service.users.updateIf(targetId) { user ->
             var updateCount = 0
             updateCount += body.username?.let { user.username = it } != null
             updateCount += body.password?.let { user.password = encoder.encode(it) } != null
@@ -50,11 +56,9 @@ class AccountController(
     }
 
     @PostMapping("/users")
-    @PreAuthorize("@e.canAddUserTo(#body.group)")
-    fun createUser(@RequestBody body: UserInfo) {
-        val gid = body.group?.let { service.findGroup(it).id }
-        if(body.password == null)
-            throw invalidArg("cannot create user without password")
+    @PreAuthorize("@checker.isGroupWritable(#body.group)")
+    fun createUser(@RequestBody body: CreateUserRequest) {
+        val gid = body.group?.let { service.findGroupUnchecked(it)?.id }
         val user = User(
             username = body.username,
             password = encoder.encode(body.password),
@@ -70,22 +74,30 @@ class AccountController(
      */
     @GetMapping("/users")
     fun userInfoList(@AuthenticationPrincipal details: AccountDetails): List<UserInfo> =
-        service.visibleUserIds(details.id).let { service.userInfo(it) }
+        service.visibleUserIds(details.id).let { service.userDetailedInfo(it) }
 
     /**
      * 获得指定用户的信息。特殊id 0代表自己
      */
     @GetMapping("/users/{targetId}")
-    fun userInfo(@PathVariable targetId: Int, @AuthenticationPrincipal details: AccountDetails): UserInfo {
-        service.users.mustHave(targetId)
-
-        val userId = if(targetId == 0 || targetId == details.id) details.id else {
-            if(!service.isTargetVisible(details.id, targetId))
-                throw forbidden("no permission to investigate user $targetId")
-            targetId
-        }
-
-        return service.userInfo(userId)
-    }
+    @PreAuthorize("#targetId == 0 || @checker.isUserReadable(#targetId)")
+    fun userInfo(@PathVariable targetId: Int, @AuthenticationPrincipal details: AccountDetails): UserInfo =
+        service.userDetailedInfo(if(targetId == 0) details.id else targetId)
 
 }
+
+data class UpdateUserRequest(
+    val username: String?,
+    val password: String?,
+    val email: String?,
+    val isAdmin: Boolean?,
+    val group: String?
+)
+
+data class CreateUserRequest(
+    val username: String?,
+    val password: String,
+    val email: String?,
+    val isAdmin: Boolean?,
+    val group: String?
+)

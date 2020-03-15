@@ -1,18 +1,20 @@
-package com.tjh.riskfactor.common
+package com.tjh.riskfactor.repository
 
 import javax.persistence.*
 
 typealias IdType = Int
 
+typealias EpochTime = Long
+
 @MappedSuperclass
-open class BaseEntity(
+open class IEntity(
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     var id: IdType = 0
 ) {
     override fun equals(other: Any?): Boolean {
         if(other == null) return false
         if(this === other) return true
-        return (other as? BaseEntity)?.id == id
+        return (other as? IEntity)?.id == id
     }
 
     override fun hashCode(): Int = id.hashCode()

@@ -1,12 +1,16 @@
-package com.tjh.riskfactor.api.account
+package com.tjh.riskfactor.service
 
+import org.springframework.stereotype.Service
 import org.springframework.security.core.userdetails.UserDetails
 import org.springframework.security.core.authority.SimpleGrantedAuthority
 import org.springframework.security.core.userdetails.UserDetailsService
 import org.springframework.security.core.userdetails.UsernameNotFoundException
-import org.springframework.stereotype.Service
 
 import au.com.console.jpaspecificationdsl.equal
+import com.tjh.riskfactor.repository.propertyOf
+import com.tjh.riskfactor.repository.GroupRepository
+import com.tjh.riskfactor.repository.User
+import com.tjh.riskfactor.repository.UserRepository
 
 /**
  * 自定义的[UserDetails]. 不使用自带的builder [org.springframework.security.core.userdetails.User]是因为默认实现中没有用户id.
@@ -17,7 +21,6 @@ class AccountDetails(val dbUser: User, group: String?): UserDetails {
         if(group != null) listOf(SimpleGrantedAuthority(group)) else listOf()
 
     val id get() = dbUser.id
-    val groupName: String? get() = authorities.firstOrNull()?.authority
 
     override fun getUsername() = dbUser.username
     override fun getPassword() = dbUser.password
@@ -30,13 +33,15 @@ class AccountDetails(val dbUser: User, group: String?): UserDetails {
 }
 
 @Service("userDetailsService")
-class AccountDetailsService(private val accounts: AccountService): UserDetailsService {
+class AccountDetailsService(
+    private val users: UserRepository,
+    private val groups: GroupRepository
+): UserDetailsService {
 
     override fun loadUserByUsername(username: String?): UserDetails {
-        val user = accounts.users.findOne(User::username.equal(username)).orElseThrow{
-            UsernameNotFoundException("user [$username] not found")
-        }
-        val groupName = accounts.getGroupName(user.groupId)
+        val user = users.findOne(User::username.equal(username))
+            .orElseThrow { UsernameNotFoundException("user [$username] not found") }
+        val groupName = groups.propertyOf(user.groupId) { name }
         return AccountDetails(user, groupName)
     }
 

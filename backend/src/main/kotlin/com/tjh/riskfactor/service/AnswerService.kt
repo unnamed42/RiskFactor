@@ -1,18 +1,11 @@
-package com.tjh.riskfactor.api.answer
-
-import com.fasterxml.jackson.annotation.JsonFormat
+package com.tjh.riskfactor.service
 
 import org.springframework.data.jpa.domain.Specification
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
-import com.tjh.riskfactor.common.*
-import com.tjh.riskfactor.api.account.User
-import com.tjh.riskfactor.api.account.AccountService
-
 import au.com.console.jpaspecificationdsl.*
-
-import java.sql.Date
+import com.tjh.riskfactor.repository.*
 
 @Service
 class AnswerService(
@@ -80,12 +73,12 @@ class AnswerService(
      */
     @Transactional
     fun writeAnswer(answerId: IdType, schemaId: IdType, values: Map<String, String>, actor: User) {
-        val now = Date(System.currentTimeMillis())
+        val now = System.currentTimeMillis()
         // 获得Answer实体
         val answer = if(answerId == 0)
             answers.save(Answer(actor.id, actor.groupId, schemaId, now, now))
         else
-            answers.update(answerId) { it.modifiedAt = now }
+            answers.updateUnchecked(answerId) { it.modifiedAt = now }
         // 将数据解构
         val data = values.map { (identifier, value) ->
             if(identifier.contains('-')) {
@@ -104,7 +97,7 @@ class AnswerService(
     private fun Answer.toInfo() = AnswerInfo(
         id = id, creator = accounts.usernameOrId(creatorId),
         createdAt = createdAt, modifiedAt = modifiedAt,
-        group = accounts.groupName(groupId)
+        group = accounts.findGroupName(groupId)
     )
 
 }
@@ -113,8 +106,6 @@ data class AnswerInfo(
     val id: IdType,
     val creator: String,
     val group: String,
-    @JsonFormat(shape = JsonFormat.Shape.NUMBER)
-    val createdAt: Date,
-    @JsonFormat(shape = JsonFormat.Shape.NUMBER)
-    var modifiedAt: Date
+    val createdAt: Long,
+    var modifiedAt: Long
 )

@@ -1,4 +1,4 @@
-package com.tjh.riskfactor.api.account
+package com.tjh.riskfactor.repository
 
 import com.fasterxml.jackson.annotation.JsonIgnore
 import com.fasterxml.jackson.annotation.JsonProperty
@@ -6,10 +6,6 @@ import com.fasterxml.jackson.annotation.JsonProperty
 import org.springframework.stereotype.Repository
 import org.springframework.data.jpa.repository.Query
 import org.springframework.data.jpa.repository.Modifying
-
-import com.tjh.riskfactor.common.BaseEntity
-import com.tjh.riskfactor.common.IdType
-import com.tjh.riskfactor.common.QueryRepository
 
 import javax.persistence.*
 
@@ -38,11 +34,11 @@ class User(
      */
     @Column(nullable = false)
     var groupId: IdType = 0
-): BaseEntity() {
+): IEntity() {
 
     @get:JsonIgnore
     @get:Transient
-    val isNobody get() = groupId == 0
+    val isNobody get() = groupId == 2
 
     @get:JsonIgnore
     @get:Transient
@@ -56,13 +52,13 @@ class Group(
      */
     @Column(nullable = false, unique = true)
     var name: String = ""
-): BaseEntity()
+): IEntity()
 
 @Repository
-interface UserRepository: QueryRepository<User, IdType>
+interface UserRepository: IQueryRepository<User, IdType>
 
 @Repository
-interface GroupRepository: QueryRepository<Group, IdType> {
+interface GroupRepository: IQueryRepository<Group, IdType> {
     @Modifying
     @Query(nativeQuery = true, value = "insert into `groups`(id, name) values (?1, ?2)")
     fun insert(id: IdType, name: String)

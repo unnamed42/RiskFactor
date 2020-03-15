@@ -1,4 +1,4 @@
-package com.tjh.riskfactor.api.token
+package com.tjh.riskfactor.component
 
 import io.jsonwebtoken.ExpiredJwtException
 import io.jsonwebtoken.MalformedJwtException
@@ -8,7 +8,8 @@ import org.springframework.http.HttpStatus
 import org.springframework.web.filter.OncePerRequestFilter
 import org.springframework.security.core.context.SecurityContextHolder
 
-import com.tjh.riskfactor.api.error.ErrorHandler
+import com.tjh.riskfactor.controller.ErrorHandler
+import com.tjh.riskfactor.service.TokenProvider
 
 import java.lang.IllegalArgumentException
 import javax.servlet.FilterChain

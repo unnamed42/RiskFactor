@@ -1,4 +1,4 @@
-package com.tjh.riskfactor.api.schema
+package com.tjh.riskfactor.repository
 
 import com.fasterxml.jackson.annotation.JsonIgnore
 import com.fasterxml.jackson.annotation.JsonValue
@@ -6,12 +6,7 @@ import com.fasterxml.jackson.annotation.JsonValue
 import org.springframework.stereotype.Repository
 import org.springframework.data.jpa.repository.Query
 
-import com.tjh.riskfactor.common.BaseEntity
-import com.tjh.riskfactor.common.IdType
-import com.tjh.riskfactor.common.QueryRepository
-
 import java.io.Serializable
-import java.sql.Date
 import javax.persistence.*
 
 /**
@@ -33,11 +28,11 @@ class Rule(
      */
     @JsonIgnore
     var collectName: String? = null
-): BaseEntity()
+): IEntity()
 
 @Suppress("unused")
 enum class RuleType(@JsonValue val value: String) {
-    ROOT("root"), // 只做管理用，理应不会出现在后端服务以外的地方
+    ROOT("root"), // 只做管理用
     TEXT("text"), // 对应文本输入
     NUMBER("number"), // 对应数字输入，浮点
     DATE("date"), // 对应日期选择
@@ -125,13 +120,13 @@ class Schema(
      */
     var rootId: IdType = 0,
 
-    var createdAt: Date = Date(0),
+    var createdAt: EpochTime = System.currentTimeMillis(),
 
-    var modifiedAt: Date = Date(0)
-): BaseEntity()
+    var modifiedAt: EpochTime = System.currentTimeMillis()
+): IEntity()
 
 @Repository
-interface RuleRepository: QueryRepository<Rule, IdType> {
+interface RuleRepository: IQueryRepository<Rule, IdType> {
     @Query("""select rule.id from RuleList list inner join Rule rule
         on list.headId = :id and list.elemId = rule.id order by list.order asc""")
     fun findList(id: IdType): List<IdType>
@@ -142,10 +137,10 @@ interface RuleRepository: QueryRepository<Rule, IdType> {
 }
 
 @Repository
-interface RuleListRepository: QueryRepository<RuleList, IdType>
+interface RuleListRepository: IQueryRepository<RuleList, IdType>
 
 @Repository
-interface RuleAttributeRepository: QueryRepository<RuleAttribute, IdType>
+interface RuleAttributeRepository: IQueryRepository<RuleAttribute, IdType>
 
 @Repository
-interface SchemaRepository: QueryRepository<Schema, IdType>
+interface SchemaRepository: IQueryRepository<Schema, IdType>

@@ -1,12 +1,7 @@
-package com.tjh.riskfactor.api.answer
+package com.tjh.riskfactor.repository
 
 import org.springframework.stereotype.Repository
 
-import com.tjh.riskfactor.common.BaseEntity
-import com.tjh.riskfactor.common.IdType
-import com.tjh.riskfactor.common.QueryRepository
-
-import java.sql.Date
 import javax.persistence.*
 
 /**
@@ -38,7 +33,7 @@ class AnswerValue(
      * 内容
      */
     var value: String = ""
-): BaseEntity()
+): IEntity()
 
 /**
  * 一个问卷的完整回答内容（不一定全部填完）
@@ -60,18 +55,18 @@ class Answer(
      */
     var schemaId: IdType = 0,
 
-    var createdAt: Date = Date(0),
+    var createdAt: EpochTime = System.currentTimeMillis(),
 
-    var modifiedAt: Date = Date(0),
+    var modifiedAt: EpochTime = System.currentTimeMillis(),
 
     /**
      * 如果为true，则表示该回答集的内容为各问题的初始值
      */
     var isInitialData: Boolean = false
-): BaseEntity()
+): IEntity()
 
 @Repository
-interface AnswerValueRepository: QueryRepository<AnswerValue, IdType>
+interface AnswerValueRepository: IQueryRepository<AnswerValue, IdType>
 
 @Repository
-interface AnswerRepository: QueryRepository<Answer, IdType>
+interface AnswerRepository: IQueryRepository<Answer, IdType>

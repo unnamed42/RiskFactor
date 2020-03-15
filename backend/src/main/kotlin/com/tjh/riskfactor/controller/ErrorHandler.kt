@@ -1,4 +1,4 @@
-package com.tjh.riskfactor.api.error
+package com.tjh.riskfactor.controller
 
 import com.fasterxml.jackson.databind.ObjectMapper
 

@@ -1,5 +1,6 @@
-package com.tjh.riskfactor.api.token
+package com.tjh.riskfactor.controller
 
+import com.tjh.riskfactor.service.TokenProvider
 import org.springframework.http.HttpStatus
 import org.springframework.security.authentication.*
 import org.springframework.security.core.Authentication

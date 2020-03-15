@@ -1,4 +1,4 @@
-package com.tjh.riskfactor.api.schema
+package com.tjh.riskfactor.service
 
 import com.fasterxml.jackson.annotation.JsonInclude
 import com.fasterxml.jackson.annotation.JsonUnwrapped
@@ -9,11 +9,7 @@ import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
 import com.tjh.riskfactor.common.*
-import com.tjh.riskfactor.api.account.AccountService
-import com.tjh.riskfactor.api.account.UserInfo
-import com.tjh.riskfactor.api.answer.AnswerService
-
-import java.sql.Date
+import com.tjh.riskfactor.repository.*
 
 @Service
 class SchemaService(
@@ -26,12 +22,18 @@ class SchemaService(
     private val mapper: ObjectMapper
 ) {
 
+    fun getSchemas(): List<SchemaInfo> =
+        schemas.findAll(Schema::modifiedAt.sorted()).map { it.toInfo() }
+
+    fun getSchema(schemaId: IdType): SchemaInfo =
+        schemas.find(schemaId).toInfo()
+
     /**
      * 获得问卷的结构和初始化数据。所有的问卷构建规则id都已经转化成"$${id}"的格式
      */
     @Transactional(readOnly = true)
-    fun getSchema(schemaId: IdType): SchemaInfo {
-        val schema = schemas.findChecked(schemaId)
+    fun getSchemaRules(schemaId: IdType): SchemaRules {
+        val schema = schemas.find(schemaId)
 
         val rules = mutableMapOf<String, RuleInfo>()
         val collectShape = mutableMapOf<String, String>()
@@ -40,8 +42,7 @@ class SchemaService(
         var pending = listOf(schema.rootId)
         while(pending.isNotEmpty()) {
             pending = pending.flatMap {
-                // TODO: 理论上是一定能拿到这个实体的。如果拿不到的情况打个log
-                val rule = this.rules.findById(it).get()
+                val rule = this.rules.find(it)
                 val list = this.rules.findList(it)
                 val identifier = "$${rule.id}"
                 rules[identifier] = rule.toInfo(list)
@@ -50,7 +51,10 @@ class SchemaService(
             }
         }
 
-        return schema.toInfo(rules, collectShape)
+        return SchemaRules(
+            info = schema.toInfo(), root = "$${schema.rootId}",
+            initialValues = answers.getInitialValues(schema.id),
+            rules = rules, collectShape = collectShape)
     }
 
     private fun saveList(parentId: IdType, rules: List<Rule>) {
@@ -108,18 +112,20 @@ class SchemaService(
         refRequested.forEach { (rule, placeholder) ->
             val replaced = placeholder.replace(regex) { match ->
                 val (ref) = match.destructured
-                val id = refReferenced[ref] ?: throw RuntimeException("referenced ref name [$ref] does not exist")
+                val id = refReferenced[ref]?.id ?: throw RuntimeException("referenced ref name [$ref] does not exist")
                 "$$id"
             }
             ruleAttrs.save(RuleAttribute(rule.id, attrName, replaced))
         }
 
         // 所有规则条目已经完全处理完毕，存储schema
-        val savedSchema = schemas.save(schema.toEntity(rootNode.id))
+        val savedSchema = schemas.save(Schema(
+            name = schema.name, creatorId = accounts.findUser(schema.creator).id,
+            groupId = accounts.findGroup(schema.group).id, rootId = rootNode.id))
 
         // 存储初始化数据
         if(initialValues.isNotEmpty())
-            answers.writeAnswer(0, savedSchema.id, initialValues, accounts.findUserChecked(schema.creator))
+            answers.writeAnswer(0, savedSchema.id, initialValues, accounts.findUser(schema.creator))
     }
 
     private fun getRuleOptions(ruleId: IdType): RuleAttributes? =
@@ -127,24 +133,16 @@ class SchemaService(
             .takeIf{ it.isNotEmpty() }?.deserialize()
 
     private fun Rule.toInfo(list: List<IdType>) = RuleInfo(
-        type = type, label = label, options = getRuleOptions(id), list = list.map { "$$it" })
+        id = "$$id", type = type, label = label,
+        options = getRuleOptions(id), list = list.map { "$$it" })
 
-    private fun Schema.toInfo(rules: Map<String, RuleInfo>, collectShape: Map<String, String>) = SchemaInfo(
-        id = id, name = name, creator = accounts.userInfo(creatorId), root = "$$rootId",
-        initialValues = answers.getInitialValues(id),
-        rules = rules, collectShape = collectShape)
-
-    private fun SchemaModel.toEntity(rootId: IdType) = Schema(
-        name = name, creatorId = accounts.findUserChecked(creator).id,
-        groupId = accounts.findGroup(group).id, rootId = rootId,
-        createdAt = Date(System.currentTimeMillis()), modifiedAt = Date(System.currentTimeMillis())
+    private fun Schema.toInfo() = SchemaInfo(
+        id = id, name = name, creator = accounts.userInfo(creatorId),
+        createdAt = createdAt, modifiedAt = modifiedAt
     )
 
-    private fun RuleModel.toEntity() = Rule(
-        type = type, label = label)
-
     private fun RuleModel.saved(): Rule {
-        val saved = rules.save(this.toEntity())
+        val saved = rules.save(Rule(type = type, label = label))
         this.options?.also {
             val attributes = it.serialize()
             ruleAttrs.saveAll(attributes.map { (k, v) -> RuleAttribute(saved.id, k, v) })
@@ -156,7 +154,7 @@ class SchemaService(
         val type = object: TypeReference<Map<String, Any>>() {}
         val converted = mapper.convertValue(this, type)
         return converted.map {
-            it.key to if(it.value is List<*>) (it.value as List<*>).joinToString(separator.toString()) else it.value.toString()
+            it.key to if(it.value is List<*>) (it.value as List<*>).joinToString(separator) else it.value.toString()
         }.toMap()
     }
 
@@ -170,6 +168,7 @@ class SchemaService(
 }
 
 data class RuleInfo(
+    val id: String,
     val type: RuleType?,
     val label: String?,
     @JsonInclude(JsonInclude.Include.NON_EMPTY)
@@ -182,6 +181,14 @@ data class SchemaInfo(
     val id: IdType,
     val name: String,
     val creator: UserInfo,
+    val modifiedAt: EpochTime,
+    val createdAt: EpochTime
+)
+
+data class SchemaRules(
+    @field:JsonUnwrapped
+    val info: SchemaInfo,
+
     var root: String,
     @JsonInclude(JsonInclude.Include.NON_EMPTY)
     val rules: Map<String, RuleInfo>,
@@ -270,8 +277,7 @@ data class RuleAttributes(
     /**
      * 占位文字，一般是输入类控件需要
      *
-     *
-     * 对于[RuleType.IMMUTABLE]类型来说，则是填充字符串。不使用[init]是因为初始值原则上是不变化的
+     * 对于[RuleType.EXPR]类型来说，则是填充字符串。不使用[init]是因为初始值原则上是不变化的
      */
     var placeholder: String? = null
 )

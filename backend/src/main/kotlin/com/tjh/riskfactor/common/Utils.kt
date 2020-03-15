@@ -5,9 +5,12 @@ import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 
-var mapper = jacksonObjectMapper()
+val mapper = jacksonObjectMapper()
 
-const val separator = '\u200B'
+/**
+ * Unicode U200B Zero-Width Space
+ */
+const val separator = "\u200B"
 
 /**
  * 将bool值转换成404或200

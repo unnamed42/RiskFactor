@@ -1,4 +1,4 @@
-package com.tjh.riskfactor.api.console
+package com.tjh.riskfactor.service
 
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.stereotype.Repository
@@ -6,10 +6,6 @@ import org.springframework.stereotype.Service
 
 import kotlin.reflect.full.*
 import kotlin.reflect.jvm.jvmErasure
-
-import com.tjh.riskfactor.api.account.AccountService
-import com.tjh.riskfactor.api.answer.AnswerService
-import com.tjh.riskfactor.api.schema.SchemaService
 
 import javax.persistence.*
 
