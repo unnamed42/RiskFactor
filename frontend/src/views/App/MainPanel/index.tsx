@@ -8,7 +8,7 @@ import {
   DownOutlined, AreaChartOutlined, ImportOutlined
 } from "@ant-design/icons";
 
-import { StoreType } from "@/redux";
+import type { StoreType } from "@/redux";
 import { logout } from "@/redux/auth";
 
 import "./index.less";
@@ -33,7 +33,7 @@ const UserDropdown: FC = () => {
     <div className="main-navbar">
       <Dropdown overlay={dropdown} trigger={["click"]}>
         <span style={{ display: "inline-block" }}>
-          <Avatar icon="user" className="main-navbar-avatar"/>
+          <Avatar icon={<UserOutlined/>} className="main-navbar-avatar"/>
           {auth.token !== null ? auth.username : ""}
           <DownOutlined className="navbar-icon"/>
         </span>

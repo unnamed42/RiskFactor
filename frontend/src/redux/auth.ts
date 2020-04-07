@@ -1,52 +1,55 @@
-import { Reducer } from "redux";
-
+import type { Reducer, Action } from "redux";
+// eslint-disable-next-line @typescript-eslint/camelcase
 import jwt_decode from "jwt-decode";
-import { JWT } from "@/types/auth";
 
-/**
- * 标记reducer中动作
- */
-enum Actions {
-  LOGIN = "auth/login",
-  LOGOUT = "auth/logout",
+import type { IdType } from "@/api";
+
+interface JsonWebToken {
+  // 标准头部，issued at（发布时间）
+  iat: number;
+  // 标准头部，expire at（过期时间）
+  exp: number;
+  // 标准头部，subject（用作用户名）
+  sub: string;
+  // 自定义头部，identity（用户id）
+  idt: number;
 }
 
-/**
- * reducer状态
- */
-export type State = { token: null } | {
+interface StoredToken {
   token: string;
   username: string;
-  userId: number;
+  userId: IdType;
   expiry: number;
   issuedAt: number;
-};
-
-interface ActionType {
-  type: Actions;
-  payload: State;
 }
+
+type LoginAction = Action<"auth/login"> & { token: string };
+type LogoutAction = Action<"auth/logout">;
 
 /**
  * 解析jwt当中的数据
  */
 const parseToken = (token: string) => {
-  const jwt = jwt_decode<JWT>(token);
+  const jwt = jwt_decode<JsonWebToken>(token);
   return { username: jwt.sub, userId: jwt.idt, expiry: jwt.exp, issuedAt: jwt.iat };
 };
 
-export const login = (token: string) =>
-  ({ type: Actions.LOGIN, payload: { token, ...parseToken(token) } });
+export const login = (token: string): LoginAction =>
+  ({ type: "auth/login", token });
 
-export const logout = () =>
-  ({ type: Actions.LOGOUT, payload: { token: null } });
+export const logout = (): LogoutAction =>
+  ({ type: "auth/logout" });
 
-export const reducer: Reducer<State, ActionType> = (state: State = { token: null }, action: ActionType) => {
+export type AuthState = { token: null } | StoredToken;
+
+type AuthAction = LoginAction | LogoutAction;
+
+export const reducer: Reducer<AuthState, AuthAction> = (state = { token: null }, action) => {
   switch (action.type) {
-    case Actions.LOGIN:
-      return { ...action.payload };
-    case Actions.LOGOUT:
-      return action.payload;
+    case "auth/login":
+      return { token: action.token, ...parseToken(action.token) };
+    case "auth/logout":
+      return { token: null };
     default:
       return state;
   }

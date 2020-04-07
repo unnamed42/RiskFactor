@@ -11,6 +11,7 @@ plugins:
 extends:
   - "eslint:recommended"
   - "plugin:react/recommended"
+  - "plugin:react-hooks/recommended"
   - "plugin:@typescript-eslint/eslint-recommended"
   - "plugin:@typescript-eslint/recommended"
   - "plugin:@typescript-eslint/recommended-requiring-type-checking"
@@ -26,14 +27,16 @@ settings:
       directory: ./tsconfig.json
 rules:
   "react/prop-types": off
-  "react-hooks/rules-of-hooks": error
-  "react-hooks/exhaustive-deps": warn
   "@typescript-eslint/indent":
     - error
     - 2
     - ignoredNodes:
         - JSXAttribute
       SwitchCase: 1
+  "@typescript-eslint/no-unused-vars":
+    - warn
+    - argsIgnorePattern: "^_"
+      varsIgnorePattern: "^_+$"
   "@typescript-eslint/quotes":
     - warn
     - double

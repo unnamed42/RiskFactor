@@ -1,13 +1,12 @@
 /**
  * 获取当前时间。这个时间和java的Date得到的单位一致（毫秒）
  */
-export const now = () => Math.floor(Date.now() / 1000);
+export const now = (): number => Date.now();
 
 /**
  * 获取一个object的第一个key（按照key的插入顺序）
- * @param obj object
  */
-export const firstKey = (obj: any) => {
+export const firstKey = (obj: any): string | null => {
   const keys = Object.keys(obj);
   return keys.length !== 0 ? keys[0] : null;
 };

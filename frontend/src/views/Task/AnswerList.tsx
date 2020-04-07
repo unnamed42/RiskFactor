@@ -1,93 +1,60 @@
-import React, { FC, useRef, useState } from "react";
+import React, { FC } from "react";
 import { Link } from "react-router-dom";
+import { useParams } from "react-router";
 
-import { Button, PageHeader, message, Table } from "antd";
+import { Button, PageHeader, Table } from "antd";
+import { PlusOutlined, ImportOutlined } from "@ant-design/icons";
 
-import { taskAnswers, task, deleteAnswer, downloadAnswer, postAnswer } from "@/api/task";
-import { AnswerBrief } from "@/types";
-import { background, cachedStructure } from "@/utils";
-import { File, Fetch } from "@/components";
+import { useResponse } from "@/utils";
+import { IdType, AnswerInfo, getAnswerList, getSchemaInfo } from "@/api";
 
-interface P {
-  taskId: string | number;
+interface RouteParams {
+  schemaId: string;
 }
 
-type T = AnswerBrief;
+const fetch = (schemaId: IdType) =>
+  Promise.all([getAnswerList(schemaId), getSchemaInfo(schemaId)]);
 
-export const AnswerList: FC<P> = ({ taskId }) => {
-  const file = useRef<HTMLInputElement>(null);
+export const AnswerList: FC = () => {
+  const schemaId = Number(useParams<RouteParams>().schemaId);
 
-  const [parsing, setParsing] = useState(false);
-  const [loading, setLoading] = useState(false);
-  const [answers, setAnswers] = useState<AnswerBrief[]>();
+  const response = useResponse(() => fetch(schemaId), [schemaId]);
+  if (response.error !== undefined)
+    return response.error;
 
-  const delAnswer = async (answer: T) => {
-    try {
-      await deleteAnswer(answer.id);
-      message.success("删除成功");
-      setAnswers(answers?.filter(a => a.id !== answer.id));
-    } catch (e) {
-      message.error(e.message);
-    }
-  };
+  const [answers, schemaInfo] = response.state.data;
 
-  // TODO: 导出为json在后端已经删除，在前端完成该操作
-  const actions = (text: any, answer: T) => {
+  // onClick={() => downloadAnswer(answer.id)}
+  //  onClick={() => delAnswer(answer)}
+  const actions = (_: any, answer: AnswerInfo) => {
     return <span>
-      <Link to={`/task/${taskId}/form/${answer.id}`}>查看</Link>
-      &nbsp;
-      <Button type="link" onClick={() => downloadAnswer(answer.id)}>导出</Button>
-      &nbsp;
-      <Button type="link" onClick={() => delAnswer(answer)}>删除</Button>
+      <Link to={`/task/${schemaId}/form/${answer.id}`}>查看</Link>&nbsp;
+      <Button type="link">导出</Button>&nbsp;
+      <Button type="link">删除</Button>
     </span>;
   };
 
-  const importAnswers = background(async (buffer: ArrayBuffer) => {
-    setLoading(true);
-    const { parsedExcel } = await import(/* webpackChunkName: "exceljs" */ "@/utils/excel");
-    setParsing(true);
-    try {
-      const excel = await parsedExcel(taskId, buffer);
-      await Promise.all(excel.map(item => postAnswer(taskId, item)));
-    } catch (e) {
-      message.error(e.message);
-    } finally {
-      setLoading(false);
-      setParsing(false);
-    }
-  });
-
-  return <Fetch fetch={() => Promise.all([task(taskId), taskAnswers(taskId), cachedStructure(taskId)])}
-                onLoadEnd={([, ans,]) => setAnswers(ans)}>
-    {([taskView, , struct]) => {
-      const names = struct.map(s => s.name);
-      return <>
-        <PageHeader title={taskView.name}
-          extra={[
-            <Button key="1" type="link" icon="plus">
-              <Link to={`/task/${taskId}/form`}>添加受试者</Link>
-            </Button>,
-            <div key="_2" style={{ display: "inline-block" }}>
-              <File ref={file} accept=".xlsx" onLoaded={importAnswers}/>
-              <Button key="2" type="link" icon="import" disabled={parsing} loading={loading}
-                      onClick={() => file.current?.click()}>批量导入</Button>
-            </div>
-          ]}
-        />
-        <Table<T> dataSource={answers} rowKey="id">
-          <Table.Column<T> key="id" dataIndex="id" title="受试者编号"/>
-          <Table.Column<T> key="creator" dataIndex="creator" title="创建人"/>
-          <Table.Column<T> key="mtime" dataIndex="mtime" title="修改时间"/>
-          <Table.Column<T> key="status" dataIndex="" title="患者入组" render={() => <span>患者入组</span>}/>
-          {
-            names.map(name =>
-              <Table.Column<T> key={name} dataIndex="" title={name}
-                               render={() => <Link to="#"/>}/>
-            )
-          }
-          <Table.Column<T> key="action" dataIndex="" title="动作" render={actions}/>
-        </Table>
-      </>;
-    }}
-  </Fetch>;
+  return <>
+    <PageHeader title={schemaInfo.name}
+      extra={[
+        <Button key="1" type="link" icon={<PlusOutlined />}>
+          <Link to={`/task/${schemaId}/form`}>添加受试者</Link>
+        </Button>,
+        <Button key="2" type="link" icon={<ImportOutlined />}>批量导入</Button>
+      ]}
+    />
+    <Table<AnswerInfo> dataSource={answers} rowKey="id">
+      <Table.Column key="id" dataIndex="id" title="受试者编号" />
+      <Table.Column key="creator" dataIndex="creator" title="创建人"/>
+      <Table.Column key="modifiedAt" dataIndex="modifiedAt" title="修改时间" />
+      <Table.Column key="status" dataIndex="" title="患者入组" render={() => "患者入组"} />
+      {
+        // names.map(name =>
+        //   <Table.Column<T> key={name} dataIndex="" title={name}
+        //     render={() => <Link to="#" />} />
+        // )
+      }
+      <Table.Column key="action" dataIndex="" title="动作" render={actions} />
+    </Table>
+  </>;
 };

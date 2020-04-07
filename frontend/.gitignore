@@ -11,6 +11,12 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 
+# yarn sources
+.yarn/*
+!.yarn/releases
+!.yarn/plugins
+.pnp.*
+
 # Editor directories and files
 .idea
 *.iml

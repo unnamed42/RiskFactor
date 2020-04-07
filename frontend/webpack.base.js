@@ -2,7 +2,7 @@ const { join, resolve } = require("path");
 
 const HtmlWebpackPlugin = require("html-webpack-plugin");
 const { CleanWebpackPlugin } = require("clean-webpack-plugin");
-const FriendlyErrorsWebpackPlugin = require("friendly-errors-webpack-plugin");
+const FriendlyErrorsWebpackPlugin = require("friendly-errors-webpack-plugin")
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 
 const root = resolve("./");
@@ -35,7 +35,7 @@ module.exports = {
       {
         test: /\.tsx?$/,
         exclude: /node_modules/,
-        loader: "babel-loader",
+        loader: require.resolve("babel-loader"),
         options: { cacheDirectory: true },
       },
       {
@@ -48,16 +48,16 @@ module.exports = {
               esModule: true
             },
           },
-          "css-loader",
+          require.resolve("css-loader"),
           {
-            loader: "less-loader",
+            loader: require.resolve("less-loader"),
             options: { javascriptEnabled: true }
           }
         ]
       },
       {
         test: /\.(png|svg|jpe?g|gif|woff2?|eot|ttf|otf)$/,
-        use: "file-loader"
+        use: require.resolve("file-loader")
       }
     ]
   },
@@ -79,8 +79,9 @@ module.exports = {
     }),
   ],
   optimization: {
-    // runtimeChunk: "single",
-    moduleIds: "hashed",
+    // splitChunks: {
+    //   chunks: "all"
+    // }
     splitChunks: {
       cacheGroups: {
         default: false,

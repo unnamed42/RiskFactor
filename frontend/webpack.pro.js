@@ -9,6 +9,7 @@ const OptimizeCSSAssetsPlugin = require("optimize-css-assets-webpack-plugin");
 const CopyPlugin = require("copy-webpack-plugin");
 
 module.exports = merge(common, {
+  mode: "production",
   plugins: [
     new CopyPlugin([{
       from: "public",

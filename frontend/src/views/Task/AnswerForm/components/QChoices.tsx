@@ -2,9 +2,9 @@ import React, { FC } from "react";
 import { isArray } from "lodash";
 
 import { Form, Checkbox, Radio, Input, Row } from "antd";
-import { FormInstance } from "rc-field-form/es";
+import type { FormInstance } from "rc-field-form/es";
 
-import { QProps as P } from ".";
+import type { RenderProps as P } from ".";
 import { text } from "@/config";
 import { tuple, shouldUpdate } from "@/utils";
 
@@ -33,28 +33,30 @@ export const QChoices: FC<P> = ({ rule: { choices, id, type, customizable }, nam
       selected === choices.length;
   };
 
-  return <Form.Item name={namePath} noStyle>
-    <ChoiceGroup>
+  return <>
+    <Form.Item name={namePath} noStyle>
+      <ChoiceGroup>
+        {
+          choices.map((choice, idx) => {
+            const item = <Choice value={idx} key={`i-${idx}`}>{choice}</Choice>;
+            return multi ? <Row key={idx}>{item}</Row> : item;
+          })
+        }
+        {
+          customizable && <Choice key={choices.length} value={choices.length}>
+            {text.other}
+          </Choice>
+        }
+      </ChoiceGroup>
+    </Form.Item>
+    <Form.Item noStyle shouldUpdate={shouldUpdate(namePath)}>
       {
-        choices.map((choice, idx) => {
-          const item = <Choice value={idx} key={`i-${idx}`}>{choice}</Choice>;
-          return multi ? <Row key={idx}>{item}</Row> : item;
-        })
+        form => otherSelected(form) ?
+          <Form.Item name={[...namePath, "other"]} noStyle required>
+            <Input type="text" />
+          </Form.Item> :
+          null
       }
-      {
-        customizable && <Choice key={choices.length} value={choices.length}>
-          {text.other}
-          <Form.Item noStyle shouldUpdate={shouldUpdate(namePath)}>
-            {
-              form => otherSelected(form) ?
-                <Form.Item name={[...namePath, "other"]} noStyle required>
-                  <Input type="text" />
-                </Form.Item> :
-                null
-            }
-          </Form.Item>
-        </Choice>
-      }
-    </ChoiceGroup>
-  </Form.Item>;
+    </Form.Item>
+  </>;
 };

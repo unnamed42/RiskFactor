@@ -5,13 +5,13 @@ import { composeWithDevTools } from "redux-devtools-extension";
 
 import localforage from "localforage";
 
-import { reducer as auth, State as AuthState } from "./auth";
-import { reducer as task, State as TaskState } from "./task";
-import { PersistConfig } from "redux-persist/es/types";
+import { reducer as auth, AuthState } from "./auth";
+import { reducer as cache, CacheState } from "./cache";
+import type { PersistConfig } from "redux-persist/es/types";
 
 export interface StoreType {
   auth: AuthState;
-  task: TaskState;
+  cache: CacheState;
 }
 
 const config: PersistConfig<StoreType> = {
@@ -21,7 +21,7 @@ const config: PersistConfig<StoreType> = {
 };
 
 const rootReducers = combineReducers({
-  auth, task
+  auth, cache
 });
 
 const reducers = persistReducer(config, rootReducers);

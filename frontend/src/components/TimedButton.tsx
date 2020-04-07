@@ -1,9 +1,7 @@
-import React, { FC, useState } from "react";
+import React, { FC, useState, useEffect } from "react";
 
 import { Button } from "antd";
-import { ButtonProps } from "antd/es/button";
-
-import { sleep } from "@/utils";
+import type { ButtonProps } from "antd/es/button";
 
 interface P extends ButtonProps {
   interval: number;
@@ -16,19 +14,28 @@ interface P extends ButtonProps {
  */
 export const TimedButton: FC<P> = ({ interval, text, ...props }) => {
   const [waiting, setWaiting] = useState(false);
-  const [timer, setTimer] = useState(0);
+  const [seconds, setSeconds] = useState(0);
 
-  const clicked = async () => {
-    if (waiting) return;
-    setWaiting(true);
-    for (let sec = interval; sec !== 0; --sec) {
-      setTimer(sec);
-      await sleep(1000);
+  useEffect(() => {
+    let id: NodeJS.Timeout;
+    if (waiting) {
+      id = setInterval(() => {
+        setSeconds(sec => {
+          if (sec <= 1) {
+            setWaiting(false);
+            clearInterval(id);
+            return 0;
+          } else
+            return sec - 1;
+        });
+      }, 1000);
     }
-    setWaiting(false);
-  };
+    return () => clearInterval(id);
+  }, [waiting]);
+
+  const clicked = () => { setSeconds(interval); setWaiting(true); };
 
   return <Button loading={waiting} disabled={waiting} onClick={clicked} {...(props as ButtonProps)}>
-    {waiting ? `${timer}秒` : text}
+    {waiting ? `${seconds}秒` : text}
   </Button>;
 };

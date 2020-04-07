@@ -2,10 +2,10 @@ import React, { FC, useMemo } from "react";
 import { get, every } from "lodash";
 
 import { Input, Form } from "antd";
-import { FormInstance } from "rc-field-form/es";
-import { Store } from "rc-field-form/es/interface";
+import type { FormInstance } from "rc-field-form/es";
+import type { Store } from "rc-field-form/es/interface";
 
-import { QProps as P } from ".";
+import type { RenderProps as P } from ".";
 import { shouldUpdate } from "@/utils";
 
 /**
@@ -14,12 +14,14 @@ import { shouldUpdate } from "@/utils";
  * @param form ant design form实例
  * @return 表达式求值无错误发生，且结果不为`NaN`时返回该数值，其他情况返回`undefined`
  */
-const evalExpr = (expr: string, form: FormInstance) => {
+const evalExpr = (expr: string, form: FormInstance): string | undefined => {
   const parseOperand = (operand: string) =>
-    Number(operand.startsWith("$") ? form.getFieldValue(operand) : operand);
+    Number(operand.startsWith("$") ? (console.log(operand, form.getFieldValue(operand)), form.getFieldValue(operand)) : operand);
   const isDigit = (ch: number) =>
     "0".charCodeAt(0) <= ch && ch <= "9".charCodeAt(0);
-  const op = (ch: string): ((lhs: number, rhs: number) => number) | undefined => {
+
+  type Calculator = (lhs: number, rhs: number) => number;
+  const op = (ch: string): Calculator | undefined => {
     switch (ch) {
       case "+": return (a, b) => a + b;
       case "-": return (a, b) => a - b;
@@ -43,15 +45,15 @@ const evalExpr = (expr: string, form: FormInstance) => {
   return stack.length === 1 && !isNaN(stack[0]) ? stack[0].toPrecision(3): undefined;
 };
 
-type ChangeNotifier = (prev: Store, curr: Store) => boolean;
-type ContentRenderer = (form: FormInstance) => string | undefined;
-
 /**
  * 根据所配置公式计算值，该项不可编辑
  */
-export const QImmutable: FC<P> = ({ rule: { id, placeholder } }) => {
+export const QAutoItem: FC<P> = ({ rule: { id, placeholder } }) => {
   if (!placeholder)
     throw new Error(`自动计算项 $${id} 的计算内容配置不正确`);
+
+  type ChangeNotifier = (prev: Store, curr: Store) => boolean;
+  type ContentRenderer = (form: FormInstance) => string | undefined;
 
   // 根据`placeholder`代表的公式生成两个函数：
   //   其一是根据所需表单项的值计算`shouldUpdate`属性的函数
@@ -63,17 +65,17 @@ export const QImmutable: FC<P> = ({ rule: { id, placeholder } }) => {
       return [shouldUpdate(expr), form => form.getFieldValue(namePath)];
     } else if (type === "expr") {
       const variables = expr.split(" ").filter(s => s.startsWith("$"));
+      console.log(variables);
       return [
         (prev, curr) => every(variables, varName => get(prev, varName) == get(curr, varName)),
-        form => evalExpr(expr, form)];
+        form => evalExpr(expr, form)
+      ];
     } else
       throw new Error(`自动计算项 $${id} 的计算公式类型不正确`);
   }, [placeholder, id]);
 
-  // TODO: 由公式计算出来的值是否需要放入到最终上传给服务器的结果中？
-  return <Form.Item shouldUpdate={updateChecker}>
-    {
-      form => <Input placeholder={renderer(form)} disabled />
-    }
+  // TODO: 当前无法将自动公式添加到提交内容中
+  return <Form.Item shouldUpdate={updateChecker} noStyle>
+    {form => <Input value={renderer(form)} disabled />}
   </Form.Item>;
 };

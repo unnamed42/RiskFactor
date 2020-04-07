@@ -2,7 +2,7 @@ import React, { FC } from "react";
 
 import { Select, Form } from "antd";
 
-import { QProps as P } from ".";
+import { RenderProps as P } from ".";
 
 export const QSelect: FC<P> = ({ rule: { id, choices, placeholder, type }, namePath }) => {
   if (!choices || choices.length === 0)
@@ -12,8 +12,8 @@ export const QSelect: FC<P> = ({ rule: { id, choices, placeholder, type }, nameP
   const filterable = choices[0].includes("/");
 
   return <Form.Item name={namePath} noStyle>
-    <Select<string> showSearch={filterable} placeholder={placeholder} optionLabelProp="label" allowClear
-                    filterOption={filterable} mode={type === "select-multi" ? "multiple" : undefined}>
+    <Select<string> showSearch={filterable} placeholder={placeholder} optionLabelProp="label"
+      allowClear filterOption={filterable} mode={type === "select-multi" ? "multiple" : undefined}>
       {
         choices.map((choice, idx) => {
           const [label, filter] = choice.split("/");

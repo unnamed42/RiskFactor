@@ -1,7 +1,6 @@
 import React, { FC } from "react";
 
 import { Form } from "antd";
-import { FormItemProps } from "antd/es/form";
 
 import { QInput } from "./QInput";
 import { QSelect } from "./QSelect";
@@ -10,24 +9,22 @@ import { QList } from "./QList";
 import { QYesNo } from "./QYesNo";
 import { QChoices } from "./QChoices";
 import { QDynamic } from "./QDynamic";
-import { QImmutable } from "./QImmutable";
+import { QAutoItem } from "./QAutoItem";
 import { QTable } from "./QTable";
-
-import { Question } from "@/types";
+import type { RuleInfo, RuleType } from "@/api";
 
 import "./index.less";
 
-export interface QProps {
-  rule: Question;
-  namePath: Array<string | number>;
-  itemProps?: FormItemProps;
+export interface RenderProps {
+  rule: RuleInfo;
+  readonly namePath: Array<string | number>;
 }
 
-const QNothing: FC<QProps> = () => null;
+const QNothing: FC<RenderProps> = () => null;
 
-export const renderer = (type: Question["type"]): FC<QProps> => {
+export const renderer = (type: RuleType | undefined): FC<RenderProps> => {
   switch (type) {
-    case "disabled": return QImmutable;
+    case "expression": return QAutoItem;
     case "date": return QDate;
     case "number": case "text": return QInput;
     case "select": case "select-multi": return QSelect;
@@ -43,21 +40,20 @@ export const renderer = (type: Question["type"]): FC<QProps> => {
 const pushPath = <T extends any>(arr: T[] | undefined, elem: T) =>
   arr ? [...arr, elem] : [elem];
 
-interface P {
-  rule: Question;
-  namePath?: Array<string | number>;
-  // 直接暴露内部渲染结果，不需要用`Form.Item`包裹来增加缩进
-  bare?: boolean;
+interface P extends Omit<RenderProps, "namePath"> {
+  readonly namePath?: Array<number | string>;
+  // 不需要用`Form.Item`包裹来增加缩进
+  noStyle?: boolean;
 }
 
 /**
  * 根据规则的`type`字段选择规则的渲染器，渲染一个`Form.Item`
  */
-export const Renderer: FC<P> = ({ rule, namePath, bare }) => {
+export const Renderer: FC<P> = ({ rule, namePath, noStyle = false }) => {
   const { type, id, label } = rule;
   const Component = renderer(type);
-  const dom = <Component rule={rule} namePath={pushPath(namePath, `$${id}`)} />;
-  if (bare)
-    return dom;
-  return <Form.Item label={label}>{dom}</Form.Item>;
+
+  return <Form.Item label={label} noStyle={noStyle}>
+    <Component rule={rule} namePath={pushPath(namePath, `$${id}`)} />
+  </Form.Item>
 };

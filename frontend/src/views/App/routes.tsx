@@ -3,19 +3,24 @@ import { Switch } from "react-router-dom";
 
 import { PrivateRoute, Loading } from "@/components";
 
-import { TaskList } from "@/views/Task/TaskList";
+import { SchemaList } from "@/views/Task/SchemaList";
 import { AnswerList } from "@/views/Task/AnswerList";
 
 const AnswerForm = lazy(() => import(/* webpackChunkName: "answer-form" */ "@/views/Task/AnswerForm"));
 
 export const Routes: FC = () => <Suspense fallback={<Loading/>}>
   <Switch>
-    <PrivateRoute exact path="/" component={TaskList}/>
-    <PrivateRoute path="/task/:id/answers"
-      render={({ match: { params } }) => <AnswerList taskId={params.id}/>}/>
-    <PrivateRoute path="/task/:id/form"
-      render={({ match: { params } }) => <AnswerForm taskId={params.id}/>}/>
-    <PrivateRoute path="/task/:id/form/:ansId"
-      render={({ match: { params } }) => <AnswerForm taskId={params.id} answerId={params.ansId}/>}/>
+    <PrivateRoute exact path="/">
+      <SchemaList/>
+    </PrivateRoute>
+    <PrivateRoute path="/task/:schemaId/answers">
+      <AnswerList/>
+    </PrivateRoute>
+    <PrivateRoute path="/task/:schemaId/form">
+      <AnswerForm/>
+    </PrivateRoute>
+    <PrivateRoute path="/task/:schemaId/form/:answerId">
+      <AnswerForm/>
+    </PrivateRoute>
   </Switch>
 </Suspense>;
