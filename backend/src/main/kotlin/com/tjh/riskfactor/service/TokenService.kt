@@ -15,7 +15,7 @@ import javax.servlet.http.HttpServletRequest
 private const val BEARER = "Bearer "
 
 @Service
-class TokenProvider(
+class TokenService(
     @Value("\${jwt.signing-key}") signingKey: String,
     @Value("\${jwt.expiry-hours}") private val expiryHours: Int,
     private val service: AccountDetailsService

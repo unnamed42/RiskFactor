@@ -53,13 +53,11 @@ inline fun <reified P, E, R> R.findAllProjected(spec: Specification<E>, sort: So
     this.findAll(spec, P::class.java, PageRequest.of(0, Int.MAX_VALUE, sort)).content
 
 /**
- * 辅助扩展属性，用来获取Entity的名字
+ * [JpaRepository]扩展
  */
-inline val <reified E, R> R.entityName where R: JpaRepository<E, *>
-    get() = E::class.java.simpleName
 
 inline fun <reified E, T, Id, R> R.notFound(content: T) where R: JpaRepository<E, Id> =
-    com.tjh.riskfactor.common.notFound(entityName, content.toString())
+    com.tjh.riskfactor.common.notFound(E::class.java.simpleName, content.toString())
 
 /**
  * 获取实体的“引用”，即使用延迟加载机制。当实体不存在时，访问属性会抛出异常[EntityNotFoundException]。
@@ -67,7 +65,7 @@ inline fun <reified E, T, Id, R> R.notFound(content: T) where R: JpaRepository<E
  * 获取的实际上是hibernate提供的proxy object因此永远不会是null，同时也要注意，如果属性未获取时一定要在获取它的`@Transactional`中使用，
  * 否则会抛出[org.hibernate.LazyInitializationException]。
  *
- * 在只需要[updateUnchecked]的情况下，用这个方法，再set相应属性，以避免直接获取的[JpaRepository.findById]将所有属性都获取一遍。这个select过程本可以避免。
+ * 在更新数据且不需要原数据的情况下，用这个方法，再set相应属性，以避免直接获取的[JpaRepository.findById]将所有属性都获取一遍。这个select过程本可以避免。
  */
 fun <E, Id, R> R.findLazy(id: Id): E where R: JpaRepository<E, Id> =
     this.getOne(id)
@@ -83,9 +81,6 @@ inline fun <Id, E, P, R> R.propertyOfUnchecked(id: Id, property: E.() -> P): P? 
 inline fun <reified E, Id, P, R> R.propertyOf(id: Id, property: E.() -> P): P where R: JpaRepository<E, Id> =
     this.propertyOfUnchecked(id, property) ?: throw notFound(id)
 
-inline fun <reified E, Id, R> R.updateUnchecked(id: Id, properties: (E) -> Unit): E where R: JpaRepository<E, Id> =
-    this.save(findLazy(id).also(properties))
-
 /**
  * 更新实体的属性
  * @param accessor 更新函数。如果返回为true，那么代表应该更新，此时存入数据库；否则不更新
@@ -97,4 +92,4 @@ inline fun <reified E, Id, R> R.update(id: Id, accessor: E.() -> Unit): E where 
     updateIf(id) { it.accessor(); true }
 
 inline fun <reified E, Id, R> R.find(id: Id): E where R: JpaRepository<E, Id> =
-    findById(id).orElseThrow { com.tjh.riskfactor.common.notFound(entityName, id.toString()) }
+    findById(id).orElseThrow { notFound(id) }

@@ -1,6 +1,6 @@
 package com.tjh.riskfactor.controller
 
-import com.tjh.riskfactor.service.TokenProvider
+import com.tjh.riskfactor.service.TokenService
 import org.springframework.http.HttpStatus
 import org.springframework.security.authentication.*
 import org.springframework.security.core.Authentication
@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.*
 @RestController
 class TokenController(
     private val authManager: AuthenticationManager,
-    private val provider: TokenProvider
+    private val service: TokenService
 ) {
 
     private fun authenticate(username: String, password: String): Authentication {
@@ -55,7 +55,7 @@ class TokenController(
     fun requestToken(@RequestBody body: TokenRequest): TokenResponse {
         val (username, password) = body
         val auth = authenticate(username, password)
-        return TokenResponse(provider.generateToken(auth))
+        return TokenResponse(service.generateToken(auth))
     }
 
     /**
@@ -63,7 +63,7 @@ class TokenController(
      */
     @GetMapping("/token")
     fun refreshToken(auth: Authentication): TokenResponse =
-        TokenResponse(provider.generateToken(auth))
+        TokenResponse(service.generateToken(auth))
 }
 
 data class TokenRequest(

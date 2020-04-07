@@ -17,7 +17,6 @@ class SchemaService(
     val ruleLists: RuleListRepository,
     val ruleAttrs: RuleAttributeRepository,
     val schemas: SchemaRepository,
-    private val answers: AnswerService,
     private val accounts: AccountService,
     private val mapper: ObjectMapper
 ) {
@@ -28,88 +27,76 @@ class SchemaService(
     fun getSchema(schemaId: IdType): SchemaInfo =
         schemas.find(schemaId).toInfo()
 
+    private fun Map<String, Any>.deserialize(): RuleAttributes {
+        val mutable = this.toMutableMap()
+        val choices = mutable["choices"]
+        if(choices != null)
+            mutable["choices"] = (choices as String).split(separator)
+        return mapper.convertValue(mutable, RuleAttributes::class.java)
+    }
+
+    private fun getRuleInfo(ruleId: IdType): RuleInfo {
+        val rule = rules.find(ruleId)
+        val options = rules.findAttributes(ruleId).map { it.attrName to it.attrValue }.toMap()
+            .takeIf{ it.isNotEmpty() }?.deserialize()
+        val list = rules.findList(ruleId).map { getRuleInfo(it) }
+        return RuleInfo(id = rule.id, label = rule.label,
+            type = rule.type, options = options, list = list)
+    }
+
     /**
      * 获得问卷的结构和初始化数据。所有的问卷构建规则id都已经转化成"$${id}"的格式
      */
     @Transactional(readOnly = true)
-    fun getSchemaRules(schemaId: IdType): SchemaRules {
+    fun getSchemaDetail(schemaId: IdType): SchemaDetail {
         val schema = schemas.find(schemaId)
+        val rules = getRuleInfo(schema.rootObjectId).list ?:
+            throw Exception("schema $schemaId has no rules configured")
 
-        val rules = mutableMapOf<String, RuleInfo>()
-        val collectShape = mutableMapOf<String, String>()
-
-        // 从根节点开始，逐层获取
-        var pending = listOf(schema.rootId)
-        while(pending.isNotEmpty()) {
-            pending = pending.flatMap {
-                val rule = this.rules.find(it)
-                val list = this.rules.findList(it)
-                val identifier = "$${rule.id}"
-                rules[identifier] = rule.toInfo(list)
-                rule.collectName?.let { collectShape[it] = identifier }
-                list
-            }
-        }
-
-        return SchemaRules(
-            info = schema.toInfo(), root = "$${schema.rootId}",
-            initialValues = answers.getInitialValues(schema.id),
-            rules = rules, collectShape = collectShape)
+        return SchemaDetail(
+            info = schema.toInfo(), rules = rules)
     }
 
     private fun saveList(parentId: IdType, rules: List<Rule>) {
-        rules.mapIndexed { index, rule ->
-            RuleList(parentId, rule.id, index)
-        }.also { ruleLists.saveAll(it) }
+        ruleLists.saveAll(rules.mapIndexed { index, rule -> RuleList(parentId, rule.id, index) })
     }
 
     @Transactional
-    fun loadFromSchema(models: List<SchemaModel>) = models.forEach(this::loadFromSchema)
+    fun loadFromSchema(models: List<SchemaModel>) =
+        models.forEach(this::loadFromSchema)
 
     private fun loadFromSchema(schema: SchemaModel) {
         // 带ref引用的规则 RuleModel::ref -> Rule
         val refReferenced = mutableMapOf<String, Rule>()
         // 要替换placeholder中ref引用的规则 pair(Rule, RuleAttributes::placeholder)
-        val refRequested = mutableListOf<Pair<Rule, String>>()
-        // 初始化数据 $${Rule::id} -> RuleModel::init
-        val initialValues = mutableMapOf<String, String>()
+        val refDependent = mutableListOf<Pair<Rule, String>>()
 
         // 根节点，是虚拟的，不对渲染结果起实际作用
         val rootModel = RuleModel(type = RuleType.ROOT, list = schema.list)
-        val rootNode = rootModel.saved()
 
-        var ruleModels = listOf(rootModel); var ruleNodes = listOf(rootNode)
-        while(ruleModels.isNotEmpty()) {
-            val nextModels = mutableListOf<RuleModel>()
-            val nextNodes = mutableListOf<Rule>()
-            // 每个节点自身已经存储在数据库中，后续只需要处理它的list
-            for(i in ruleModels.indices) {
-                val currModel = ruleModels[i]; val currNode = ruleNodes[i]
-                // 存储其list，并将结果存储到下一轮循环的节点列表中
-                val childModels = currModel.list
-                if(childModels != null && childModels.isNotEmpty()) {
-                    val childNodes = childModels.map { it.saved() }
-                    this.saveList(currNode.id, childNodes)
-                    nextModels.addAll(childModels); nextNodes.addAll(childNodes)
-                }
-                // 记录初始化数据
-                if(currModel.init != null)
-                    initialValues["$${currNode.id}"] = currModel.init
-                // ref规则，登记ref名
-                if(currModel.ref != null)
-                    refReferenced[currModel.ref] = currNode
-                // ref替换请求，登记其id和计算表达式
-                val placeholder = currModel.options?.placeholder
-                if(placeholder != null && currModel.type == RuleType.EXPR)
-                    refRequested.add(currNode to placeholder)
+        fun traverse(ruleModel: RuleModel): Rule {
+            val entity = ruleModel.saved()
+            // ref规则，登记ref名
+            if(ruleModel.ref != null)
+                refReferenced[ruleModel.ref] = entity
+            // ref替换请求，登记其id和计算表达式
+            val placeholder = ruleModel.options?.placeholder
+            if(placeholder != null && ruleModel.type == RuleType.EXPR)
+                refDependent.add(entity to placeholder)
+            // 存储其list
+            if(ruleModel.list != null && ruleModel.list.isNotEmpty()) {
+                val childNodes = ruleModel.list.map { traverse(it) }
+                saveList(entity.id, childNodes)
             }
-            ruleModels = nextModels; ruleNodes = nextNodes
+            return entity
         }
+
+        val rootNode = traverse(rootModel)
 
         // 所有规则条目已经存储完成，现在替换ref代表的placeholder，ref换为对应的"$${id}"
         val regex = "\\$(\\w+)".toRegex()
         val attrName = RuleAttributes::placeholder.name
-        refRequested.forEach { (rule, placeholder) ->
+        refDependent.forEach { (rule, placeholder) ->
             val replaced = placeholder.replace(regex) { match ->
                 val (ref) = match.destructured
                 val id = refReferenced[ref]?.id ?: throw RuntimeException("referenced ref name [$ref] does not exist")
@@ -119,22 +106,10 @@ class SchemaService(
         }
 
         // 所有规则条目已经完全处理完毕，存储schema
-        val savedSchema = schemas.save(Schema(
+        schemas.save(Schema(
             name = schema.name, creatorId = accounts.findUser(schema.creator).id,
-            groupId = accounts.findGroup(schema.group).id, rootId = rootNode.id))
-
-        // 存储初始化数据
-        if(initialValues.isNotEmpty())
-            answers.writeAnswer(0, savedSchema.id, initialValues, accounts.findUser(schema.creator))
+            groupId = accounts.findGroup(schema.group).id, rootObjectId = rootNode.id))
     }
-
-    private fun getRuleOptions(ruleId: IdType): RuleAttributes? =
-        rules.findAttributes(ruleId).map { it.attrName to it.attrValue }.toMap()
-            .takeIf{ it.isNotEmpty() }?.deserialize()
-
-    private fun Rule.toInfo(list: List<IdType>) = RuleInfo(
-        id = "$$id", type = type, label = label,
-        options = getRuleOptions(id), list = list.map { "$$it" })
 
     private fun Schema.toInfo() = SchemaInfo(
         id = id, name = name, creator = accounts.userInfo(creatorId),
@@ -144,8 +119,8 @@ class SchemaService(
     private fun RuleModel.saved(): Rule {
         val saved = rules.save(Rule(type = type, label = label))
         this.options?.also {
-            val attributes = it.serialize()
-            ruleAttrs.saveAll(attributes.map { (k, v) -> RuleAttribute(saved.id, k, v) })
+            val attrs = it.serialize().map { (k, v) -> RuleAttribute(saved.id, k, v) }
+            ruleAttrs.saveAll(attrs)
         }
         return saved
     }
@@ -157,22 +132,14 @@ class SchemaService(
             it.key to if(it.value is List<*>) (it.value as List<*>).joinToString(separator) else it.value.toString()
         }.toMap()
     }
-
-    private fun Map<String, Any>.deserialize(): RuleAttributes {
-        val mutable = this.toMutableMap()
-        val choices = mutable["choices"]
-        if(choices != null)
-            mutable["choices"] = (choices as String).split(separator)
-        return mapper.convertValue(mutable, RuleAttributes::class.java)
-    }
 }
 
 data class RuleInfo(
-    val id: String,
+    val id: IdType,
     val type: RuleType?,
     val label: String?,
     @JsonInclude(JsonInclude.Include.NON_EMPTY)
-    val list: List<String>?,
+    val list: List<RuleInfo>?,
     @field:JsonUnwrapped
     val options: RuleAttributes?
 )
@@ -185,17 +152,12 @@ data class SchemaInfo(
     val createdAt: EpochTime
 )
 
-data class SchemaRules(
+data class SchemaDetail(
+    // 仅为了复用其内容
     @field:JsonUnwrapped
     val info: SchemaInfo,
-
-    var root: String,
     @JsonInclude(JsonInclude.Include.NON_EMPTY)
-    val rules: Map<String, RuleInfo>,
-    @JsonInclude(JsonInclude.Include.NON_EMPTY)
-    val initialValues: Map<String, String>,
-    @JsonInclude(JsonInclude.Include.NON_EMPTY)
-    val collectShape: Map<String, String>
+    val rules: List<RuleInfo>
 )
 
 data class RuleModel(

@@ -9,7 +9,7 @@ import org.springframework.web.filter.OncePerRequestFilter
 import org.springframework.security.core.context.SecurityContextHolder
 
 import com.tjh.riskfactor.controller.ErrorHandler
-import com.tjh.riskfactor.service.TokenProvider
+import com.tjh.riskfactor.service.TokenService
 
 import java.lang.IllegalArgumentException
 import javax.servlet.FilterChain
@@ -18,14 +18,14 @@ import javax.servlet.http.HttpServletResponse
 
 @Component
 class TokenFilter(
-    private val provider: TokenProvider,
+    private val service: TokenService,
     private val handler: ErrorHandler
 ): OncePerRequestFilter() {
 
     override fun doFilterInternal(req: HttpServletRequest, res: HttpServletResponse, chain: FilterChain) {
         val ctx = SecurityContextHolder.getContext()
         try {
-            provider.resolveToken(req)?.let { ctx.authentication = provider.getAuthentication(it) }
+            service.resolveToken(req)?.let { ctx.authentication = service.getAuthentication(it) }
         } catch (ex: RuntimeException) {
             when(ex) {
                 is IllegalArgumentException, is MalformedJwtException, is ExpiredJwtException

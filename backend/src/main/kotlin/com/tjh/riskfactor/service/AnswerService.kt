@@ -1,17 +1,25 @@
 package com.tjh.riskfactor.service
 
-import org.springframework.data.jpa.domain.Specification
+import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.databind.JsonNode
+import com.fasterxml.jackson.databind.node.ArrayNode
+import com.fasterxml.jackson.databind.node.ObjectNode
+import com.fasterxml.jackson.databind.util.RawValue
+
 import org.springframework.stereotype.Service
+import org.springframework.data.jpa.domain.Specification
 import org.springframework.transaction.annotation.Transactional
 
 import au.com.console.jpaspecificationdsl.*
+
 import com.tjh.riskfactor.repository.*
 
 @Service
 class AnswerService(
     val answerValues: AnswerValueRepository,
     val answers: AnswerRepository,
-    private val accounts: AccountService
+    private val accounts: AccountService,
+    private val mapper: ObjectMapper
 ) {
 
     /**
@@ -20,7 +28,7 @@ class AnswerService(
      */
     fun answerInfoInSchema(schemaId: IdType): List<AnswerInfo> {
         // 初始值不能返回
-        val query = Answer::schemaId.equal(schemaId) and Answer::isInitialData.isFalse()
+        val query = Answer::schemaId.equal(schemaId)
         return answers.findAll(query).map { it.toInfo() }
     }
 
@@ -36,62 +44,125 @@ class AnswerService(
             user.isRoot -> `true`()
             user.isAdmin -> Answer::groupId.equal(user.groupId)
             else -> Answer::creatorId.equal(user.id)
-        } and Answer::isInitialData.isFalse()
+        }
         val result: List<IdOnly> = answers.findAllProjected(query)
         return result.map { it.id }
     }
 
-    /**
-     * 返回一个扁平化的回答内容。其值为一个string -> string的map，
-     * 其key代表回答对应问题的id，为将其利用为javascript的key，转换成"$${id}"的格式，即在前面加一个符号
-     *   如果该问题是动态数量列表中的其中一个，则key的格式为"$${id}-${index}"，index为其所处位置，下标从1开始
-     *     如上设计的话，动态数量列表这个问题本身提交的内容是它的长度
-     * 其value代表回答的值
-     */
-    fun getAnswer(answerId: IdType): Map<String, String> =
-        answerValues.findAll(AnswerValue::tableId.equal(answerId)).map {
-            val identifier = "$${it.questionId}"
-            if(it.order == 0)
-                identifier to it.value
-            else
-                "$identifier-${it.order}" to it.value
-        }.toMap()
+    private fun findChildren(rootObjectId: IdType, ordered: Boolean = false): List<AnswerValue> {
+        val query = AnswerValue::parentId.equal(rootObjectId)
+        return if(ordered) answerValues.findAll(query, AnswerValue::order.sorted()) else answerValues.findAll(query)
+    }
 
-    fun getInitialValues(schemaId: IdType): Map<String, String> {
-        val answerId: IdOnly? = answers.findOneProjected(
-            Answer::schemaId.equal(schemaId) and Answer::isInitialData.isTrue()
-        )
-        return if(answerId == null) mapOf() else getAnswer(answerId.id)
+    private fun AnswerValue.toJsonNode(): JsonNode = when(type) {
+        AnswerType.OBJECT -> {
+            val obj = mapper.createObjectNode()
+            findChildren(id).forEach { obj.set<JsonNode>(it.question, it.toJsonNode()) }
+            obj
+        }
+        AnswerType.ARRAY -> {
+            val arr = mapper.createArrayNode()
+            findChildren(id, true).forEach { arr.add(it.toJsonNode()) }
+            arr
+        }
+        AnswerType.STRING -> mapper.nodeFactory.textNode(value)
+        else -> mapper.nodeFactory.rawValueNode(RawValue(value))
+    }
+
+    @Transactional(readOnly = true)
+    fun getAnswer(answerId: IdType): ObjectNode =
+        answerValues.find(answers.propertyOf(answerId) { rootObjectId }).toJsonNode() as ObjectNode
+
+    private fun JsonNode.toAnswerValue(question: String?, parentId: IdType?): AnswerValue {
+        val entity = AnswerValue(question = question, parentId = parentId)
+        when {
+            isObject -> entity.type = AnswerType.OBJECT
+            isArray -> entity.type = AnswerType.ARRAY
+            else -> {
+                entity.value = this.asText()
+                when {
+                    isTextual -> entity.type = AnswerType.STRING
+                    isBoolean -> entity.type = AnswerType.BOOLEAN
+                    else -> entity.type = AnswerType.NUMBER
+                }
+            }
+        }
+        return entity
     }
 
     /**
-     * 追加回答内容/创建新的回答。回答的创建者和所有组的信息跟随执行动作的用户。
-     * @param answerId 追加的回答的id，更新原有的值。如果该值为0，则创建一个新的回答。
-     *                 如果该id不存在，抛出异常而非创建新回答。
-     * @param values 回答的内容，格式与[getAnswer]的返回值相同
-     * @param actor 该动作的执行者
+     * 将JSON分解为单个的条目存入数据库。该函数只考虑全新创建的情况
+     */
+    private fun JsonNode.persist(name: String?, parentId: IdType?, order: Int? = null): AnswerValue {
+        val entity = answerValues.save(this.toAnswerValue(name, parentId))
+        when {
+            isObject -> (this as ObjectNode).fields().forEach { (key, node) -> node.persist(key, entity.id) }
+            isArray -> (this as ArrayNode).forEachIndexed { index, node -> node.persist(null, entity.id, index) }
+        }
+        return entity
+    }
+
+    /**
+     * 创建新的回答。
+     * @param schemaId 回答所对应的问卷
+     * @param actor 创建回答的用户
+     * @param body 回答的内容，JSON格式
      */
     @Transactional
-    fun writeAnswer(answerId: IdType, schemaId: IdType, values: Map<String, String>, actor: User) {
-        val now = System.currentTimeMillis()
-        // 获得Answer实体
-        val answer = if(answerId == 0)
-            answers.save(Answer(actor.id, actor.groupId, schemaId, now, now))
-        else
-            answers.updateUnchecked(answerId) { it.modifiedAt = now }
-        // 将数据解构
-        val data = values.map { (identifier, value) ->
-            if(identifier.contains('-')) {
-                val regex = "^\\$(\\d+)-(\\d+)$".toRegex()
-                val (questionId, order) = regex.find(identifier)!!.destructured
-                AnswerValue(answer.id, questionId.toInt(), order.toInt(), value)
-            } else {
-                val regex = "^\\$(\\d+)$".toRegex()
-                val (questionId) = regex.find(identifier)!!.destructured
-                AnswerValue(answer.id, questionId.toInt(), 0, value)
+    fun createAnswer(schemaId: IdType, actor: User, body: ObjectNode): Answer {
+        val answer = Answer(creatorId = actor.id, groupId = actor.groupId, schemaId = schemaId,
+            rootObjectId = body.persist(name = null, parentId = null).id)
+        return answers.save(answer)
+    }
+
+    fun updateNode(oldNodeId: IdType, body: ObjectNode) {
+        val children = findChildren(oldNodeId).map { it.question to it }.toMap()
+        body.fields().forEach { (key, node) ->
+            val childNode = children[key]
+            if(childNode == null)
+                node.persist(key, oldNodeId)
+            else when {
+                node.isObject -> updateNode(childNode.id, node as ObjectNode)
+                // 更新数组时，整个删除再重新存入。希望有更好的方式
+                node.isArray -> { removeNode(childNode.id); node.persist(key, oldNodeId) }
+                node.isNull -> removeNode(childNode.id)
+                else -> answerValues.save(childNode.apply { value = node.asText() })
             }
         }
-        answerValues.saveAll(data)
+    }
+
+    /**
+     * 更新回答。如果[body]中某个项的值为`null`，那么删除该项。
+     */
+    @Transactional
+    fun updateAnswer(answerId: IdType, body: ObjectNode) {
+        val now = System.currentTimeMillis()
+        val rootObjectId = answers.propertyOf(answerId) { rootObjectId }
+        updateNode(rootObjectId, body)
+        answers.update(answerId) { modifiedAt = now }
+    }
+
+    /**
+     * 删除回答的JSON结构中，根节点id为[rootId]的JSON node
+     */
+    private fun removeNode(rootId: IdType) {
+        val remove = mutableListOf<AnswerValue>(); var traverse = listOf(answerValues.find(rootId))
+        while(traverse.isNotEmpty()) {
+            val nextTraverse = mutableListOf<AnswerValue>()
+            traverse.forEach {
+                remove.add(it)
+                if(it.type == AnswerType.ARRAY || it.type == AnswerType.OBJECT)
+                    nextTraverse.addAll(findChildren(it.id))
+            }
+            traverse = nextTraverse
+        }
+        answerValues.deleteInBatch(remove)
+    }
+
+    @Transactional
+    fun removeAnswer(answerId: IdType) {
+        val rootId = answers.propertyOf(answerId) { rootObjectId }
+        removeNode(rootId)
     }
 
     private fun Answer.toInfo() = AnswerInfo(

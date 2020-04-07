@@ -20,6 +20,12 @@ open class IEntity(
     override fun hashCode(): Int = id.hashCode()
 }
 
+@MappedSuperclass
+open class ITimestampEntity(
+    var createdAt: EpochTime = System.currentTimeMillis(),
+    var modifiedAt: EpochTime = System.currentTimeMillis()
+): IEntity()
+
 /**
  * 常用Projection：仅需要Id
  */

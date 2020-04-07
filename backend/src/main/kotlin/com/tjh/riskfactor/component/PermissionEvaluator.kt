@@ -34,6 +34,9 @@ class PermissionEvaluator(
             ((!requireWritable || current.isAdmin) && current.groupId == targetUser.groupId)
     }
 
+    fun isUserEnabled(): Boolean =
+        !currentUser.isNobody
+
     /**
      * 是否可以修改用户[targetId]的信息
      */
