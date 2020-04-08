@@ -2,7 +2,6 @@ const { join, resolve } = require("path");
 
 const merge = require("webpack-merge");
 const common = require("./webpack.base");
-const WebpackCdnPlugin = require("webpack-cdn-plugin");
 const { BundleAnalyzerPlugin } = require("webpack-bundle-analyzer");
 const TerserPlugin = require("terser-webpack-plugin");
 const OptimizeCSSAssetsPlugin = require("optimize-css-assets-webpack-plugin");
@@ -17,13 +16,6 @@ module.exports = merge(common, {
       to: join(resolve("."), "/dist/public"),
       toType: "dir"
     }]),
-    new WebpackCdnPlugin({
-      modules: [{
-        name: "react-dom",
-        var: "ReactDOM",
-        path: "cjs/react-dom.production.min.js"
-      }]
-    }),
     new CompressionWebpackPlugin({
       filename: "[path].gz[query]",
       algorithm: "gzip",

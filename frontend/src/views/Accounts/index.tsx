@@ -1,64 +1,68 @@
-import React, { FC, useState, useEffect } from "react";
-import { useSelector, useDispatch } from "react-redux";
-import { useHistory } from "react-router";
+import React, { FC, CSSProperties, useState } from "react";
+import { useSelector } from "react-redux";
 
-import { Table, Button, Popconfirm } from "antd";
-import { CheckOutlined } from "@ant-design/icons";
-import type { TableRowSelection } from "antd/es/table/interface";
+import { Form, Button, Modal } from "antd";
+import { PlusOutlined, UserSwitchOutlined } from "@ant-design/icons";
 
-import { userInfoList, deleteUser as du, UserInfo } from "@/api";
+import { AccountList } from "./AccountList";
+import { AccountForm } from "./AccountForm";
+import { useAsync } from "@/utils";
+import { updateUser, createUser, IdType } from "@/api";
 import type { StoreType } from "@/redux";
-import { logout } from "@/redux/auth";
-import { useApi, useData } from "@/utils";
 
-const renderIsAdmin = (isAdmin: boolean | undefined) =>
-  isAdmin ? <CheckOutlined /> : null;
+const buttonLine: CSSProperties = {
+  marginBottom: 16
+};
+
+const button: CSSProperties = {
+  marginRight: 5
+};
 
 export const Accounts: FC = () => {
-  const [resp] = useApi(userInfoList, []);
-  const [, deleteUser] = useApi(du, [], { success: "删除成功", immediate: false });
+  const [visible, setVisible] = useState(false);
+  const [target, setTarget] = useState<IdType>();
 
-  const auth = useSelector((state: StoreType) => state.auth);
-  const dispatch = useDispatch();
-  const history = useHistory();
-  const [selected, setSelected] = useState<Array<number | string>>([]);
-  const [source, setSource] = useData(resp);
+  const auth = useSelector((store: StoreType) => store.auth);
+  const [form] = Form.useForm();
 
-  if (resp.alt !== undefined)
-    return resp.alt;
+  const [state, submit] = useAsync(async () => {
+    let fields;
+    try {
+      fields = await form.validateFields();
+    } catch (err) {
+      console.log("errors");
+      return;
+    }
+    const request = target === undefined ?
+      createUser(fields as any) :
+      updateUser(target, fields);
+    await request;
+    setVisible(false);
+    window.location.reload();
+  }, [target]);
 
-  const rowSelection: TableRowSelection<UserInfo> = {
-    type: "checkbox",
-    selectedRowKeys: selected,
-    onChange: setSelected
+  const triggerModal = () => {
+    setVisible(true);
+    if (auth.token !== null)
+      setTarget(auth.userId);
   };
 
-  const renderAction = (_: any, item: UserInfo) => {
-    const deleteThis = async () => {
-      await deleteUser(item.id);
-      setSource(prevSource => prevSource?.filter(elem => elem.id != item.id));
-      setSelected(prevSelected => prevSelected.filter(elem => elem != item.id));
-      if (auth.token !== null && item.id == auth.userId) {
-        dispatch(logout());
-        history.replace("/login");
-      }
-    };
-    return <span>
-      <Popconfirm title="确认删除？" onConfirm={deleteThis} okText="是" cancelText="否">
-        <Button type="link" danger>删除</Button>
-      </Popconfirm>
-    </span>;
-  };
-
-  return <Table dataSource={source} loading={source === undefined}
-                rowSelection={rowSelection} tableLayout="fixed" rowKey="id">
-    <Table.Column align="center" title="UID" dataIndex="id" />
-    <Table.Column align="center" title="用户名" dataIndex="username" render={username => username} />
-    <Table.Column align="center" title="电子邮箱" dataIndex="email" />
-    <Table.Column align="center" title="用户组" dataIndex="group" />
-    <Table.Column align="center" title="是管理员" dataIndex="isAdmin" render={renderIsAdmin} />
-    <Table.Column align="center" title="操作" key="action" render={renderAction}/>
-  </Table>;
+  return <div>
+    <div style={buttonLine}>
+      <Button type="primary" style={button} onClick={() => setVisible(true)} icon={<PlusOutlined />}>
+        添加用户
+      </Button>
+      <Button type="primary" onClick={triggerModal} icon={<UserSwitchOutlined/>}>
+        修改信息
+      </Button>
+    </div>
+    <Modal visible={visible} centered closable={false} confirmLoading={state?.loading}
+      onOk={() => submit()} onCancel={() => setVisible(false)} destroyOnClose={true}
+      okText="提交" cancelText="取消" title={target == undefined ? "创建用户" : "更新用户"}>
+      <AccountForm form={form} target={target} />
+    </Modal>
+    <AccountList/>
+  </div>;
 };
 
 export default Accounts;

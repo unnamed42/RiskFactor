@@ -7,7 +7,10 @@ import { Button, PageHeader, Table } from "antd";
 import { PlusOutlined, ImportOutlined } from "@ant-design/icons";
 
 import { useApi, useData } from "@/utils";
-import { IdType, AnswerInfo, getAnswerList, getSchemaInfo, removeAnswer } from "@/api";
+import {
+  IdType, AnswerInfo,
+  getAnswerList, getSchemaInfo, removeAnswer
+} from "@/api";
 import { datePattern } from "@/config";
 
 interface RouteParams {

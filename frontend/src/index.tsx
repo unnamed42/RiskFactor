@@ -18,8 +18,8 @@ render(
       <Router>
         <Suspense fallback={<Loading />}>
           <Switch>
-            <Route exact path="/login"><Login /></Route>
-            <PrivateRoute path="/"><App /></PrivateRoute>
+            <Route exact path="/login" component={Login}/>
+            <PrivateRoute path="/" component={App}/>
           </Switch>
         </Suspense>
       </Router>

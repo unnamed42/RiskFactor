@@ -10,17 +10,9 @@ const AnswerList = lazy(() => import(/* webpackChunkName: "answer-list" */"@/vie
 
 export const Routes: FC = () => <Suspense fallback={<Loading/>}>
   <Switch>
-    <PrivateRoute exact path="/">
-      <SchemaList/>
-    </PrivateRoute>
-    <PrivateRoute path="/accounts">
-      <Accounts/>
-    </PrivateRoute>
-    <PrivateRoute path="/task/:schemaId/answers">
-      <AnswerList/>
-    </PrivateRoute>
-    <PrivateRoute path="/task/:schemaId/form/:answerId?">
-      <AnswerForm/>
-    </PrivateRoute>
+    <PrivateRoute exact path="/" component={SchemaList}/>
+    <PrivateRoute path="/accounts" component={Accounts}/>
+    <PrivateRoute path="/task/:schemaId/answers" component={AnswerList}/>
+    <PrivateRoute path="/task/:schemaId/form/:answerId?" component={AnswerForm}/>
   </Switch>
 </Suspense>;

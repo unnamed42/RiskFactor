@@ -32,6 +32,9 @@ export const userInfo = (userId: IdType) =>
 export const userInfoList = () =>
   request<UserInfo[]>({ url: "/users" });
 
+export const groupNames = () =>
+  request<string[]>({ url: "/groups" });
+
 export const updateUser = (targetId: IdType, data: UpdateUserRequest) =>
   request({ url: `/users/${targetId}`, data, method: "PUT" });
 
