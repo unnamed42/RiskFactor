@@ -91,6 +91,9 @@ class AccountController(
         service.deleteUser(targetId)
     }
 
+    @GetMapping("/groups")
+    fun getGroupNames(): List<String> =
+        service.groupNames()
 }
 
 data class UpdateUserRequest(

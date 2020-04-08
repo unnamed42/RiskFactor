@@ -24,6 +24,11 @@ class AccountService(
     fun findUser(name: String): User =
         users.findOne(User::username.equal(name)).orElseThrow { users.notFound(name) }
 
+    fun groupNames(): List<String> {
+        val names: List<NameOnly> = groups.findAllProjected()
+        return names.map { it.name }
+    }
+
     /**
      * 返回用户的用户名，不存在的情况下用其id代替
      */
@@ -95,3 +100,7 @@ data class UserInfo(
     val group: String?,
     val isAdmin: Boolean?
 )
+
+interface NameOnly {
+    val name: String
+}

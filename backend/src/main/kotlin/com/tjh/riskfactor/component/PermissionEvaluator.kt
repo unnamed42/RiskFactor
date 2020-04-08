@@ -20,17 +20,21 @@ class PermissionEvaluator(
     private val self get() = (auth.principal as AccountDetails)
     private val currentUser get() = self.dbUser
 
+    /**
+     * 查询用户[targetId]的产出物对当前用户是否可见。[requireWritable]时还需额外检查可写权限。
+     */
     private fun isUserVisible(targetId: IdType, requireWritable: Boolean = false): Boolean {
         val current = currentUser
-        if(targetId == current.id || targetId == 0)
-            return true
         // 无权限组除了自己，什么也干不了
         if(current.isNobody)
             return false
+        // 自己，或者[已删除]的无效用户可见
+        if(targetId == current.id || targetId == 0)
+            return true
         val targetUser = accounts.users.find(targetId)
         // 如果[targetUser]也是root组，那么规定root组的普通成员不能相互更改
         return (current.isRoot && (!requireWritable || !targetUser.isRoot)) ||
-            // 只在要求可写时需要是组管理员
+            // 只在要求可写时需要是组管理员。同组的都是可见
             ((!requireWritable || current.isAdmin) && current.groupId == targetUser.groupId)
     }
 

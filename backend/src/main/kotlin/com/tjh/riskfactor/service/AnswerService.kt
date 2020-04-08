@@ -37,12 +37,11 @@ class AnswerService(
      * 超级管理员可以看见所有
      */
     fun userVisibleAnswers(user: User): List<IdType> {
-        val query: Specification<Answer> = when {
-            user.isRoot -> `true`()
-            user.isAdmin -> Answer::groupId.equal(user.groupId)
-            else -> Answer::creatorId.equal(user.id)
+        val result: List<IdOnly> = when {
+            user.isRoot -> answers.findAllProjected()
+            user.isAdmin -> answers.findAllProjected(Answer::groupId.equal(user.groupId))
+            else -> answers.findAllProjected(Answer::creatorId.equal(user.id))
         }
-        val result: List<IdOnly> = answers.findAllProjected(query)
         return result.map { it.id }
     }
 

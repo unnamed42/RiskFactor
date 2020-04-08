@@ -10,6 +10,8 @@ import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.HttpMethod
 import org.springframework.http.HttpStatus
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider
+import org.springframework.web.servlet.config.annotation.CorsRegistry
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity
@@ -35,7 +37,7 @@ class ApplicationConfig(
     private val tokenFilter: TokenFilter,
     private val handler: ErrorHandler,
     @Value("\${jwt.encoding-strength}") private val encodingStrength: Int
-): WebSecurityConfigurerAdapter() {
+): WebSecurityConfigurerAdapter(), WebMvcConfigurer {
     /**
      * 启用Jackson的Hibernates LAZY fetch支持
      */
@@ -67,6 +69,16 @@ class ApplicationConfig(
         setUserDetailsService(userDetailsService)
         setPasswordEncoder(passwordEncoder())
         isHideUserNotFoundExceptions = false
+    }
+
+    /**
+     * CORS shut up
+     */
+    override fun addCorsMappings(registry: CorsRegistry) {
+        super.addCorsMappings(registry)
+        registry.addMapping("/**")
+            .allowCredentials(true)
+            .allowedMethods("*")
     }
 
     override fun configure(auth: AuthenticationManagerBuilder) {
