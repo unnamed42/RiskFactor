@@ -1,12 +1,14 @@
 import React, { FC } from "react";
 import { Link } from "react-router-dom";
 import { useParams } from "react-router";
+import dayjs from "dayjs";
 
 import { Button, PageHeader, Table } from "antd";
 import { PlusOutlined, ImportOutlined } from "@ant-design/icons";
 
-import { useResponse } from "@/utils";
-import { IdType, AnswerInfo, getAnswerList, getSchemaInfo } from "@/api";
+import { useApi, useData } from "@/utils";
+import { IdType, AnswerInfo, getAnswerList, getSchemaInfo, removeAnswer } from "@/api";
+import { datePattern } from "@/config";
 
 interface RouteParams {
   schemaId: string;
@@ -15,27 +17,45 @@ interface RouteParams {
 const fetch = (schemaId: IdType) =>
   Promise.all([getAnswerList(schemaId), getSchemaInfo(schemaId)]);
 
+const renderTime = (time: string) =>
+  dayjs(time).format(datePattern);
+
 export const AnswerList: FC = () => {
   const schemaId = Number(useParams<RouteParams>().schemaId);
 
-  const response = useResponse(() => fetch(schemaId), [schemaId]);
-  if (response.error !== undefined)
-    return response.error;
+  const [, deleteAnswer] = useApi(removeAnswer, [], { success: "删除成功", immediate: false });
+  const [resp] = useApi(() => fetch(schemaId), [schemaId]);
 
-  const [answers, schemaInfo] = response.state.data;
+  const [source, setSource] = useData(resp);
+
+  if (resp.alt !== undefined)
+    return resp.alt;
+
+  const [answers, schemaInfo] = source ?? [];
 
   // onClick={() => downloadAnswer(answer.id)}
   //  onClick={() => delAnswer(answer)}
-  const actions = (_: any, answer: AnswerInfo) => {
+
+  const rmAnswer = async (answerId: IdType) => {
+    await deleteAnswer(answerId);
+    setSource(prevSource => {
+      if (prevSource !== undefined) {
+        const [prevAns, prevInfo] = prevSource;
+        return [prevAns.filter(ans => ans.id !== answerId), prevInfo];
+      }
+    });
+  };
+
+  const actions = (_: any, { id }: AnswerInfo) => {
     return <span>
-      <Link to={`/task/${schemaId}/form/${answer.id}`}>查看</Link>&nbsp;
+      <Link to={`/task/${schemaId}/form/${id}`}>查看</Link>&nbsp;
       <Button type="link">导出</Button>&nbsp;
-      <Button type="link">删除</Button>
+      <Button type="link" onClick={() => rmAnswer(id)}>删除</Button>
     </span>;
   };
 
   return <>
-    <PageHeader title={schemaInfo.name}
+    <PageHeader title={schemaInfo?.name}
       extra={[
         <Button key="1" type="link" icon={<PlusOutlined />}>
           <Link to={`/task/${schemaId}/form`}>添加受试者</Link>
@@ -46,7 +66,7 @@ export const AnswerList: FC = () => {
     <Table<AnswerInfo> dataSource={answers} rowKey="id">
       <Table.Column key="id" dataIndex="id" title="受试者编号" />
       <Table.Column key="creator" dataIndex="creator" title="创建人"/>
-      <Table.Column key="modifiedAt" dataIndex="modifiedAt" title="修改时间" />
+      <Table.Column key="modifiedAt" dataIndex="modifiedAt" title="修改时间" render={renderTime} />
       <Table.Column key="status" dataIndex="" title="患者入组" render={() => "患者入组"} />
       {
         // names.map(name =>
@@ -58,3 +78,5 @@ export const AnswerList: FC = () => {
     </Table>
   </>;
 };
+
+export default AnswerList;

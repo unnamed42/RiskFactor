@@ -1,4 +1,4 @@
-import React, { FC } from "react";
+import React, { FC, ElementType } from "react";
 import { isArray } from "lodash";
 
 import { Form, Checkbox, Radio, Input, Row } from "antd";
@@ -6,7 +6,7 @@ import type { FormInstance } from "rc-field-form/es";
 
 import type { RenderProps as P } from ".";
 import { text } from "@/config";
-import { tuple, shouldUpdate } from "@/utils";
+import { shouldUpdate } from "@/utils";
 
 /**
  * 将多项单选（Radio）和多项多选（Checkbox）合并在一起，因为大量代码是相同的
@@ -17,11 +17,13 @@ export const QChoices: FC<P> = ({ rule: { choices, id, type, customizable }, nam
     throw new Error(`下拉菜单|多选框 ${id} 没有正确配置选项choices`);
   const multi = type?.includes("multi") ?? false;
 
+  type ChoiceItem = typeof Checkbox.Group | typeof Radio.Group;
+
   // 决定渲染控件类型
-  const [Choice, ChoiceGroup] = (() => {
+  const [Choice, ChoiceGroup] = ((): [ElementType, ChoiceItem] => {
     const ChoiceType = multi ? Checkbox : Radio;
     // 必须转成React.ElementType，否则报 no constructor 错误
-    return tuple(ChoiceType as React.ElementType, ChoiceType.Group);
+    return [ChoiceType, ChoiceType.Group];
   })();
 
   // 选中了“其他”，启用自定义输入选项

@@ -7,7 +7,7 @@ import { List, Avatar } from "antd";
 import "./index.less";
 
 import { SchemaInfo, getSchemas } from "@/api";
-import { useResponse } from "@/utils";
+import { useApi } from "@/utils";
 import { datePattern } from "@/config";
 
 const renderItem = (info: SchemaInfo) => <List.Item>
@@ -20,9 +20,11 @@ const renderItem = (info: SchemaInfo) => <List.Item>
 </List.Item>;
 
 export const SchemaList: FC = () => {
-  const response = useResponse(getSchemas, []);
-  if (response.error !== undefined)
-    return response.error;
-  return <List<SchemaInfo> dataSource={response.state.data}
+  const [resp] = useApi(getSchemas, []);
+  if (resp.alt !== undefined)
+    return resp.alt;
+  return <List<SchemaInfo> dataSource={resp.data}
     className="task-list" renderItem={renderItem} />;
 };
+
+export default SchemaList;

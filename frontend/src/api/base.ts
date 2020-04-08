@@ -33,10 +33,10 @@ export const rawRequest = <T = void>(config: AxiosRequestConfig) =>
 /**
  * 向REST API请求数据的通用工具函数
  * @param config 传递给Axios的配置
- * @param withToken 当token可用时是否携带token数据，默认为`true`
+ * @param refreshToken 是否在token快要过期时刷新
  * @template T 请求返回的数据类型
  */
-export const request = async <T = void>(config: AxiosRequestConfig) => {
+export const request = async <T = void>(config: AxiosRequestConfig, refreshToken = true) => {
   if(!config.method)
     config.method = "GET";
   const auth = authentication();
@@ -47,7 +47,7 @@ export const request = async <T = void>(config: AxiosRequestConfig) => {
     const timeRemain = expiry - now() / 1000, timeTotal = expiry - issuedAt;
     if (timeRemain > 0) {
       // 快要过期（剩余时间占比小于refreshThres）
-      if (timeRemain <= timeTotal * refreshThres) {
+      if (timeRemain <= timeTotal * refreshThres && refreshToken) {
         const refreshed = await refresh();
         store.dispatch(login(refreshed));
         config = withBearerToken(config, refreshed);

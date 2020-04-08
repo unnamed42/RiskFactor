@@ -1,10 +1,10 @@
 import React, { FC, useMemo } from "react";
 
-import { Input, Form } from "antd";
+import { Input, InputNumber, Form } from "antd";
 
 import { RenderProps as P, Renderer } from ".";
 
-export const QInput: FC<P> = ({ rule: { placeholder, list, id }, namePath }) => {
+export const QInput: FC<P> = ({ rule: { placeholder, list, id, type }, namePath }) => {
 
   const addon = useMemo(() => {
     if (!list) return {};
@@ -18,7 +18,9 @@ export const QInput: FC<P> = ({ rule: { placeholder, list, id }, namePath }) => 
       return { addonAfter: dom };
   }, [list, id, namePath]);
 
+  const InputControl = type === "number" ? InputNumber : Input;
+
   return <Form.Item name={namePath} noStyle>
-    <Input type="text" placeholder={placeholder} {...addon} />
+    <InputControl placeholder={placeholder} {...addon} />
   </Form.Item>;
 };

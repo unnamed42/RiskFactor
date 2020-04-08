@@ -5,7 +5,7 @@ import { Radio, Form } from "antd";
 import { RenderProps as P, Renderer } from ".";
 import { shouldUpdate } from "@/utils";
 
-export const QYesNo: FC<P> = ({ rule: { id, list, yesno, label }, ...props }) => {
+export const QYesNo: FC<P> = ({ rule: { id, list, yesno }, ...props }) => {
   const splitted = (yesno ?? "是/否").split("/");
   if (splitted.length < 2)
     throw new Error(`双选问题 ${id} 的选项名配置不正确`);

@@ -20,4 +20,4 @@ export const login = (data: TokenRequest) =>
  * 刷新token
  */
 export const refresh = () =>
-  request<TokenResponse>({ url: "/token" }).then(({ token }) => token);
+  request<TokenResponse>({ url: "/token" }, false).then(({ token }) => token);

@@ -1,18 +1,19 @@
 import { request, IdType } from "./base";
 
 export interface UserInfo {
+  id: IdType;
   username?: string;
   email?: string;
-  group?: string;
-}
-
-export interface UpdateUserRequest extends UserInfo {
-  password?: string;
   group?: string;
   isAdmin?: boolean;
 }
 
-export interface CreateUserRequest extends UpdateUserRequest {
+export interface UpdateUserRequest extends Omit<UserInfo, "id"> {
+  password?: string;
+  group?: string;
+}
+
+export interface CreateUserRequest extends Omit<UpdateUserRequest, "password"> {
   password: string;
 }
 
@@ -31,8 +32,11 @@ export const userInfo = (userId: IdType) =>
 export const userInfoList = () =>
   request<UserInfo[]>({ url: "/users" });
 
-export const updateUser = (targetId: IdType) =>
-  request({ url: `/users/${targetId}`, method: "PUT" });
+export const updateUser = (targetId: IdType, data: UpdateUserRequest) =>
+  request({ url: `/users/${targetId}`, data, method: "PUT" });
 
 export const createUser = (data: CreateUserRequest) =>
   request({ url: "/users", data, method: "POST" });
+
+export const deleteUser = (targetId: IdType) =>
+  request({ url: `/users/${targetId}`, method: "DELETE" });

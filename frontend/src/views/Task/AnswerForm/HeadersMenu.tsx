@@ -1,4 +1,4 @@
-import React, { FC, CSSProperties, useMemo, useEffect } from "react";
+import React, { FC, CSSProperties, useEffect } from "react";
 
 import { Menu } from "antd";
 import { BarsOutlined } from "@ant-design/icons";
@@ -33,17 +33,18 @@ export const openKey = (obj: any) => {
     obj = v;
   }
   // 如果是空，返回undefined；否则为 [一级header]/[二级header]/[三级header]...
-  return path ? path.join("/") : undefined;
+  return path ? [path[0], path.join("/")] : [];
 };
 
 export const HeadersMenu: FC<HeadersMenuProps> = ({ headers, onChange }) => {
-  const open = openKey(headers);
+  const [open,] = openKey(headers);
 
   useEffect(() => {
     onChange?.(open ?? "");
   }, [onChange, open]);
 
-  return <Menu mode="inline" style={menuStyle} defaultSelectedKeys={open ? [open] : undefined}
+  return <Menu mode="inline" style={menuStyle}
+    defaultOpenKeys={open ? [open] : undefined}
     onSelect={({ key }) => onChange?.(key)}>
     {renderItems(headers)}
   </Menu>;

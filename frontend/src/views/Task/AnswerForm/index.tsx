@@ -1,12 +1,17 @@
-import React, { FC, CSSProperties, useState } from "react";
+import React, { FC, CSSProperties, useState, useRef } from "react";
 import { useParams } from "react-router";
 import { useHistory } from "react-router-dom";
 import { omit, set } from "lodash";
+import { merge } from "lodash/fp";
 
 import { Layout, PageHeader } from "antd";
+import type { Store } from "rc-field-form/es/interface";
 
-import { useCachedResponse } from "@/utils";
-import { getSchemaDetail, schemaModifiedTime, IdType, RuleInfo } from "@/api";
+import { useApiCached, useApi } from "@/utils";
+import {
+  getSchemaDetail, schemaModifiedTime, IdType, RuleInfo,
+  createAnswer, updateAnswer
+} from "@/api";
 import { HeadersMenu } from "./HeadersMenu";
 import { InternalForm } from "./InternalForm";
 
@@ -56,17 +61,26 @@ export const AnswerForm: FC = () => {
   const params = useParams<RouteParams>();
   // 当前选中的 [一级标题(h1)]/[二级标题(h2)]/...
   const [header, setHeader] = useState("");
+  const answerRef = useRef<Store>({});
 
   const schemaId = Number(params.schemaId);
   const answerId = params.answerId ? Number(params.answerId) : undefined;
 
-  const response = useCachedResponse(`schema-${schemaId}`,
-    () => fetch(schemaId), schemaModifiedTime, [schemaId]);
+  const [, submit] = useApi(async (value: Store) => {
+    if (answerId === undefined)
+      await createAnswer(schemaId, value);
+    else
+      await updateAnswer(answerId, value);
+  }, [answerId, schemaId], { immediate: false, success: "提交成功" });
 
-  if (response.error !== undefined)
-    return response.error;
+  const [resp] = useApiCached(() => fetch(schemaId), [schemaId], {
+    cacheKey: `schema-${schemaId}`, mtimeGetter: schemaModifiedTime
+  });
 
-  const { schema, headers } = response.state.data;
+  if (resp.alt !== undefined)
+    return resp.alt;
+
+  const { schema, headers } = resp.data;
 
   return <Layout>
     <Layout.Sider style={layoutStyle}>
@@ -75,7 +89,10 @@ export const AnswerForm: FC = () => {
     <Layout>
       <Layout.Content style={containerStyle}>
         <PageHeader title="返回数据页" onBack={() => history.replace(`/task/${schemaId}/answers`)} />
-        <InternalForm schema={schema} header={header} answerId={answerId} onValuesChange={values => console.log(values)}/>
+        <InternalForm schema={schema} header={header} answerId={answerId}
+          onValuesChange={changes => answerRef.current = merge(answerRef.current, changes)}
+          onFinish={() => { const value = (() => answerRef.current)(); submit(value); }}
+        />
       </Layout.Content>
     </Layout>
   </Layout>;

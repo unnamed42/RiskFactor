@@ -35,7 +35,7 @@ export const TimedButton: FC<P> = ({ interval, text, ...props }) => {
 
   const clicked = () => { setSeconds(interval); setWaiting(true); };
 
-  return <Button loading={waiting} disabled={waiting} onClick={clicked} {...(props as ButtonProps)}>
+  return <Button loading={waiting} disabled={waiting} onClick={clicked} {...props}>
     {waiting ? `${seconds}秒` : text}
   </Button>;
 };

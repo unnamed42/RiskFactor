@@ -65,7 +65,6 @@ export const QAutoItem: FC<P> = ({ rule: { id, placeholder } }) => {
       return [shouldUpdate(expr), form => form.getFieldValue(namePath)];
     } else if (type === "expr") {
       const variables = expr.split(" ").filter(s => s.startsWith("$"));
-      console.log(variables);
       return [
         (prev, curr) => every(variables, varName => get(prev, varName) == get(curr, varName)),
         form => evalExpr(expr, form)

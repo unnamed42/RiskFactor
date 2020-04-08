@@ -4,8 +4,9 @@ import { Form, Button } from "antd";
 import type { FormInstance } from "antd/es/form";
 import type { Store } from "rc-field-form/es/interface";
 
-import type { RuleInfo, IdType } from "@/api";
+import { RuleInfo, IdType, answerModifiedAt, getAnswer } from "@/api";
 import { Renderer } from "./components";
+import { useApi } from "@/utils";
 
 interface P {
   schema: Record<string, RuleInfo[]>;
@@ -13,15 +14,26 @@ interface P {
   answers?: Store;
   answerId?: IdType;
 
-  onValuesChange?: (changedValues: Store) => void;
+  onFinish?: () => void;
+  onValuesChange?: (changedValues: Store, values: Store) => void;
 }
 
 const FormContext = createContext({} as FormInstance);
 
 export const useFormInstance = () => useContext(FormContext);
 
-export const InternalForm: FC<P> = ({ schema, header, answers, answerId, onValuesChange }) => {
+export const InternalForm: FC<P> = ({ schema, header, answers, answerId, onValuesChange, onFinish }) => {
   const [form] = Form.useForm();
+
+  const [, fetchValues] = useApi(getAnswer, [], { immediate: false });
+
+  // const [resp] = useApiCached(async () => {
+  //   if (answerId === undefined)
+  //     return {};
+  //   return await getAnswer(answerId);
+  // }, [answerId], {
+  //   cacheKey: `answer-${answerId}`, mtimeGetter: answerModifiedAt
+  // });
 
   const dom = useMemo(() => {
     const entries = Object.entries(schema).map(([headerKey, rules]) => {
@@ -36,9 +48,9 @@ export const InternalForm: FC<P> = ({ schema, header, answers, answerId, onValue
   }, [schema]);
 
   useEffect(() => {
-    if(answers !== undefined)
-      form.setFieldsValue(answers);
-  }, [form, answers]);
+    if (answerId !== undefined)
+      fetchValues(answerId).then(values => form.setFieldsValue(values));
+  }, [answerId]);
 
   useEffect(() => {
     if(answerId !== undefined)
@@ -46,7 +58,7 @@ export const InternalForm: FC<P> = ({ schema, header, answers, answerId, onValue
   }, [form, answerId]);
 
   return <Form form={form} layout="horizontal" labelCol={{ span: 4 }} wrapperCol={{ span: 14 }}
-    onValuesChange={(changes, _) => onValuesChange?.(changes)} validateMessages={{ required: "'${name}' 是必选字段" }}>
+    onValuesChange={onValuesChange} validateMessages={{ required: "'${name}' 是必选字段" }}>
     {/* 插入 answerId 项 */}
     <Form.Item name={["#vars", "answerId"]} noStyle style={{ display: "none" }}>
       <></>
@@ -55,7 +67,7 @@ export const InternalForm: FC<P> = ({ schema, header, answers, answerId, onValue
       {dom.get(header) ?? null}
     </FormContext.Provider>
     <Form.Item>
-      <Button type="primary" htmlType="submit" style={{ marginLeft: 5 }}>提交</Button>
+      <Button type="primary" htmlType="submit" style={{ marginLeft: 5 }} onClick={onFinish}>提交</Button>
     </Form.Item>
   </Form>;
 };
