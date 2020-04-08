@@ -29,4 +29,6 @@ class Schema(
 ): ITimestampEntity()
 
 @Repository
-interface SchemaRepository: IQueryRepository<Schema, IdType>
+interface SchemaRepository: IQueryRepository<Schema, IdType> {
+    fun findByCreatorId(creatorId: IdType): List<IdOnly>
+}

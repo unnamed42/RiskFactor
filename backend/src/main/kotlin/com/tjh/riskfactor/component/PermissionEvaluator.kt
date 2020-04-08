@@ -22,7 +22,7 @@ class PermissionEvaluator(
 
     private fun isUserVisible(targetId: IdType, requireWritable: Boolean = false): Boolean {
         val current = currentUser
-        if(targetId == current.id)
+        if(targetId == current.id || targetId == 0)
             return true
         // 无权限组除了自己，什么也干不了
         if(current.isNobody)

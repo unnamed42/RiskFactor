@@ -1,10 +1,6 @@
 package com.tjh.riskfactor.service
 
-import com.fasterxml.jackson.annotation.JsonProperty
-
 import org.springframework.stereotype.Service
-import org.springframework.transaction.annotation.Transactional
-import org.springframework.security.crypto.password.PasswordEncoder
 
 import au.com.console.jpaspecificationdsl.*
 import com.tjh.riskfactor.repository.*
@@ -17,7 +13,8 @@ import com.tjh.riskfactor.repository.*
 class AccountService(
     val users: UserRepository,
     val groups: GroupRepository,
-    private val encoder: PasswordEncoder
+    private val answers: AnswerService,
+    private val schemas: SchemaService
 ) {
 
     fun hasUser(name: String): Boolean = users.exists(User::username.equal(name))
@@ -44,6 +41,16 @@ class AccountService(
     fun findGroupName(id: IdType): String =
         groups.propertyOf(id) { name }
 
+    fun deleteUser(id: IdType) {
+        answers.answers.findByCreatorId(id).forEach {
+            answers.answers.update(it.id) { creatorId = 0 }
+        }
+        schemas.schemas.findByCreatorId(id).forEach {
+            schemas.schemas.update(it.id) { creatorId = 0 }
+        }
+        users.deleteById(id)
+    }
+
     /**
      * 返回一个用户可以修改的其他用户id列表
      * @param actorId 以此id用户为视角观察
@@ -65,78 +72,26 @@ class AccountService(
     }
 
     fun userInfo(id: IdType): UserInfo =
-        users.find(id).toInfo().copy(isAdmin = null)
+        userDetailedInfo(id).copy(isAdmin = null)
 
     fun userDetailedInfo(id: IdType): UserInfo =
-        users.find(id).toInfo()
+        if(id != 0) users.find(id).toInfo() else
+            UserInfo(id = 0, username = "[已删除]", email = null, group = "无权限", isAdmin = null)
 
     fun userDetailedInfo(idList: Iterable<IdType>): List<UserInfo> =
         users.findAllById(idList).map { it.toInfo() }
 
-    /**
-     * 插入数据中指定的用户和用户组
-     */
-    @Transactional
-    fun loadFromSchema(model: DataModel) {
-        fun defineGroup(id: IdType, name: String) {
-            val group = findGroupUnchecked(name)
-            if(group != null && group.id != id)
-                groups.deleteById(group.id)
-            if(!groups.existsById(id))
-                groups.insert(id, name)
-            else
-                groups.update(id) { this.name = name }
-        }
-
-        defineGroup(1, "超级管理员")
-        defineGroup(2, "无权限")
-
-        val (groupList, userList) = model
-
-        val groupRefs = mutableMapOf("root" to 1, "nobody" to 2)
-
-        // 存储groups，并将组名引用指向其id
-        groupList.map { it.ref to groups.save(Group(it.name)).id }
-            .toMap(groupRefs)
-        // 存储users，并利用组名引用指向真实组id
-        users.saveAll(userList.map { it.toUser(groupRefs) })
-    }
-
-    private fun UserModel.toUser(groupRefs: Map<String, IdType>) = User(
-        username = username, password = encoder.encode(password),
-        email = email, isAdmin = isAdmin,
-        groupId = groupRefs[groupRef] ?: throw Exception("group $groupRef not found")
-    )
-
     private fun User.toInfo(): UserInfo {
         val group = groups.propertyOf(groupId) { name }
-        return UserInfo(username = username, email = email,
+        return UserInfo(id = id, username = username, email = email,
             group = group, isAdmin = isAdmin)
     }
 }
 
 data class UserInfo(
+    val id: IdType,
     val username: String?,
     val email: String?,
     val group: String?,
     val isAdmin: Boolean?
-)
-
-data class DataModel(
-    val groups: List<GroupModel>,
-    val users: List<UserModel>
-)
-
-data class GroupModel(
-    val ref: String,
-    val name: String
-)
-
-data class UserModel(
-    val username: String,
-    val password: String,
-    val email: String?,
-    @JsonProperty("group")
-    val groupRef: String = "nobody",
-    val isAdmin: Boolean = false
 )

@@ -78,4 +78,6 @@ class Answer(
 interface AnswerValueRepository: IQueryRepository<AnswerValue, IdType>
 
 @Repository
-interface AnswerRepository: IQueryRepository<Answer, IdType>
+interface AnswerRepository: IQueryRepository<Answer, IdType> {
+    fun findByCreatorId(creatorId: IdType): List<IdOnly>
+}

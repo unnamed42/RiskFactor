@@ -18,7 +18,6 @@ import com.tjh.riskfactor.repository.*
 class AnswerService(
     val answerValues: AnswerValueRepository,
     val answers: AnswerRepository,
-    private val accounts: AccountService,
     private val mapper: ObjectMapper
 ) {
 
@@ -26,14 +25,12 @@ class AnswerService(
      * 获得回答的简略信息（即不包含回答的内容），用于列表展示
      * @param schemaId 获得此问卷对应的所有回答信息
      */
-    fun answerInfoInSchema(schemaId: IdType): List<AnswerInfo> {
+    fun answerInfoInSchema(schemaId: IdType): List<Answer> =
         // 初始值不能返回
-        val query = Answer::schemaId.equal(schemaId)
-        return answers.findAll(query).map { it.toInfo() }
-    }
+        answers.findAll(Answer::schemaId.equal(schemaId) and Answer::creatorId.notEqual(0))
 
-    fun answerInfoInSchema(schemaId: IdType, idList: Collection<IdType>): List<AnswerInfo> =
-        answers.findAll(Answer::schemaId.equal(schemaId) and Answer::id.`in`(idList)).map { it.toInfo() }
+    fun answerInfoInSchema(schemaId: IdType, idList: Collection<IdType>): List<Answer> =
+        answers.findAll(Answer::schemaId.equal(schemaId) and Answer::id.`in`(idList))
 
     /**
      * 返回一个用户所能看见的全部回答。组管理员可看见所有组成员的回答，普通用户只能看见自己的，
@@ -163,20 +160,7 @@ class AnswerService(
     fun removeAnswer(answerId: IdType) {
         val rootId = answers.propertyOf(answerId) { rootObjectId }
         removeNode(rootId)
+        answers.deleteById(answerId)
     }
 
-    private fun Answer.toInfo() = AnswerInfo(
-        id = id, creator = accounts.usernameOrId(creatorId),
-        createdAt = createdAt, modifiedAt = modifiedAt,
-        group = accounts.findGroupName(groupId)
-    )
-
 }
-
-data class AnswerInfo(
-    val id: IdType,
-    val creator: String,
-    val group: String,
-    val createdAt: Long,
-    var modifiedAt: Long
-)

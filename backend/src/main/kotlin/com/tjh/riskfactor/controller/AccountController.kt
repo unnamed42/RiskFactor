@@ -11,6 +11,7 @@ import com.tjh.riskfactor.service.AccountService
 import com.tjh.riskfactor.service.UserInfo
 import com.tjh.riskfactor.repository.User
 import com.tjh.riskfactor.repository.updateIf
+import com.tjh.riskfactor.repository.IdType
 
 @CrossOrigin
 @RestController
@@ -42,7 +43,7 @@ class AccountController(
      */
     @PutMapping("/users/{targetId}")
     @PreAuthorize("@checker.isUserWritable(#targetId)")
-    fun updateInfo(@PathVariable targetId: Int, @RequestBody body: UpdateUserRequest?) {
+    fun updateInfo(@PathVariable targetId: IdType, @RequestBody body: UpdateUserRequest?) {
         if(body == null) return
         service.users.updateIf(targetId) { user ->
             var updateCount = 0
@@ -81,8 +82,14 @@ class AccountController(
      */
     @GetMapping("/users/{targetId}")
     @PreAuthorize("#targetId == 0 || @checker.isUserReadable(#targetId)")
-    fun userInfo(@PathVariable targetId: Int, @AuthenticationPrincipal details: AccountDetails): UserInfo =
+    fun userInfo(@PathVariable targetId: IdType, @AuthenticationPrincipal details: AccountDetails): UserInfo =
         service.userDetailedInfo(if(targetId == 0) details.id else targetId)
+
+    @DeleteMapping("/users/{targetId}")
+    @PreAuthorize("@checker.isUserWritable(#targetId)")
+    fun deleteUser(@PathVariable targetId: IdType) {
+        service.deleteUser(targetId)
+    }
 
 }
 

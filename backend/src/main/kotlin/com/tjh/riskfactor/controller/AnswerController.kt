@@ -7,11 +7,15 @@ import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.security.core.annotation.AuthenticationPrincipal
 
 import com.tjh.riskfactor.repository.IdType
+import com.tjh.riskfactor.repository.propertyOf
 import com.tjh.riskfactor.service.*
 
 @CrossOrigin
 @RestController
-class AnswerController(private val service: AnswerService) {
+class AnswerController(
+    private val service: AnswerService,
+    private val accounts: AccountService
+) {
 
     /**
      * 获得回答
@@ -28,8 +32,19 @@ class AnswerController(private val service: AnswerService) {
     fun getAnswerInfoInSchema(@RequestParam schemaId: IdType,
                               @AuthenticationPrincipal details: AccountDetails): List<AnswerInfo> {
         val visible = service.userVisibleAnswers(details.dbUser)
-        return service.answerInfoInSchema(schemaId, visible)
+        return service.answerInfoInSchema(schemaId, visible).map { AnswerInfo(
+            id = it.id, creator = accounts.usernameOrId(it.creatorId),
+            group = accounts.findGroupName(it.groupId),
+            createdAt = it.createdAt, modifiedAt = it.modifiedAt
+        ) }
     }
+
+    /**
+     *
+     */
+    @GetMapping("/answers/{answerId}/modifiedAt")
+    fun answerModifiedAt(@PathVariable answerId: IdType) =
+        service.answers.propertyOf(answerId) { modifiedAt }
 
     /**
      * 创建一个回答。目前认为所有有效用户都可以创建回答
@@ -62,3 +77,11 @@ class AnswerController(private val service: AnswerService) {
 }
 
 data class Id(val id: IdType)
+
+data class AnswerInfo(
+    val id: IdType,
+    val creator: String,
+    val group: String,
+    val createdAt: Long,
+    var modifiedAt: Long
+)

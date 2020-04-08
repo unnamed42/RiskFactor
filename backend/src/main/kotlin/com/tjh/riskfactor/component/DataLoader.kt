@@ -9,16 +9,16 @@ import org.springframework.boot.CommandLineRunner
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder
 import org.springframework.transaction.annotation.Transactional
 
-import com.tjh.riskfactor.service.AccountService
 import com.tjh.riskfactor.service.ConsoleService
-import com.tjh.riskfactor.service.SchemaService
+import com.tjh.riskfactor.component.loader.AccountLoader
+import com.tjh.riskfactor.component.loader.SchemaLoader
 
 import java.io.InputStream
 
 @Component
 class DataLoader(
-    private val accounts: AccountService,
-    private val schemas: SchemaService,
+    private val accountLoader: AccountLoader,
+    private val schemaLoader: SchemaLoader,
     private val console: ConsoleService,
     builder: Jackson2ObjectMapperBuilder
 ): CommandLineRunner {
@@ -29,10 +29,10 @@ class DataLoader(
     @Transactional
     override fun run(vararg args: String?) {
         onceOnly("users") {
-            accounts.loadFromSchema(mapper.parse(it))
+            accountLoader.loadFromSchema(mapper.parse(it))
         }
         onceOnly("rules") {
-            schemas.loadFromSchema(mapper.parse(it))
+            schemaLoader.loadFromSchema(mapper.parse(it))
         }
     }
 
