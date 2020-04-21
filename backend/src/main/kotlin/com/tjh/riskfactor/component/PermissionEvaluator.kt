@@ -35,7 +35,7 @@ class PermissionEvaluator(
         // 如果[targetUser]也是root组，那么规定root组的普通成员不能相互更改
         return (current.isRoot && (!requireWritable || !targetUser.isRoot)) ||
             // 只在要求可写时需要是组管理员。同组的都是可见
-            ((!requireWritable || current.isAdmin) && current.groupId == targetUser.groupId)
+            ((!requireWritable || current.isAdmin) && current.group == targetUser.group)
     }
 
     fun isUserEnabled(): Boolean =
@@ -59,20 +59,21 @@ class PermissionEvaluator(
     fun isGroupWritable(targetId: IdType): Boolean {
         val current = currentUser
         return (current.isRoot && targetId != 1) ||
-            current.groupId == targetId && current.isAdmin
+            current.group?.id == targetId && current.isAdmin
     }
 
-    fun isAnswerReadable(answerId: IdType): Boolean {
-        val creatorId = answers.answers.propertyOf(answerId) { creatorId }
-        return isUserVisible(creatorId)
+    private fun answerReadable(answerId: IdType, requireWritable: Boolean = false): Boolean {
+        val creator = answers.answers.propertyOf(answerId) { creator }
+        return creator?.let { isUserVisible(it.id, requireWritable) } ?: false
     }
+
+    fun isAnswerReadable(answerId: IdType): Boolean =
+        answerReadable(answerId)
 
     /**
      * 是否可以更新回答[answerId]
      */
-    fun isAnswerWritable(answerId: IdType): Boolean {
-        val creatorId = answers.answers.propertyOf(answerId) { creatorId }
-        return isUserVisible(creatorId, true)
-    }
+    fun isAnswerWritable(answerId: IdType): Boolean =
+        answerReadable(answerId, true)
 
 }

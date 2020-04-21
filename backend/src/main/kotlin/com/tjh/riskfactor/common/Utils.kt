@@ -25,9 +25,3 @@ inline fun <T> T.applyIf(bool: Boolean, block: T.() -> Unit): T {
     if(bool) this.block()
     return this
 }
-
-inline fun <reified T> String.parse(): T =
-    mapper.readValue(this, T::class.java)
-
-inline fun <reified T: Any> T.toJson(): String =
-    mapper.writeValueAsString(this)

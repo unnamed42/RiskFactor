@@ -2,22 +2,22 @@ package com.tjh.riskfactor.service
 
 import com.fasterxml.jackson.annotation.JsonInclude
 import com.fasterxml.jackson.annotation.JsonUnwrapped
-import com.fasterxml.jackson.core.type.TypeReference
-import com.fasterxml.jackson.databind.ObjectMapper
 
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
-import au.com.console.jpaspecificationdsl.*
-
 import com.tjh.riskfactor.common.*
 import com.tjh.riskfactor.repository.*
+
+import kotlin.reflect.KMutableProperty1
+import kotlin.reflect.full.declaredMemberProperties
+import kotlin.reflect.full.isSubclassOf
+import kotlin.reflect.jvm.jvmErasure
 
 @Service
 class SchemaService(
     val rules: RuleRepository,
-    val schemas: SchemaRepository,
-    private val mapper: ObjectMapper
+    val schemas: SchemaRepository
 ) {
 
     fun getSchemas(): List<Schema> =
@@ -28,8 +28,7 @@ class SchemaService(
 
     private fun getRuleInfo(ruleId: IdType): RuleInfo {
         val rule = rules.find(ruleId)
-        val options = rules.findAttributes(ruleId).map { it.attrName to it.attrValue }.toMap()
-            .takeIf{ it.isNotEmpty() }?.let { deserialize(it) }
+        val options = RuleAttributes.fromAttributeList(rules.findAttributes(ruleId))
         val list = rules.findList(ruleId).map { getRuleInfo(it) }
         return RuleInfo(id = rule.id, label = rule.label,
             type = rule.type, options = options, list = list)
@@ -45,22 +44,6 @@ class SchemaService(
             throw Exception("schema $schemaId has no rules configured")
 
         return Pair(schema, rules)
-    }
-
-    fun deserialize(map: Map<String, Any>): RuleAttributes {
-        val mutable = map.toMutableMap()
-        val choices = mutable["choices"]
-        if(choices != null)
-            mutable["choices"] = (choices as String).split(separator)
-        return mapper.convertValue(mutable, RuleAttributes::class.java)
-    }
-
-    fun serialize(attrs: RuleAttributes): Map<String, String> {
-        val type = object: TypeReference<Map<String, Any>>() {}
-        val converted = mapper.convertValue(attrs, type)
-        return converted.map {
-            it.key to if(it.value is List<*>) (it.value as List<*>).joinToString(separator) else it.value.toString()
-        }.toMap()
     }
 
 }
@@ -139,4 +122,41 @@ data class RuleAttributes(
      * 对于[RuleType.EXPR]类型来说，则是填充字符串。不使用[init]是因为初始值原则上是不变化的
      */
     var placeholder: String? = null
-)
+) {
+    companion object {
+        val reflection = RuleAttributes::class.declaredMemberProperties
+            .map { it.name to it }.toMap()
+
+        /**
+         * 将key(string) -> value(String)转换为[RuleAttributes]
+         */
+        private fun fromAttributeList(pairs: Sequence<Pair<String, String>>): RuleAttributes {
+            val result = RuleAttributes()
+            for((key, value) in pairs) {
+                val prop = reflection[key] as? KMutableProperty1 ?: continue
+                @Suppress("UNCHECKED_CAST")
+                if(prop.returnType.jvmErasure.isSubclassOf(List::class)) {
+                    val setValue = value.split(separator)
+                    (prop as KMutableProperty1<RuleAttributes, List<*>>).set(result, setValue)
+                } else
+                    (prop as KMutableProperty1<RuleAttributes, String>).set(result, value)
+            }
+            return result
+        }
+
+        fun fromAttributeList(attrs: List<RuleAttribute>): RuleAttributes? = if(attrs.isEmpty()) null else
+            attrs.asSequence().map { it.attrName to it.attrValue }.let { fromAttributeList(it) }
+    }
+
+    /**
+     * 将一个[RuleAttributes]的属性转换为key(string) -> value(string)的形式
+     */
+    fun toAttributeList(ruleId: IdType): List<RuleAttribute>? = reflection.asSequence()
+        .filter { (_, getter) -> getter.get(this) != null }
+        .map { (name, getter) -> RuleAttribute(ruleId, name, getter.get(this)!!.serialize()) }
+        .toList().takeIf { it.isNotEmpty() }
+
+    private fun Any.serialize(): String =
+        if(this is List<*>) this.joinToString(separator) else this.toString()
+
+}

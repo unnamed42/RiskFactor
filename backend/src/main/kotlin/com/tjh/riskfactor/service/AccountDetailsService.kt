@@ -1,14 +1,13 @@
 package com.tjh.riskfactor.service
 
 import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Transactional
 import org.springframework.security.core.userdetails.UserDetails
 import org.springframework.security.core.authority.SimpleGrantedAuthority
 import org.springframework.security.core.userdetails.UserDetailsService
 import org.springframework.security.core.userdetails.UsernameNotFoundException
 
 import au.com.console.jpaspecificationdsl.equal
-import com.tjh.riskfactor.repository.propertyOf
-import com.tjh.riskfactor.repository.GroupRepository
 import com.tjh.riskfactor.repository.User
 import com.tjh.riskfactor.repository.UserRepository
 
@@ -34,14 +33,14 @@ class AccountDetails(val dbUser: User, group: String?): UserDetails {
 
 @Service("userDetailsService")
 class AccountDetailsService(
-    private val users: UserRepository,
-    private val groups: GroupRepository
+    private val users: UserRepository
 ): UserDetailsService {
 
+    @Transactional(readOnly = true)
     override fun loadUserByUsername(username: String?): UserDetails {
         val user = users.findOne(User::username.equal(username))
             .orElseThrow { UsernameNotFoundException("user [$username] not found") }
-        val groupName = groups.propertyOf(user.groupId) { name }
+        val groupName = user.group?.name
         return AccountDetails(user, groupName)
     }
 

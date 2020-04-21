@@ -3,6 +3,8 @@ package com.tjh.riskfactor.repository
 import com.fasterxml.jackson.annotation.JsonValue
 
 import org.springframework.stereotype.Repository
+import org.springframework.data.jpa.repository.Query
+import org.springframework.data.jpa.repository.Modifying
 
 import javax.persistence.*
 
@@ -11,6 +13,14 @@ import javax.persistence.*
  */
 @Entity @Table
 class AnswerValue(
+    @Enumerated
+    var type: AnswerType = AnswerType.OBJECT,
+
+    /**
+     * 内容。除[AnswerType.ARRAY]和[AnswerType.OBJECT]外都不为null
+     */
+    var value: String? = null,
+
     /**
      * 对应问题的name path。若[type]为[AnswerType.ARRAY]，则可为null。
      */
@@ -26,21 +36,13 @@ class AnswerValue(
      *
      * 为0的情况代表只是单项条目
      */
-    var order: Int? = null,
-
-    /**
-     * 内容。除[AnswerType.ARRAY]和[AnswerType.OBJECT]外都不为null
-     */
-    var value: String? = null,
-
-    @Enumerated
-    var type: AnswerType = AnswerType.OBJECT
+    var order: Int? = null
 ): IEntity()
 
 @Suppress("unused")
 enum class AnswerType(@JsonValue val value: String) {
     /// 由于`undefined`不是有效的JSON值，所以用`null`来代替`undefined`的作用（更新内容标记删除）
-    // NULL("null"),
+    NULL("null"),
     NUMBER("number"),
     BOOLEAN("boolean"),
     STRING("string"),
@@ -53,15 +55,9 @@ enum class AnswerType(@JsonValue val value: String) {
  */
 @Entity @Table
 class Answer(
-    /**
-     * 创建者的用户id
-     */
-    var creatorId: IdType = 0,
-
-    /**
-     * 所属组的id
-     */
-    var groupId: IdType = 0,
+    @ManyToOne
+    @JoinColumn(nullable = true)
+    var creator: User? = null,
 
     /**
      * 所对应问卷的id
@@ -79,5 +75,10 @@ interface AnswerValueRepository: IQueryRepository<AnswerValue, IdType>
 
 @Repository
 interface AnswerRepository: IQueryRepository<Answer, IdType> {
-    fun findByCreatorId(creatorId: IdType): List<IdOnly>
+    @Modifying
+    @Query("update Answer a set a.creator = null where a.creator.id = :creatorId")
+    fun markDeletedByCreator(creatorId: IdType): Int
+
+    @Query("select a.id from Answer a where a.creator.id in :creatorList")
+    fun findIdsWhenCreatorIn(creatorList: List<IdType>): List<IdType>
 }

@@ -32,11 +32,14 @@ class AnswerController(
     fun getAnswerInfoInSchema(@RequestParam schemaId: IdType,
                               @AuthenticationPrincipal details: AccountDetails): List<AnswerInfo> {
         val visible = service.userVisibleAnswers(details.dbUser)
-        return service.answerInfoInSchema(schemaId, visible).map { AnswerInfo(
-            id = it.id, creator = accounts.usernameOrId(it.creatorId),
-            group = accounts.findGroupName(it.groupId),
-            createdAt = it.createdAt, modifiedAt = it.modifiedAt
-        ) }
+        return service.answerInfoInSchema(schemaId, visible).asSequence()
+            .filter { it.creator?.group != null }.map {
+                val creator = it.creator!!
+                AnswerInfo(id = it.id, creator = accounts.usernameOrId(creator.id),
+                    group = accounts.findGroupName(creator.group!!.id),
+                    createdAt = it.createdAt, modifiedAt = it.modifiedAt
+                )
+            }.toList()
     }
 
     /**

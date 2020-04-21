@@ -1,6 +1,6 @@
 buildscript {
   ext {
-    kotlinVersion = "1.3.61"
+    kotlinVersion = "1.3.71"
     springBootVersion = "2.2.6.RELEASE"
 
     jacksonKotlinVersion = "2.10.2"
@@ -51,13 +51,13 @@ version = "0.0.1-SNAPSHOT"
 sourceCompatibility = JavaVersion.VERSION_11
 targetCompatibility = JavaVersion.VERSION_11
 
-idea {
-  module {
-    def kaptMain = file("build/generated/source/kapt/main")
-    sourceDirs += kaptMain
-    generatedSourceDirs += kaptMain
-  }
-}
+//idea {
+//  module {
+//    def kaptMain = file("build/generated/source/kapt/main")
+//    sourceDirs += kaptMain
+//    generatedSourceDirs += kaptMain
+//  }
+//}
 
 compileKotlin {
   kotlinOptions {
@@ -71,10 +71,6 @@ compileTestKotlin {
     jvmTarget = JavaVersion.VERSION_11
     freeCompilerArgs = ["-Xjsr305=strict"]
   }
-}
-
-test {
-  useJUnitPlatform()
 }
 
 dependencies {
@@ -112,7 +108,10 @@ dependencies {
   testCompileOnly("org.junit.jupiter:junit-jupiter-api")
   testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine")
   testImplementation("org.junit.platform:junit-platform-launcher")
-  testImplementation("org.mockito:mockito-junit-jupiter")
   // h2 database
   testRuntimeOnly("com.h2database:h2")
+}
+
+test {
+  useJUnitPlatform()
 }

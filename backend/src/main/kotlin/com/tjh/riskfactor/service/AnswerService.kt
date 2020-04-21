@@ -7,7 +7,6 @@ import com.fasterxml.jackson.databind.node.ObjectNode
 import com.fasterxml.jackson.databind.util.RawValue
 
 import org.springframework.stereotype.Service
-import org.springframework.data.jpa.domain.Specification
 import org.springframework.transaction.annotation.Transactional
 
 import au.com.console.jpaspecificationdsl.*
@@ -18,6 +17,7 @@ import com.tjh.riskfactor.repository.*
 class AnswerService(
     val answerValues: AnswerValueRepository,
     val answers: AnswerRepository,
+    private val accounts: AccountService,
     private val mapper: ObjectMapper
 ) {
 
@@ -25,9 +25,9 @@ class AnswerService(
      * 获得回答的简略信息（即不包含回答的内容），用于列表展示
      * @param schemaId 获得此问卷对应的所有回答信息
      */
-    fun answerInfoInSchema(schemaId: IdType): List<Answer> =
-        // 初始值不能返回
-        answers.findAll(Answer::schemaId.equal(schemaId) and Answer::creatorId.notEqual(0))
+//    fun answerInfoInSchema(schemaId: IdType): List<Answer> =
+//        // 初始值不能返回
+//        answers.findAll(Answer::schemaId.equal(schemaId) and Answer::creatorId.notEqual(0))
 
     fun answerInfoInSchema(schemaId: IdType, idList: Collection<IdType>): List<Answer> =
         answers.findAll(Answer::schemaId.equal(schemaId) and Answer::id.`in`(idList))
@@ -37,12 +37,8 @@ class AnswerService(
      * 超级管理员可以看见所有
      */
     fun userVisibleAnswers(user: User): List<IdType> {
-        val result: List<IdOnly> = when {
-            user.isRoot -> answers.findAllProjected()
-            user.isAdmin -> answers.findAllProjected(Answer::groupId.equal(user.groupId))
-            else -> answers.findAllProjected(Answer::creatorId.equal(user.id))
-        }
-        return result.map { it.id }
+        val visible = accounts.visibleUserIds(user.id)
+        return answers.findIdsWhenCreatorIn(visible)
     }
 
     private fun findChildren(rootObjectId: IdType, ordered: Boolean = false): List<AnswerValue> {
@@ -106,7 +102,7 @@ class AnswerService(
      */
     @Transactional
     fun createAnswer(schemaId: IdType, actor: User, body: ObjectNode): Answer {
-        val answer = Answer(creatorId = actor.id, groupId = actor.groupId, schemaId = schemaId,
+        val answer = Answer(creator = actor, schemaId = schemaId,
             rootObjectId = body.persist(name = null, parentId = null).id)
         return answers.save(answer)
     }
@@ -142,7 +138,8 @@ class AnswerService(
      * 删除回答的JSON结构中，根节点id为[rootId]的JSON node
      */
     private fun removeNode(rootId: IdType) {
-        val remove = mutableListOf<AnswerValue>(); var traverse = listOf(answerValues.find(rootId))
+        val remove = mutableListOf<AnswerValue>()
+        var traverse = listOf(answerValues.find(rootId))
         while(traverse.isNotEmpty()) {
             val nextTraverse = mutableListOf<AnswerValue>()
             traverse.forEach {

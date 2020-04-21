@@ -1,8 +1,10 @@
 package com.tjh.riskfactor.service
 
 import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Transactional
 
 import au.com.console.jpaspecificationdsl.*
+
 import com.tjh.riskfactor.repository.*
 
 /**
@@ -13,8 +15,8 @@ import com.tjh.riskfactor.repository.*
 class AccountService(
     val users: UserRepository,
     val groups: GroupRepository,
-    private val answers: AnswerService,
-    private val schemas: SchemaService
+    private val answers: AnswerRepository,
+    private val schemas: SchemaRepository
 ) {
 
     fun hasUser(name: String): Boolean = users.exists(User::username.equal(name))
@@ -24,10 +26,8 @@ class AccountService(
     fun findUser(name: String): User =
         users.findOne(User::username.equal(name)).orElseThrow { users.notFound(name) }
 
-    fun groupNames(): List<String> {
-        val names: List<NameOnly> = groups.findAllProjected()
-        return names.map { it.name }
-    }
+    fun groupNames(): List<String> =
+        groups.findAllNames()
 
     /**
      * 返回用户的用户名，不存在的情况下用其id代替
@@ -46,13 +46,10 @@ class AccountService(
     fun findGroupName(id: IdType): String =
         groups.propertyOf(id) { name }
 
+    @Transactional
     fun deleteUser(id: IdType) {
-        answers.answers.findByCreatorId(id).forEach {
-            answers.answers.update(it.id) { creatorId = 0 }
-        }
-        schemas.schemas.findByCreatorId(id).forEach {
-            schemas.schemas.update(it.id) { creatorId = 0 }
-        }
+        answers.markDeletedByCreator(id)
+        schemas.markDeletedByCreator(id)
         users.deleteById(id)
     }
 
@@ -60,20 +57,20 @@ class AccountService(
      * 返回一个用户可以修改的其他用户id列表
      * @param actorId 以此id用户为视角观察
      */
+    @Transactional(readOnly = true)
     fun visibleUserIds(actorId: IdType): List<IdType> {
         val user = users.find(actorId)
         // 无权限组，只返回自己
         if(user.isNobody)
             return listOf(user.id)
-        val result: List<IdOnly>? = when {
+        return when {
             // 超级管理员组返回全部用户
-            user.isRoot -> users.findAllProjected()
+            user.isRoot -> users.findAllIds()
             // 组管理员返回全部组用户
-            user.isAdmin -> users.findAllProjected(User::groupId.equal(user.groupId))
-            // 其余情况，返回自己。用null标记
-            else -> null
+            user.group != null && user.isAdmin -> users.findUserIdsInSameGroup(user.group!!)
+            // 其余情况，返回自己
+            else -> listOf(user.id)
         }
-        return result?.map { it.id } ?: listOf(user.id)
     }
 
     fun userInfo(id: IdType): UserInfo =
@@ -87,7 +84,7 @@ class AccountService(
         users.findAllById(idList).map { it.toInfo() }
 
     private fun User.toInfo(): UserInfo {
-        val group = groups.propertyOf(groupId) { name }
+        val group = this.group?.name
         return UserInfo(id = id, username = username, email = email,
             group = group, isAdmin = isAdmin)
     }
@@ -100,7 +97,3 @@ data class UserInfo(
     val group: String?,
     val isAdmin: Boolean?
 )
-
-interface NameOnly {
-    val name: String
-}

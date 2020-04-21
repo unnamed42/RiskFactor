@@ -1,6 +1,5 @@
 package com.tjh.riskfactor.repository
 
-import com.fasterxml.jackson.annotation.JsonIgnore
 import com.fasterxml.jackson.annotation.JsonValue
 
 import org.springframework.data.jpa.repository.Query
@@ -21,6 +20,14 @@ class Rule(
     var type: RuleType? = null,
 
     var label: String? = null
+
+//    @ManyToOne(fetch = FetchType.LAZY, cascade = [CascadeType.ALL])
+//    var parent: Rule? = null,
+//
+//    @OneToMany(fetch = FetchType.LAZY, mappedBy = "parent", cascade = [CascadeType.ALL])
+//    @JoinColumn(name = "child_id")
+//    @OrderColumn
+//    var list: MutableList<Rule>? = null
 
     /**
      * 最终收集到excel表格中的名称。内容为字符串数组，以特定分隔符划分

@@ -51,7 +51,7 @@ class AccountController(
             updateCount += body.password?.let { user.password = encoder.encode(it) } != null
             updateCount += body.email?.let { user.email = it } != null
             updateCount += body.isAdmin?.let { user.isAdmin = it } != null
-            updateCount += body.group?.let { user.groupId = service.findGroup(it).id } != null
+            updateCount += body.group?.let { user.group = service.findGroup(it) } != null
             updateCount != 0
         }
     }
@@ -59,13 +59,13 @@ class AccountController(
     @PostMapping("/users")
     @PreAuthorize("@checker.isGroupWritable(#body.group)")
     fun createUser(@RequestBody body: CreateUserRequest) {
-        val gid = body.group?.let { service.findGroupUnchecked(it)?.id }
+        val group = body.group?.let { service.findGroupUnchecked(it) }
         val user = User(
             username = body.username,
             password = encoder.encode(body.password),
             email = body.email,
             isAdmin = body.isAdmin ?: false,
-            groupId = gid ?: 0
+            group = group
         )
         service.users.save(user)
     }

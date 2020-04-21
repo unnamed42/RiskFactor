@@ -1,0 +1,32 @@
+debug: true
+
+logging:
+  level:
+    org.springframework.boot.autoconfigure: ERROR
+
+spring:
+  datasource:
+    driver-class-name: org.h2.Driver
+    url: jdbc:h2:mem:db;DB_CLOSE_DELAY=-1
+    username: sa
+    password: sa
+    platform: h2
+  jpa:
+    database: h2
+    database-platform: org.hibernate.dialect.H2Dialect
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.H2Dialect
+        connection:
+          characterEncoding: utf8
+          charSet: utf8
+        globally_quoted_identifiers: true
+    hibernate:
+      ddl-auto: create-drop
+
+jwt:
+  encoding-strength: 12
+  not-before: 3000
+  expiry-hours: 168 # 7 days
+  security-realm: Spring Boot JWT Example Realm
+  signing-key: "y$B&E)H@McQfTjWmZq4t7w!z%C*F-JaNdRgUkXp2r5u8x/A?D(G+KbPeShVmYq3t"

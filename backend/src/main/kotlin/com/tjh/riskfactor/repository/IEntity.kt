@@ -11,13 +11,11 @@ open class IEntity(
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     var id: IdType = 0
 ) {
-    override fun equals(other: Any?): Boolean {
-        if(other == null) return false
-        if(this === other) return true
-        return (other as? IEntity)?.id == id
-    }
 
-    override fun hashCode(): Int = id.hashCode()
+    override fun equals(other: Any?): Boolean =
+        this === other || (other as? IEntity)?.id == id
+
+    override fun hashCode() = id.hashCode()
 }
 
 @MappedSuperclass

@@ -41,8 +41,11 @@ class ConsoleService(
         answers.dropAll()
     }
 
-}
+    /**
+     * 反射获取Service层的所有[JpaRepository]成员，并逐个调用[JpaRepository.deleteAllInBatch]
+     */
+    private inline fun <reified Service: Any> Service.dropAll() = Service::class.declaredMemberProperties.asSequence()
+        .filter { it.returnType.jvmErasure.isSubclassOf(JpaRepository::class) }
+        .map { it.get(this) as JpaRepository<*, *> }.forEach { it.deleteAllInBatch() }
 
-private inline fun <reified T: Any> T.dropAll() = T::class.declaredMemberProperties
-    .filter { it.returnType.jvmErasure.isSubclassOf(JpaRepository::class) }
-    .map { it.get(this) as JpaRepository<*, *> }.forEach { it.deleteAllInBatch() }
+}

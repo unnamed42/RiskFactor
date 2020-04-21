@@ -5,7 +5,6 @@ import com.fasterxml.jackson.annotation.JsonProperty
 
 import org.springframework.stereotype.Repository
 import org.springframework.data.jpa.repository.Query
-import org.springframework.data.jpa.repository.Modifying
 
 import javax.persistence.*
 
@@ -29,20 +28,18 @@ class User(
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     var isAdmin: Boolean = false,
 
-    /**
-     * 所属组的id。为0代表是不属于任何组，也就是没有任何权限
-     */
-    @Column(nullable = false)
-    var groupId: IdType = 0
+    @ManyToOne
+    @JoinColumn(name = "gid", nullable = true)
+    var group: Group?
 ): IEntity() {
 
     @get:JsonIgnore
     @get:Transient
-    val isNobody get() = groupId == 2
+    val isNobody get() = group?.id == 2
 
     @get:JsonIgnore
     @get:Transient
-    val isRoot get() = groupId == 1
+    val isRoot get() = group?.id == 1
 }
 
 @Entity @Table(name = "groups")
@@ -55,11 +52,19 @@ class Group(
 ): IEntity()
 
 @Repository
-interface UserRepository: IQueryRepository<User, IdType>
+interface UserRepository: IQueryRepository<User, IdType> {
+    @Query("select u.id from User u")
+    fun findAllIds(): List<IdType>
+
+    @Query("select u.id from User u where u.group = :group")
+    fun findUserIdsInSameGroup(group: Group): List<IdType>
+//
+//    @Query("")
+//    fun findVisibleUserIds(actorId: IdType): List<IdType>
+}
 
 @Repository
 interface GroupRepository: IQueryRepository<Group, IdType> {
-    @Modifying
-    @Query(nativeQuery = true, value = "insert into `groups`(id, name) values (?1, ?2)")
-    fun insert(id: IdType, name: String)
+    @Query("select g.name from Group g")
+    fun findAllNames(): List<String>
 }

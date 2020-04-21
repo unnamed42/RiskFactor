@@ -1,6 +1,8 @@
 package com.tjh.riskfactor.repository
 
 import org.springframework.stereotype.Repository
+import org.springframework.data.jpa.repository.Query
+import org.springframework.data.jpa.repository.Modifying
 
 import javax.persistence.*
 
@@ -30,5 +32,12 @@ class Schema(
 
 @Repository
 interface SchemaRepository: IQueryRepository<Schema, IdType> {
-    fun findByCreatorId(creatorId: IdType): List<IdOnly>
+    @Query("select s.id from Schema s where s.creatorId = :creatorId")
+    fun findByCreatorId(creatorId: IdType): List<IdType>
+
+    @Modifying
+    @Query("""update Schema s set s.creatorId = 0, s.groupId = 0
+        where s.creatorId = :creatorId
+    """)
+    fun markDeletedByCreator(creatorId: IdType): Int
 }

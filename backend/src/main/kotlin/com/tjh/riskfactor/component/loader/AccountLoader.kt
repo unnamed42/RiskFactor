@@ -17,14 +17,14 @@ class AccountLoader(
     private val encoder: PasswordEncoder
 ) {
 
-    private fun defineGroup(gid: IdType, name: String) {
+    private fun defineGroup(gid: IdType, name: String): Group {
         val group = groups.findOne(Group::name.equal(name)).orElse(null)
         if(group != null && group.id != gid)
             groups.deleteById(group.id)
         if(!groups.existsById(gid))
-            groups.insert(gid, name)
+            return groups.save(Group(name = name).apply { id = gid })
         else
-            groups.update(gid) { this.name = name }
+            return groups.update(gid) { this.name = name }
     }
 
     /**
@@ -32,21 +32,20 @@ class AccountLoader(
      */
     @Transactional
     fun loadFromSchema(model: DataModel) {
-        defineGroup(1, "超级管理员")
-        defineGroup(2, "无权限")
+        val root = defineGroup(1, "超级管理员")
+        val nobody = defineGroup(2, "无权限")
 
         val (groupList, userList) = model
 
-        val groupRefs = mutableMapOf("root" to 1, "nobody" to 2)
+        val groupRefs = mutableMapOf("root" to root, "nobody" to nobody)
 
         // 存储groups，并将组名引用指向其id
-        groupList.map { it.ref to groups.save(Group(it.name)).id }
-            .toMap(groupRefs)
+        groupList.map { it.ref to groups.save(Group(it.name)) }.toMap(groupRefs)
         // 存储users，并利用组名引用指向真实组id
         users.saveAll(userList.map { User(
             username = it.username, password = encoder.encode(it.password),
             email = it.email, isAdmin = it.isAdmin,
-            groupId = groupRefs[it.groupRef] ?: throw Exception("group ${it.groupRef} not found")
+            group = groupRefs[it.groupRef] ?: throw Exception("group ${it.groupRef} not found")
         ) })
     }
 }

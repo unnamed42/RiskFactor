@@ -8,7 +8,6 @@ import org.springframework.transaction.annotation.Transactional
 import com.tjh.riskfactor.repository.*
 import com.tjh.riskfactor.service.AccountService
 import com.tjh.riskfactor.service.RuleAttributes
-import com.tjh.riskfactor.service.SchemaService
 
 @Component
 class SchemaLoader(
@@ -16,7 +15,6 @@ class SchemaLoader(
     private val ruleLists: RuleListRepository,
     private val ruleAttrs: RuleAttributeRepository,
     private val schemas: SchemaRepository,
-    private val schemaService: SchemaService,
     private val accounts: AccountService
 ) {
 
@@ -74,13 +72,8 @@ class SchemaLoader(
         ruleLists.saveAll(rules.mapIndexed { index, rule -> RuleList(parentId, rule.id, index) })
     }
 
-    private fun RuleModel.saved(): Rule {
-        val saved = rules.save(Rule(type = type, label = label))
-        this.options?.also {
-            ruleAttrs.saveAll(schemaService.serialize(it).map { (k, v) ->
-                RuleAttribute(saved.id, k, v) })
-        }
-        return saved
+    private fun RuleModel.saved(): Rule = rules.save(Rule(type = type, label = label)).also { rule ->
+        this.options?.toAttributeList(rule.id)?.also { ruleAttrs.saveAll(it) }
     }
 }
 
