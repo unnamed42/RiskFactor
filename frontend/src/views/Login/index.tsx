@@ -1,7 +1,7 @@
 import React, { FC } from "react";
-import type { Location } from "history";
 import { Redirect, useLocation } from "react-router-dom";
 import { useSelector } from "react-redux";
+import type { Location } from "history";
 
 import { LoginForm } from "./LoginForm";
 import type { StoreType } from "@/redux";
@@ -14,7 +14,7 @@ interface Referrer {
 }
 
 export const Login: FC = () => {
-  const { state } = useLocation<Referrer>();
+  const { state } = useLocation<Referrer | undefined>();
   const token = useSelector((store: StoreType) => store.auth.token);
 
   // 已登录不允许重新进入该界面

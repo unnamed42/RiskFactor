@@ -2,7 +2,7 @@ import type { Reducer, Action } from "redux";
 // eslint-disable-next-line @typescript-eslint/camelcase
 import jwt_decode from "jwt-decode";
 
-import type { IdType, UpdateUserRequest } from "@/api";
+import type { IdType } from "@/api";
 
 interface JsonWebToken {
   // 标准头部，issued at（发布时间）
@@ -15,7 +15,11 @@ interface JsonWebToken {
   idt: number;
 }
 
-interface StoredToken {
+interface InitialState {
+  token: null;
+}
+
+interface TokenState {
   token: string;
   username: string;
   userId: IdType;
@@ -44,7 +48,7 @@ export const logout = (): LogoutAction =>
 export const updateInfo = (username: string): UpdateInfoAction =>
   ({ type: "auth/update", username });
 
-export type AuthState = { token: null } | StoredToken;
+export type AuthState = (InitialState | TokenState) & { lastUsername?: string };
 
 type AuthAction = LoginAction | LogoutAction | UpdateInfoAction;
 
@@ -53,7 +57,9 @@ export const reducer: Reducer<AuthState, AuthAction> = (state = { token: null },
     case "auth/login":
       return { token: action.token, ...parseToken(action.token) };
     case "auth/logout":
-      return { token: null };
+      return state.token === null ?
+        { token: null } :
+        { token: null, lastUsername: state.username };
     case "auth/update":
       return { ...state, username: action.username };
     default:

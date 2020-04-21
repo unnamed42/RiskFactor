@@ -1,7 +1,7 @@
 import { combineReducers, createStore, applyMiddleware } from "redux";
 import { persistStore, persistReducer } from "redux-persist";
 import hardSet from "redux-persist/lib/stateReconciler/hardSet";
-import { composeWithDevTools } from "redux-devtools-extension";
+import { composeWithDevTools } from "redux-devtools-extension/developmentOnly";
 
 import localforage from "localforage";
 

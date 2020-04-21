@@ -1,18 +1,27 @@
 import { DependencyList, useState, useCallback } from "react";
 
-interface AsyncLoadedState<T> {
+interface DefaultState {
+  loading: true;
+}
+
+interface LoadedState<T> {
   loading: false;
   data: T;
   error?: undefined;
 }
 
-interface AsyncErrorState<E extends Error = Error> {
+interface ErrorState<E extends Error> {
   loading: false;
   data?: undefined;
   error: E;
 }
 
-type AsyncActionState<T> = { loading: true } | AsyncLoadedState<T> | AsyncErrorState;
+type ActionState<T, E extends Error = Error> =
+  DefaultState | LoadedState<T> | ErrorState<E>;
+
+export const isErrorState =
+  <T, E extends Error>(state: ActionState<T, E>): state is ErrorState<E> =>
+    (state as any).error !== undefined;
 
 /**
  * 将一个异步函数包装成hooks，并提供`loading`和`error`辅助属性。
@@ -23,9 +32,9 @@ type AsyncActionState<T> = { loading: true } | AsyncLoadedState<T> | AsyncErrorS
 export const useAsync = <T extends any[], R>(
   fn: (...args: T) => Promise<R>,
   deps: DependencyList
-): [AsyncActionState<R> | undefined, (...args: T) => Promise<R | undefined>] => {
+): [ActionState<R> | undefined, (...args: T) => Promise<R | undefined>] => {
 
-  const [state, setState] = useState<AsyncActionState<R>>();
+  const [state, setState] = useState<ActionState<R>>();
 
   // 由于传入的闭包也有`deps`传入作为闭包依赖，所以不把`fn`当作`useCallback`的依赖
   const asyncFunc = useCallback(async (...args: T) => {

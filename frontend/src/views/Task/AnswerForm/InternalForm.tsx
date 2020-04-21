@@ -2,9 +2,9 @@ import React, { FC, useEffect, createContext, useContext, useMemo } from "react"
 
 import { Form, Button } from "antd";
 import type { FormInstance } from "antd/es/form";
-import type { Store } from "rc-field-form/es/interface";
+import type { Store } from "antd/es/form/interface";
 
-import { RuleInfo, IdType, answerModifiedAt, getAnswer } from "@/api";
+import { RuleInfo, IdType, getAnswer } from "@/api";
 import { Renderer } from "./components";
 import { useApi } from "@/utils";
 

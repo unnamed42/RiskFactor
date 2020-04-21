@@ -5,7 +5,7 @@ import { omit, set } from "lodash";
 import { merge } from "lodash/fp";
 
 import { Layout, PageHeader } from "antd";
-import type { Store } from "rc-field-form/es/interface";
+import type { Store } from "antd/es/form/interface";
 
 import { useApiCached, useApi } from "@/utils";
 import {

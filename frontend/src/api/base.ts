@@ -47,7 +47,7 @@ export const request = async <T = void>(config: AxiosRequestConfig, refreshToken
     const timeRemain = expiry - now() / 1000, timeTotal = expiry - issuedAt;
     if (timeRemain > 0) {
       // 快要过期（剩余时间占比小于refreshThres）
-      if (timeRemain <= timeTotal * refreshThres && refreshToken) {
+      if (refreshToken && timeRemain <= timeTotal * refreshThres) {
         const refreshed = await refresh();
         store.dispatch(login(refreshed));
         config = withBearerToken(config, refreshed);

@@ -57,7 +57,7 @@ export const Accounts: FC = () => {
       </Button>
     </div>
     <Modal visible={visible} centered closable={false} confirmLoading={state?.loading}
-      onOk={() => submit()} onCancel={() => setVisible(false)} destroyOnClose={true}
+      onOk={submit} onCancel={() => setVisible(false)} destroyOnClose={true}
       okText="提交" cancelText="取消" title={target == undefined ? "创建用户" : "更新用户"}>
       <AccountForm form={form} target={target} />
     </Modal>

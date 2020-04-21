@@ -9,8 +9,8 @@ import "@/plugins";
 import { persistor, store } from "@/redux";
 import { Loading, PrivateRoute } from "@/components";
 
-const Login = lazy(() => import(/* webpackChunkName: 'login' */ "@/views/Login"));
-const App   = lazy(() => import(/* webpackChunkName: 'app' */ "@/views/App"));
+const Login = lazy(() => import(/* webpackChunkName: "login" */"@/views/Login"));
+const Home = lazy(() => import(/* webpackChunkName: "home" */"@/views/Home"));
 
 render(
   <Provider store={store}>
@@ -19,7 +19,7 @@ render(
         <Suspense fallback={<Loading />}>
           <Switch>
             <Route exact path="/login" component={Login}/>
-            <PrivateRoute path="/" component={App}/>
+            <PrivateRoute path="/" component={Home}/>
           </Switch>
         </Suspense>
       </Router>

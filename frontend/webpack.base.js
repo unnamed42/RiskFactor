@@ -8,7 +8,6 @@ const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 const root = resolve("./");
 
 module.exports = {
-  mode: process.env.NODE_ENV,
   stats: {
     modules: false,
     reasons: false,
@@ -27,13 +26,14 @@ module.exports = {
   resolve: {
     extensions: [".ts", ".tsx", ".js"],
     alias: {
-      "@": join(root, "/src")
+      "@": join(root, "/src"),
+      "@public": join(root, "/public")
     }
   },
   module: {
     rules: [
       {
-        test: /\.tsx?$/,
+        test: /\.[tj]sx?$/,
         exclude: /node_modules/,
         loader: require.resolve("babel-loader"),
         options: { cacheDirectory: true },
@@ -57,7 +57,10 @@ module.exports = {
       },
       {
         test: /\.(png|svg|jpe?g|gif|woff2?|eot|ttf|otf)$/,
-        use: require.resolve("file-loader")
+        loader: require.resolve("file-loader"),
+        options: {
+          outputPath: "assets"
+        }
       }
     ]
   },
@@ -65,43 +68,19 @@ module.exports = {
     hints: process.env.NODE_ENV === "production" ? "warning" : false,
   },
   plugins: [
+    new FriendlyErrorsWebpackPlugin(),
     new CleanWebpackPlugin(),
     new HtmlWebpackPlugin({
       filename: "index.html",
       template: join(root, "/src/index.html"),
       minify: true
     }),
-    new FriendlyErrorsWebpackPlugin(),
     new MiniCssExtractPlugin({
       filename: "static/[name].[hash:5].css",
       chunkFilename: "static/[name].[hash:5].css",
       ignoreOrder: true,
     }),
   ],
-  optimization: {
-    // splitChunks: {
-    //   chunks: "all"
-    // }
-    splitChunks: {
-      cacheGroups: {
-        default: false,
-        vendor: {
-          name: "vendor",
-          chunks: "initial",
-          test: /node_modules/,
-          priority: 20
-        },
-        common: {
-          name: "common",
-          minChunks: 2,
-          chunks: "async",
-          priority: 10,
-          reuseExistingChunk: true,
-          enforce: true
-        }
-      }
-    }
-  }
 };
 
 // function envKeys() {

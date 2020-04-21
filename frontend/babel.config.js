@@ -3,9 +3,11 @@ module.exports = api => {
 
   const presets = [
     ["@babel/preset-env", {
-      targets: {
-        ie: "11"
-      }
+      modules: false,
+      exclude: [
+        "transform-regenerator",
+        "transform-async-to-generator"
+      ]
     }],
     "@babel/preset-react",
     "@babel/preset-typescript"
@@ -20,12 +22,12 @@ module.exports = api => {
     // enables this to use more modern features
     ["@babel/plugin-transform-runtime", {
       regenerator: false,
+      corejs: 3,
       useESModules: true
-      // corejs: 3
     }],
     "lodash",
     ["import", { libraryName: "antd", libraryDirectory: "es", style: true }, "antd"]
   ];
 
   return { presets, plugins };
-}
+};

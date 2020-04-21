@@ -2,8 +2,8 @@ import React, { FC, useMemo } from "react";
 import { get, every } from "lodash";
 
 import { Input, Form } from "antd";
+import type { Store } from "antd/es/form/interface";
 import type { FormInstance } from "rc-field-form/es";
-import type { Store } from "rc-field-form/es/interface";
 
 import type { RenderProps as P } from ".";
 import { shouldUpdate } from "@/utils";
