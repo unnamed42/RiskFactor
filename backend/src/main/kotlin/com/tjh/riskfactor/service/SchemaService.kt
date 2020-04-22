@@ -1,7 +1,9 @@
 package com.tjh.riskfactor.service
 
 import com.fasterxml.jackson.annotation.JsonInclude
+import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.annotation.JsonUnwrapped
+import com.fasterxml.jackson.databind.ObjectMapper
 
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -9,7 +11,6 @@ import org.springframework.transaction.annotation.Transactional
 import com.tjh.riskfactor.common.*
 import com.tjh.riskfactor.repository.*
 
-import kotlin.reflect.KMutableProperty1
 import kotlin.reflect.full.declaredMemberProperties
 import kotlin.reflect.full.isSubclassOf
 import kotlin.reflect.jvm.jvmErasure
@@ -67,6 +68,7 @@ data class RuleAttributes(
     /**
      * 指定该问题的输入能否控制后续问题的显示。用于指定联动问题，即只有这个问题输入之后才能显示后续问题
      */
+    @get:JsonProperty("isEnabler")
     var isEnabler: Boolean? = null,
 
     /**
@@ -127,21 +129,20 @@ data class RuleAttributes(
         val reflection = RuleAttributes::class.declaredMemberProperties
             .map { it.name to it }.toMap()
 
+        private val mapper = ObjectMapper()
+
         /**
          * 将key(string) -> value(String)转换为[RuleAttributes]
          */
         private fun fromAttributeList(pairs: Sequence<Pair<String, String>>): RuleAttributes {
-            val result = RuleAttributes()
-            for((key, value) in pairs) {
-                val prop = reflection[key] as? KMutableProperty1 ?: continue
-                @Suppress("UNCHECKED_CAST")
-                if(prop.returnType.jvmErasure.isSubclassOf(List::class)) {
-                    val setValue = value.split(separator)
-                    (prop as KMutableProperty1<RuleAttributes, List<*>>).set(result, setValue)
-                } else
-                    (prop as KMutableProperty1<RuleAttributes, String>).set(result, value)
-            }
-            return result
+            val kvPairs: Map<String, Any> = pairs.mapNotNull { (name, value) ->
+                val prop = reflection[name] ?: return@mapNotNull null
+                if(prop.returnType.jvmErasure.isSubclassOf(List::class))
+                    name to value.split(separator)
+                else
+                    name to value
+            }.toMap()
+            return mapper.convertValue(kvPairs, RuleAttributes::class.java)
         }
 
         fun fromAttributeList(attrs: List<RuleAttribute>): RuleAttributes? = if(attrs.isEmpty()) null else

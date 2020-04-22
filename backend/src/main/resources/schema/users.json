@@ -1,0 +1,37 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema",
+  "definitions": {
+    "group": {
+      "type": "object",
+      "properties": {
+        "ref": { "type": "string" },
+        "name": { "type": "string" }
+      },
+      "required": ["ref", "name"]
+    },
+    "user": {
+      "type": "object",
+      "properties": {
+        "username": { "type": "string" },
+        "password": { "type": "string" },
+        "email": { "type": "string" },
+        "group": { "type": "string" },
+        "isAdmin": { "type": "boolean" }
+      },
+      "required": ["username", "password"]
+    }
+  },
+
+  "type": "object",
+  "properties": {
+    "groups": {
+      "type": "array",
+      "items": { "$ref": "#/definitions/group" }
+    },
+    "users": {
+      "type": "array",
+      "items": { "$ref": "#/definitions/user" }
+    }
+  },
+  "required": ["groups", "users"]
+}

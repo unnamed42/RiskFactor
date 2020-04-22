@@ -1,0 +1,65 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema",
+  "definitions": {
+    "rule": {
+      "type": "object",
+      "properties": {
+        "label": { "type": "string" },
+        "type": {
+          "type": "string",
+          "enum": ["root", "text", "number", "date", "expression", "either", "list", "template", "choice-multi", "choice", "select", "select-multi", "table", "table-header", "header"]
+        },
+        "init": { "type": "string" },
+        "list": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/rule"
+          }
+        },
+
+        "required": { "type": "boolean" },
+        "isEnabler": { "type": "boolean" },
+        "customizable": { "type": "boolean" },
+        "choices": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "yesno": { "type": "string" },
+        "labelPosition": {
+          "enum": [null, "prefix", "postfix"]
+        },
+        "addonPosition": {
+          "enum": [null, "prefix", "postfix"]
+        },
+        "description": { "type": "string" },
+        "placeholder": { "type": "string" }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": { "type": { "const": "expression" } }
+          },
+          "then": {
+            "properties": {
+              "placeholder": {"pattern": "^(var|expr):"}
+            }
+          }
+        }
+      ]
+    }
+  },
+
+  "type": "array",
+  "items": {
+    "properties": {
+      "creator": { "type": "string" },
+      "group": { "type": "string" },
+      "name": { "type": "string" },
+      "list": {
+        "type": "array",
+        "items": { "$ref": "#/definitions/rule" }
+      }
+    },
+    "required": ["creator", "group", "name"]
+  }
+}
