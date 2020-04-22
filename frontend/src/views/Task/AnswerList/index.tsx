@@ -1,4 +1,4 @@
-import React, { FC } from "react";
+import React, { FC, useCallback } from "react";
 import { Link } from "react-router-dom";
 import { useParams } from "react-router";
 import dayjs from "dayjs";
@@ -6,9 +6,9 @@ import dayjs from "dayjs";
 import { Button, PageHeader, Table } from "antd";
 import { PlusOutlined, ImportOutlined } from "@ant-design/icons";
 
-import { useApi, useData } from "@/utils";
+import { useApi, useData } from "@/hooks";
 import {
-  IdType, AnswerInfo,
+  AnswerInfo, ApiIdType,
   getAnswerList, getSchemaInfo, removeAnswer
 } from "@/api";
 import { datePattern } from "@/config";
@@ -17,29 +17,24 @@ interface RouteParams {
   schemaId: string;
 }
 
-const fetch = (schemaId: IdType) =>
+const fetch = (schemaId: ApiIdType) =>
   Promise.all([getAnswerList(schemaId), getSchemaInfo(schemaId)]);
 
 const renderTime = (time: string) =>
   dayjs(time).format(datePattern);
 
 export const AnswerList: FC = () => {
-  const schemaId = Number(useParams<RouteParams>().schemaId);
+  const { schemaId } = useParams<RouteParams>();
 
   const [, deleteAnswer] = useApi(removeAnswer, [], { success: "删除成功", immediate: false });
   const [resp] = useApi(() => fetch(schemaId), [schemaId]);
 
   const [source, setSource] = useData(resp);
 
-  if (resp.alt !== undefined)
-    return resp.alt;
-
-  const [answers, schemaInfo] = source ?? [];
-
   // onClick={() => downloadAnswer(answer.id)}
   //  onClick={() => delAnswer(answer)}
 
-  const rmAnswer = async (answerId: IdType) => {
+  const rmAnswer = useCallback(async (answerId: ApiIdType) => {
     await deleteAnswer(answerId);
     setSource(prevSource => {
       if (prevSource !== undefined) {
@@ -47,21 +42,28 @@ export const AnswerList: FC = () => {
         return [prevAns.filter(ans => ans.id !== answerId), prevInfo];
       }
     });
-  };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
-  const actions = (_: any, { id }: AnswerInfo) => {
+  const actions = useCallback((_: any, { id }: AnswerInfo) => {
     return <span>
-      <Link to={`/task/${schemaId}/form/${id}`}>查看</Link>&nbsp;
+      <Link to={`/app/${schemaId}/form/${id}`}>查看</Link>&nbsp;
       <Button type="link">导出</Button>&nbsp;
       <Button type="link" onClick={() => rmAnswer(id)}>删除</Button>
     </span>;
-  };
+  }, [schemaId, rmAnswer]);
+
+
+  if (resp.alt !== undefined)
+    return resp.alt;
+
+  const [answers, schemaInfo] = source ?? [];
 
   return <>
     <PageHeader title={schemaInfo?.name}
       extra={[
         <Button key="1" type="link" icon={<PlusOutlined />}>
-          <Link to={`/task/${schemaId}/form`}>添加受试者</Link>
+          <Link to={`/app/${schemaId}/form`}>添加受试者</Link>
         </Button>,
         <Button key="2" type="link" icon={<ImportOutlined />}>批量导入</Button>
       ]}

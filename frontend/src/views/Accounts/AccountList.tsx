@@ -9,7 +9,7 @@ import type { TableRowSelection } from "antd/es/table/interface";
 import { userInfoList, deleteUser as du, UserInfo } from "@/api";
 import type { StoreType } from "@/redux";
 import { logout } from "@/redux/auth";
-import { useApi, useData } from "@/utils";
+import { useApi, useData } from "@/hooks";
 
 const renderIsAdmin = (isAdmin: boolean | undefined) =>
   isAdmin ? <CheckOutlined /> : null;

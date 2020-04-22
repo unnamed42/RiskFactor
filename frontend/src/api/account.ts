@@ -1,4 +1,4 @@
-import { request, IdType } from "./base";
+import { request, IdType, ApiIdType } from "./base";
 
 export interface UserInfo {
   id: IdType;
@@ -23,7 +23,7 @@ export const usernameExists = (username: string) =>
 /**
   * 获得指定用户的信息。特殊id 0代表自己
   */
-export const userInfo = (userId: IdType) =>
+export const userInfo = (userId: ApiIdType) =>
   request<UserInfo>({ url: `/users/${userId}` });
 
 /**
@@ -35,11 +35,11 @@ export const userInfoList = () =>
 export const groupNames = () =>
   request<string[]>({ url: "/groups" });
 
-export const updateUser = (targetId: IdType, data: UpdateUserRequest) =>
+export const updateUser = (targetId: ApiIdType, data: UpdateUserRequest) =>
   request({ url: `/users/${targetId}`, data, method: "PUT" });
 
 export const createUser = (data: CreateUserRequest) =>
   request({ url: "/users", data, method: "POST" });
 
-export const deleteUser = (targetId: IdType) =>
+export const deleteUser = (targetId: ApiIdType) =>
   request({ url: `/users/${targetId}`, method: "DELETE" });

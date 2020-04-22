@@ -6,7 +6,7 @@ import type { AxiosError } from "axios";
 import { message } from "antd";
 
 import { Loading } from "./Loading";
-import { useAsync } from "@/utils";
+import { useAsync } from "@/hooks";
 import { store } from "@/redux";
 import { logout } from "@/redux/auth";
 import { write } from "@/redux/cache";
@@ -50,6 +50,7 @@ export function Fetch<R>({ fetch, children, placeholder, ...rest }: P<R>): React
 
   const [state, fetchFn] = useAsync(async () => {
     if (cacheKey !== undefined) {
+      console.log("尝试从缓存读取");
       // 不能useSelector。后续获取全新数据dispatch时useSelector触发重渲染又会重新执行到这里，导致死循环
       const cache = store.getState().cache[cacheKey] as (R & Checkable);
       if (cache !== undefined) {

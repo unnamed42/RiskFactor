@@ -2,7 +2,7 @@ import React, { FC, useState, useEffect } from "react";
 
 import { Form, Radio, Input, Button } from "antd";
 
-import { shouldUpdate } from "@/utils";
+import { fieldUpdated } from "@/hooks";
 
 export const Demo: FC = () => {
 
@@ -25,7 +25,7 @@ export const Demo: FC = () => {
           <Radio value={3}>3</Radio>
           <Radio value={4}>
             4
-          <Form.Item noStyle name={[...namePath, "other"]}>
+            <Form.Item noStyle name={[...namePath, "other"]}>
               <Input />
             </Form.Item>
           </Radio>
@@ -37,7 +37,7 @@ export const Demo: FC = () => {
         <Input />
       </Form.Item>
     </Form.Item>
-    <Form.Item noStyle shouldUpdate={shouldUpdate(l)}>
+    <Form.Item noStyle shouldUpdate={fieldUpdated(l)}>
       {({ getFieldValue }) => {
         return getFieldValue(l) === 3 ?
           <Form.Item name={[...namePath, "input"]} label="input"><Input /></Form.Item> :
@@ -45,7 +45,7 @@ export const Demo: FC = () => {
       }
       }
     </Form.Item>
-    <Form.Item label="fixed" shouldUpdate={shouldUpdate("fuck")}>
+    <Form.Item label="fixed" shouldUpdate={fieldUpdated("fuck")}>
       {form => <Input value={`${form.getFieldValue("fuck")}-1`} disabled/> }
     </Form.Item>
     <Form.List name="list">

@@ -5,6 +5,8 @@ import { Layout } from "antd";
 import { UserDropdown } from "@/components";
 import SchemaList from "./SchemaList";
 
+import "./index.less";
+
 export const Home: FC = () => {
   return <Layout className="rf-main">
     <Layout.Header className="rf-main-header">

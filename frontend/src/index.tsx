@@ -11,6 +11,7 @@ import { Loading, PrivateRoute } from "@/components";
 
 const Login = lazy(() => import(/* webpackChunkName: "login" */"@/views/Login"));
 const Home = lazy(() => import(/* webpackChunkName: "home" */"@/views/Home"));
+const App = lazy(() => import(/* webpackChunkName: "app" */"@/views/App"));
 
 render(
   <Provider store={store}>
@@ -19,7 +20,8 @@ render(
         <Suspense fallback={<Loading />}>
           <Switch>
             <Route exact path="/login" component={Login}/>
-            <PrivateRoute path="/" component={Home}/>
+            <PrivateRoute exact path="/" component={Home}/>
+            <PrivateRoute path="/app" component={App}/>
           </Switch>
         </Suspense>
       </Router>

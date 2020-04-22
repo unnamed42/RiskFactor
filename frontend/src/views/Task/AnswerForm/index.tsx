@@ -2,18 +2,17 @@ import React, { FC, CSSProperties, useState, useRef } from "react";
 import { useParams } from "react-router";
 import { useHistory } from "react-router-dom";
 import { omit, set } from "lodash";
-import { merge } from "lodash/fp";
 
 import { Layout, PageHeader } from "antd";
 import type { Store } from "antd/es/form/interface";
 
-import { useApiCached, useApi } from "@/utils";
+import { useApiCached, useApi } from "@/hooks";
 import {
-  getSchemaDetail, schemaModifiedTime, IdType, RuleInfo,
-  createAnswer, updateAnswer
+  getSchemaDetail, schemaModifiedTime, ApiIdType, RuleInfo,
+  createAnswer, updateAnswer,
 } from "@/api";
 import { HeadersMenu } from "./HeadersMenu";
-import { InternalForm } from "./InternalForm";
+import { FieldForm } from "@/components";
 
 interface RouteParams {
   schemaId: string;
@@ -26,7 +25,7 @@ const containerStyle: CSSProperties = { padding: "20px 24px", minHeight: 280 };
 /**
  * get问卷的规则结构，并将多层的header flatten合并处理成一层
  */
-const fetch = async (schemaId: IdType) => {
+const fetch = async (schemaId: ApiIdType) => {
   const schemaSource = await getSchemaDetail(schemaId);
   // 问题header -> header下属的list
   const schema: Record<string, RuleInfo[]> = {};
@@ -58,13 +57,10 @@ const fetch = async (schemaId: IdType) => {
 
 export const AnswerForm: FC = () => {
   const history = useHistory();
-  const params = useParams<RouteParams>();
+  const { schemaId, answerId } = useParams<RouteParams>();
   // 当前选中的 [一级标题(h1)]/[二级标题(h2)]/...
   const [header, setHeader] = useState("");
   const answerRef = useRef<Store>({});
-
-  const schemaId = Number(params.schemaId);
-  const answerId = params.answerId ? Number(params.answerId) : undefined;
 
   const [, submit] = useApi(async (value: Store) => {
     if (answerId === undefined)
@@ -89,8 +85,8 @@ export const AnswerForm: FC = () => {
     <Layout>
       <Layout.Content style={containerStyle}>
         <PageHeader title="返回数据页" onBack={() => history.replace(`/task/${schemaId}/answers`)} />
-        <InternalForm schema={schema} header={header} answerId={answerId}
-          onValuesChange={changes => answerRef.current = merge(answerRef.current, changes)}
+        <FieldForm schema={schema} header={header} answerId={answerId}
+          onValuesChange={changes => answerRef.current = { ...answerRef.current, ...changes }}
           onFinish={() => { const value = (() => answerRef.current)(); submit(value); }}
         />
       </Layout.Content>

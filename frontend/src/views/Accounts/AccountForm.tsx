@@ -7,7 +7,7 @@ import {
 } from "@ant-design/icons";
 
 import { IdType, groupNames, userInfo } from "@/api";
-import { useApi } from "@/utils";
+import { useApi } from "@/hooks";
 
 interface UserFormProps {
   target?: IdType;

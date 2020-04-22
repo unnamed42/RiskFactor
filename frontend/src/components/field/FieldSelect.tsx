@@ -2,11 +2,14 @@ import React, { FC } from "react";
 
 import { Select, Form } from "antd";
 
-import { RenderProps as P } from ".";
+import type { RuleSelect } from "@/api";
+import type { FieldProps } from ".";
 
-export const QSelect: FC<P> = ({ rule: { id, choices, placeholder, type }, namePath }) => {
-  if (!choices || choices.length === 0)
-    throw new Error(`下拉菜单选择 ${id} 未配置选项`);
+type P = FieldProps<RuleSelect>;
+
+export const FieldSelect: FC<P> = ({ rule: { choices, placeholder, type }, namePath }) => {
+  // if (!choices || choices.length === 0)
+  //   throw new Error(`下拉菜单选择 ${id} 未配置选项`);
 
   // 是否开启“输入时筛选”功能
   const filterable = choices[0].includes("/");

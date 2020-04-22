@@ -1,7 +1,5 @@
 import type { Reducer, Action } from "redux";
 
-import { omit } from "lodash/fp";
-
 interface WriteAction extends Action<"cache/write"> {
   key: string;
   data: any;
@@ -25,8 +23,10 @@ export const reducer: Reducer<CacheState, CacheAction> = (state = {}, action) =>
   switch (action.type) {
     case "cache/write":
       return { ...state, [action.key]: action.data };
-    case "cache/remove":
-      return omit([action.key], state);
+    case "cache/remove": {
+      const { [action.key]: _, ...rest } = state;
+      return rest;
+    }
     default:
       return state;
   }

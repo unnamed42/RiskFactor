@@ -7,7 +7,8 @@ import generatePicker from "antd/es/date-picker/generatePicker";
 import "antd/es/date-picker/style/index";
 
 import { datePattern } from "@/config";
-import type { RenderProps as P } from "./";
+import type { RuleDate } from "@/api";
+import type { FieldProps } from ".";
 
 const AntdDatePicker = generatePicker<Dayjs>(dayjsGenerateConfig);
 
@@ -32,6 +33,8 @@ const DatePicker: FC<ComponentProps> = ({ value, onChange, ...props }) => {
   return <AntdDatePicker value={date} onChange={changed} {...props} />;
 };
 
-export const QDate: FC<P> = ({ rule: { placeholder }, namePath }) => <Form.Item name={namePath} noStyle>
+type P = FieldProps<RuleDate>;
+
+export const FieldDate: FC<P> = ({ rule: { placeholder }, namePath }) => <Form.Item name={namePath} noStyle>
   <DatePicker placeholder={placeholder} />
 </Form.Item>;

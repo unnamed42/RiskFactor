@@ -6,7 +6,7 @@ import { PlusOutlined, UserSwitchOutlined } from "@ant-design/icons";
 
 import { AccountList } from "./AccountList";
 import { AccountForm } from "./AccountForm";
-import { useAsync } from "@/utils";
+import { useAsync } from "@/hooks";
 import { updateUser, createUser, IdType } from "@/api";
 import type { StoreType } from "@/redux";
 

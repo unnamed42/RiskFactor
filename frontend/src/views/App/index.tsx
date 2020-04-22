@@ -3,22 +3,24 @@ import { Switch } from "react-router-dom";
 
 import { PrivateRoute, Loading } from "@/components";
 
-import { SchemaList } from "@/views/Task/SchemaList";
 import { AnswerList } from "@/views/Task/AnswerList";
 const Accounts = lazy(() => import(/* webpackChunkName: "accounts" */"@/views/Accounts"));
 const AnswerForm = lazy(() => import(/* webpackChunkName: "ansform" */"@/views/Task/AnswerForm"));
 
 import { MainPanel } from "./MainPanel";
+import { useRouteMatch } from "react-router";
 
-export const App: FC = () => <MainPanel>
-  <Suspense fallback={<Loading />}>
-    <Switch>
-      <PrivateRoute exact path="/" component={SchemaList} />
-      <PrivateRoute path="/accounts" component={Accounts} />
-      <PrivateRoute path="/task/:schemaId/answers" component={AnswerList} />
-      <PrivateRoute path="/task/:schemaId/form/:answerId?" component={AnswerForm} />
-    </Switch>
-  </Suspense>
-</MainPanel>;
+export const App: FC = () => {
+  const { url } = useRouteMatch();
+  return <MainPanel>
+    <Suspense fallback={<Loading/>}>
+      <Switch>
+        <PrivateRoute path={`${url}/accounts`} component={Accounts}/>
+        <PrivateRoute path={`${url}/:schemaId/answers`} component={AnswerList}/>
+        <PrivateRoute path={`${url}/:schemaId/form/:answerId?`} component={AnswerForm}/>
+      </Switch>
+    </Suspense>
+  </MainPanel>;
+};
 
 export default App;

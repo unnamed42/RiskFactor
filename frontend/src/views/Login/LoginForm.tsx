@@ -8,7 +8,7 @@ import { Store } from "rc-field-form/es/interface";
 import { StoreType } from "@/redux";
 import * as authStore from "@/redux/auth";
 import { login } from "@/api";
-import { useAsync } from "@/utils";
+import { useAsync } from "@/hooks";
 
 import "./index.less";
 

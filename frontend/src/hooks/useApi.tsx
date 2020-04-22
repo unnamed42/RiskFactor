@@ -59,6 +59,7 @@ export const useApi = <T extends any[], R>(
     } else if (success !== undefined)
       message.success(success);
   // 无视`isMounted`的deps警告
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [state, reportError]);
 
   useEffect(() => {
@@ -73,6 +74,7 @@ export const useApi = <T extends any[], R>(
         throw error;
     }
   // 无视`isMounted`的deps警告
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [state, dispatch]);
 
   useEffect(() => {

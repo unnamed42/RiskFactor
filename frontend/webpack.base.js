@@ -4,6 +4,7 @@ const HtmlWebpackPlugin = require("html-webpack-plugin");
 const { CleanWebpackPlugin } = require("clean-webpack-plugin");
 const FriendlyErrorsWebpackPlugin = require("friendly-errors-webpack-plugin")
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
+const ForkTsCheckerWebpackPlugin = require('fork-ts-checker-webpack-plugin');
 
 const root = resolve("./");
 
@@ -80,6 +81,9 @@ module.exports = {
       chunkFilename: "static/[name].[hash:5].css",
       ignoreOrder: true,
     }),
+    new ForkTsCheckerWebpackPlugin({
+      eslint: true
+    })
   ],
 };
 

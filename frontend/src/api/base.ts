@@ -3,11 +3,10 @@ import Axios, { AxiosRequestConfig } from "axios";
 import { baseUrl, refreshThres } from "@/config";
 import { store } from "@/redux";
 import { login } from "@/redux/auth";
-import { now } from "@/utils";
 import { refresh } from "./token";
 
 export type IdType = number;
-export interface Dict<T = string> { [key: string]: T }
+export type ApiIdType = number | string;
 export interface IdResponse { id: IdType }
 
 const authentication = () => {
@@ -43,8 +42,9 @@ export const request = async <T = void>(config: AxiosRequestConfig, refreshToken
   if (auth !== null) {
     // 当快要过期时刷新token
     const { expiry, issuedAt, token } = auth;
-    // now是毫秒，expiry是秒
-    const timeRemain = expiry - now() / 1000, timeTotal = expiry - issuedAt;
+    // Date.now()是毫秒，expiry是秒
+    const now = Date.now() / 1000;
+    const timeRemain = expiry - now, timeTotal = expiry - issuedAt;
     if (timeRemain > 0) {
       // 快要过期（剩余时间占比小于refreshThres）
       if (refreshToken && timeRemain <= timeTotal * refreshThres) {

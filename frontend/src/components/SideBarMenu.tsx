@@ -1,43 +1,31 @@
-import React, { FC } from "react";
-import { Link, useLocation } from "react-router-dom";
+import React, { FC, ReactElement } from "react";
+import { Link, useRouteMatch } from "react-router-dom";
 
 import { Menu } from "antd";
 import type { MenuProps } from "antd/es/menu";
-import {
-  UserOutlined, DatabaseOutlined,
-  AreaChartOutlined, ExportOutlined
-} from "@ant-design/icons";
 
-type P = Pick<MenuProps, "theme" | "mode">;
+interface Mapping {
+  path: string;
+  icon: ReactElement;
+  label: string;
+}
 
-const mappings = [{
-  path: "/accounts",
-  icon: UserOutlined,
-  label: "用户信息"
-}, {
-  path: "/",
-  icon: DatabaseOutlined,
-  label: "病患数据"
-}, {
-  path: "/statistics",
-  icon: AreaChartOutlined,
-  label: "统计分析"
-}, {
-  path: "/export",
-  icon: ExportOutlined,
-  label: "批量导出"
-}];
+interface P extends Pick<MenuProps, "theme" | "mode"> {
+  mappings: Mapping[];
+}
 
-export const SidebarMenu: FC<P> = ({ theme = "dark", mode = "inline" }) => {
-  const { pathname } = useLocation();
+export const SidebarMenu: FC<P> = ({ theme = "dark", mode = "inline", mappings }) => {
+  const { url } = useRouteMatch();
 
-  const here = `/${pathname.split(/[\\/?]/)[1]}`;
+  console.log(url);
 
-  return <Menu theme={theme} mode={mode} defaultSelectedKeys={["/"]} selectedKeys={[here]}>
+  const first = [mappings[0].path];
+
+  return <Menu theme={theme} mode={mode} defaultSelectedKeys={first} selectedKeys={[url]}>
     {
-      mappings.map(({ path, icon: Icon, label }) =>
+      mappings.map(({ path, icon, label }) =>
         <Menu.Item key={path}>
-          <Link to={path}><Icon />{label}</Link>
+          <Link to={path}>{icon}{label}</Link>
         </Menu.Item>
       )
     }
