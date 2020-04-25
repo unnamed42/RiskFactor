@@ -1,4 +1,4 @@
-import React, { useEffect, ReactElement, useState } from "react";
+import React, { useEffect, ReactElement } from "react";
 import { useDispatch } from "react-redux";
 import { Redirect, useLocation } from "react-router-dom";
 import type { AxiosError } from "axios";
@@ -14,7 +14,6 @@ import type { IdType } from "@/api";
 
 interface ChildProps<T> {
   data: T;
-  setData: (prevData: T) => void;
 }
 
 interface DefaultProps<Result> {
@@ -62,13 +61,16 @@ export function Fetch<R>({ fetch, children, placeholder, ...rest }: P<R>): React
         if (cache.modifiedAt >= mtime) {
           console.log(`自缓存取得 ${cacheKey}`);
           return cache;
+        } else {
+          console.log("更新缓存对象");
+          const result = await fetch();
+          dispatch(write(cacheKey, result));
+          return result;
         }
       }
-    }
-    return await fetch();
+    } else
+      return await fetch();
   }, [cacheKey, updated, dispatch]);
-
-  const [v, setV] = useState<R>();
 
   useEffect(() => {
     fetchFn();
@@ -78,21 +80,16 @@ export function Fetch<R>({ fetch, children, placeholder, ...rest }: P<R>): React
   useEffect(() => {
     if (state && !state.loading) {
       if (state.error != undefined) {
-        message.error(state.error);
+        message.error(state.error.message);
         if (isUnauthorized(state.error))
           dispatch(logout());
-      }
-      else if (state.data != undefined) {
-        setV(prev => prev ?? state.data);
-        if(cacheKey !== undefined)
-          dispatch(write(cacheKey, state.data));
       }
     }
   }, [state, cacheKey, dispatch]);
 
   if (state === undefined || state.loading)
     return placeholder ?? <Loading />;
-  if (v == undefined)
+  if (state.data === undefined)
     return null;
   if (state.error)
     return isUnauthorized(state.error) ?
@@ -100,7 +97,6 @@ export function Fetch<R>({ fetch, children, placeholder, ...rest }: P<R>): React
       null;
 
   return children({
-    data: v,
-    setData: setV
+    data: state.data
   });
 }

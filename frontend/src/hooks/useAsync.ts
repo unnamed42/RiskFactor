@@ -40,7 +40,6 @@ export const useAsync = <T extends any[], R>(
   const asyncFunc = useCallback(async (...args: T) => {
     setState({ loading: true });
     try {
-      console.log("发起请求");
       const data = await fn(...args);
       setState({ loading: false, data });
       return data;

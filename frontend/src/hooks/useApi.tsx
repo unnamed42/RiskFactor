@@ -71,7 +71,7 @@ export const useApi = <T extends any[], R>(
       if (isAxiosError(error) && error.response?.status === 401)
         dispatch(logout());
       else if (process.env.NODE_ENV === "development")
-        throw error;
+        console.log(error);
     }
   // 无视`isMounted`的deps警告
   // eslint-disable-next-line react-hooks/exhaustive-deps

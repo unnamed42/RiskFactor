@@ -41,8 +41,10 @@
       "esnext"
     ]
   },
+  "files": [
+    "module.d.ts"
+  ],
   "include": [
-    "*.ts",
     "scripts/*.ts",
     "src/**/*.ts",
     "src/**/*.tsx",

@@ -6,7 +6,7 @@ import type { Location } from "history";
 import { LoginForm } from "./LoginForm";
 import type { StoreType } from "@/redux";
 
-import "./index.less";
+import style from "@/styles/login-form.mod.less";
 import { Demo } from "./demo";
 
 interface Referrer {
@@ -21,11 +21,13 @@ export const Login: FC = () => {
   if(token !== null)
     return <Redirect to={state?.from ?? "/"} />;
 
+  console.log(style);
+
   return <>
-    <div className="login-background"/>
-    <div className="login-container">
-      <h3 className="login-title">胆囊危险因素分析采集系统</h3>
-      <div className="login-wrapper">
+    <div className={style.background}/>
+    <div className={style.container}>
+      <h3 className={style.title}>胆囊危险因素分析采集系统</h3>
+      <div className={style.wrapper}>
         <LoginForm />
       </div>
     </div>

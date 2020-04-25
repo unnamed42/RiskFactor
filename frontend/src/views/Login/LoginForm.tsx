@@ -10,7 +10,7 @@ import * as authStore from "@/redux/auth";
 import { login } from "@/api";
 import { useAsync } from "@/hooks";
 
-import "./index.less";
+import style from "@/styles/login-form.mod.less";
 
 // import { MobileFilled, MailOutlined } from "@ant-design/icons";
 // import { phoneRegex } from "@/config";
@@ -56,29 +56,29 @@ export const LoginForm: FC = () => {
     remember: false
   };
 
-  return <Form onFinish={doLogin} className="login-form" initialValues={initialValues}>
+  return <Form onFinish={doLogin} className={style.form} initialValues={initialValues}>
     <Tabs defaultActiveKey="1" animated={{ inkBar: true, tabPane: false }} tabBarStyle={{ textAlign: "center" }}>
       <Tabs.TabPane tab="用户名密码登录" key="1">
         <Form.Item name="username" rules={[{
           required: true, message: "请输入用户名！",
           validateTrigger: ["onChange", "onBlur"]
         }]}>
-          <Input placeholder="用户名" prefix={<UserOutlined className="login-form-icon" />} />
+          <Input placeholder="用户名" prefix={<UserOutlined className={style.formIcon} />} />
         </Form.Item>
         <Form.Item name="password" rules={[{
           required: true, message: "请输入密码！",
           validateTrigger: ["onChange", "onBlur"]
         }]}>
-          <Input.Password prefix={<LockOutlined className="login-form-icon" />} type="password" placeholder="密码" />
+          <Input.Password prefix={<LockOutlined className={style.formIcon} />} type="password" placeholder="密码" />
         </Form.Item>
       </Tabs.TabPane>
     </Tabs>
     <Form.Item noStyle>
       <Form.Item noStyle valuePropName="checked" name="remember">
-        <Checkbox className="login-form-remember">保持登录</Checkbox>
+        <Checkbox className={style.formRemember}>保持登录</Checkbox>
       </Form.Item>
-      <a className="login-form-forget" href="">忘记密码？</a>
-      <Button type="primary" htmlType="submit" className="login-form-submit"
+      <a className={style.formForget} href="">忘记密码？</a>
+      <Button type="primary" htmlType="submit" className={style.formSubmit}
         disabled={state?.loading} loading={state?.loading}>登录</Button>
     </Form.Item>
   </Form>;

@@ -6,7 +6,7 @@ import {
   AreaChartOutlined, ExportOutlined
 } from "@ant-design/icons";
 
-import "./index.less";
+import style from "@/styles/panel.mod.less";
 import { SidebarMenu, UserDropdown } from "@/components";
 
 const mappings = [{
@@ -30,18 +30,18 @@ const mappings = [{
 /**
  * 主窗口组件
  */
-export const MainPanel: FC = ({ children }) => <Layout className="rf-main-panel">
-  <Layout.Sider className="rf-main-sider">
-    <div className="logo"/>
+export const MainPanel: FC = ({ children }) => <Layout className={style.panel}>
+  <Layout.Sider className={style.sider}>
+    <div className={style.logo}/>
     <SidebarMenu mappings={mappings}/>
   </Layout.Sider>
   <Layout>
-    <Layout.Header className="rf-main-header">
-      <div className="rf-main-navbar">
+    <Layout.Header className={style.header}>
+      <div className={style.navbar}>
         <UserDropdown/>
       </div>
     </Layout.Header>
-    <Layout.Content className="rf-main-content-container">
+    <Layout.Content className={style.contentContainer}>
       {children}
     </Layout.Content>
   </Layout>

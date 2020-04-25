@@ -3,14 +3,14 @@ import React, { FC } from "react";
 import { Layout } from "antd";
 
 import { UserDropdown } from "@/components";
-import SchemaList from "./SchemaList";
+import { SchemaList } from "./SchemaList";
 
-import "./index.less";
+import style from "@/styles/panel.mod.less";
 
 export const Home: FC = () => {
-  return <Layout className="rf-main">
-    <Layout.Header className="rf-main-header">
-      <div className="rf-main-navbar">
+  return <Layout className={style.panel}>
+    <Layout.Header className={style.header}>
+      <div className={style.navbar}>
         <UserDropdown/>
       </div>
     </Layout.Header>

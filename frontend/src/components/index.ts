@@ -5,3 +5,4 @@ export * from "./SideBarMenu";
 export * from "./UserDropdown";
 export * from "./Fetch";
 export { Field, FieldForm, useFormInstance } from "./field";
+export * from "./ErrorBoundary";

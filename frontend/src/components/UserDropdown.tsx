@@ -8,14 +8,19 @@ import { UserOutlined, LogoutOutlined, DownOutlined } from "@ant-design/icons";
 import type { StoreType } from "@/redux";
 import { logout } from "@/redux/auth";
 
-import "./index.less";
+import style from "@/styles/dropdown.mod.less";
 
-const DropdownOverlay: FC = () => {
+interface P {
+  avatarUrl?: string;
+}
+
+export const UserDropdown: FC<P> = ({ avatarUrl }) => {
+  const auth = useSelector((state: StoreType) => state.auth);
   const dispatch = useDispatch();
 
-  return <Menu className="rf-dropdown-menu">
+  const menu = <Menu className={style.dropdown}>
     <Menu.Item key="1">
-      <Link to="/accounts">
+      <Link to="/app/accounts">
         <UserOutlined />用户信息
       </Link>
     </Menu.Item>
@@ -26,28 +31,17 @@ const DropdownOverlay: FC = () => {
       </Link>
     </Menu.Item>
   </Menu>;
-};
 
-const inline = {
-  display: "inline-block"
-};
-
-interface P {
-  avatarUrl?: string;
-}
-
-export const UserDropdown: FC<P> = ({ avatarUrl }) => {
-  const username = useSelector((state: StoreType) => state.auth.lastUsername);
-
-  return <Dropdown overlay={<DropdownOverlay />} trigger={["click"]}>
-    <span style={inline}>
+  return <Dropdown overlay={menu} trigger={["click"]}>
+    <span className={style.inline}>
       {
         avatarUrl ?
-          <Avatar src={avatarUrl} className="rf-avatar" /> :
-          <Avatar icon={<UserOutlined />} className="rf-avatar" />
+          // className="rf-avatar"
+          <Avatar src={avatarUrl} /> :
+          <Avatar icon={<UserOutlined />} />
       }
-      {username}
-      <DownOutlined className="rf-dropdown-icon" />
+      {auth.token ? auth.username : null}
+      <DownOutlined className={style.dropdownIcon} />
     </span>
   </Dropdown>;
 };

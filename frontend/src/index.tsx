@@ -7,24 +7,28 @@ import { PersistGate } from "redux-persist/integration/react";
 import "@/plugins";
 
 import { persistor, store } from "@/redux";
-import { Loading, PrivateRoute } from "@/components";
+import { Loading, PrivateRoute, ErrorBoundary } from "@/components";
 
 const Login = lazy(() => import(/* webpackChunkName: "login" */"@/views/Login"));
 const Home = lazy(() => import(/* webpackChunkName: "home" */"@/views/Home"));
 const App = lazy(() => import(/* webpackChunkName: "app" */"@/views/App"));
 
+const Routes = () => <Router>
+  <Suspense fallback={<Loading />}>
+    <Switch>
+      <Route exact path="/login" component={Login} />
+      <PrivateRoute exact path="/" component={Home} />
+      <PrivateRoute path="/app" component={App} />
+    </Switch>
+  </Suspense>
+</Router>;
+
 render(
   <Provider store={store}>
     <PersistGate persistor={persistor}>
-      <Router>
-        <Suspense fallback={<Loading />}>
-          <Switch>
-            <Route exact path="/login" component={Login}/>
-            <PrivateRoute exact path="/" component={Home}/>
-            <PrivateRoute path="/app" component={App}/>
-          </Switch>
-        </Suspense>
-      </Router>
+      <ErrorBoundary>
+        <Routes/>
+      </ErrorBoundary>
     </PersistGate>
   </Provider>
   , document.getElementById("root"));

@@ -1,8 +1,8 @@
-.rf-main {
+.panel {
 
   min-height: 100vh;
 
-  .trigger {
+  :global .trigger {
     font-size: 18px;
     line-height: 64px;
     padding: 0 24px;
@@ -14,26 +14,39 @@
     }
   }
 
-  .inline-anchor {
+  .logo {
+    height: 32px;
+    background: rgba(255, 255, 255, 0.2);
+    margin: 16px;
+  }
+
+  :global .inline-anchor {
     display: inline-block;
   }
 }
 
-.rf-main-navbar {
+.sider {
+  box-shadow: 2px 0 6px rgba(0, 21, 41, .35);
+}
+
+.navbar {
   float: right;
   height: 100%;
   overflow: hidden;
 
-  .rf-dropdown-icon {
-    padding: 0 12px;
-  }
-
-  .ant-avatar {
+  :global .ant-avatar {
     margin-right: 10px;
   }
 }
 
-.rf-main-header {
+.content-container {
+  margin: 24px 16px;
+  padding: 24px;
+  background: #fff;
+  min-height: 280px;
+}
+
+.header {
   background: #2f4050;
 
   span {
