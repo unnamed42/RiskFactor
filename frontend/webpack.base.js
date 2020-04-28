@@ -41,28 +41,6 @@ module.exports = {
       },
       {
         test: /\.(le|c)ss$/,
-        exclude: /\.mod\.(le|c)ss$/,
-        use: [
-          {
-            loader: MiniCssExtractPlugin.loader,
-            options: {
-              hmr: process.env.NODE_ENV === "development",
-              esModule: true
-            },
-          },
-          require.resolve("css-loader"),
-          {
-            loader: require.resolve("less-loader"),
-            options: {
-              lessOptions: {
-                javascriptEnabled: true
-              }
-            }
-          }
-        ]
-      },
-      {
-        test: /\.mod\.(le|c)ss$/,
         use: [
           {
             loader: MiniCssExtractPlugin.loader,
@@ -74,10 +52,15 @@ module.exports = {
           {
             loader: require.resolve("css-loader"),
             options: {
-              modules: true,
+              modules: {
+                auto: /\.mod\.(le|c)ss$/i,
+                localIdentName: process.env.NODE_ENV === "development" ?
+                  "[path][name]__[local]--[hash:base64:5]" :
+                  "[hash:base64:8]",
+              },
               importLoaders: 2,
               localsConvention: "camelCaseOnly",
-              localIdentName: "[local]___[hash:base64:5]"
+              esModule: true
             }
           },
           require.resolve("postcss-loader"),
