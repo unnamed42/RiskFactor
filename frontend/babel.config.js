@@ -1,19 +1,17 @@
-module.exports = api => {
-  api.cache(true);
-
-  const presets = [
+module.exports = {
+  presets: [
     ["@babel/preset-env", {
-      modules: false,
       exclude: [
         "transform-regenerator",
         "transform-async-to-generator"
       ]
     }],
-    "@babel/preset-react",
+    ["@babel/preset-react", {
+      development: process.env.NODE_ENV === "development"
+    }],
     "@babel/preset-typescript"
-  ];
-
-  const plugins = [
+  ],
+  plugins: [
     ["@babel/plugin-transform-typescript", { allowDeclareFields: true }],
     ["@babel/plugin-proposal-decorators", { legacy: true }],
     ["@babel/plugin-proposal-class-properties", { loose: true }],
@@ -27,7 +25,5 @@ module.exports = api => {
     }],
     "lodash",
     ["import", { libraryName: "antd", libraryDirectory: "es", style: true }, "antd"]
-  ];
-
-  return { presets, plugins };
+  ]
 };
