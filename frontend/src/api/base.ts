@@ -1,4 +1,4 @@
-import Axios, { AxiosRequestConfig } from "axios";
+import Axios, { AxiosRequestConfig, AxiosResponse } from "axios";
 
 import { baseUrl, refreshThres } from "@/config";
 import { store } from "@/redux";
@@ -26,16 +26,23 @@ export const http = Axios.create({
   }
 });
 
-export const rawRequest = <T = void>(config: AxiosRequestConfig) =>
-  http.request<T>(config);
+/**
+ * 向REST API请求数据的通用工具函数。
+ * @param config 请求的配置
+ * @template T 请求返回的数据类型
+ * @return 请求结果，但依然以`AxiosResponse`的形式返回
+ */
+export const rawRequest = <T = void>(config: AxiosRequestConfig): Promise<AxiosResponse<T>> =>
+  http.request(config);
 
 /**
- * 向REST API请求数据的通用工具函数
+ * 向REST API请求数据的通用工具函数。与`rawRequest`不同在于，`request`会检查token的时效性，并当快过期时自动刷新
  * @param config 传递给Axios的配置
  * @param refreshToken 是否在token快要过期时刷新
  * @template T 请求返回的数据类型
+ * @return 请求结果，直接返回解析完的数据
  */
-export const request = async <T = void>(config: AxiosRequestConfig, refreshToken = true) => {
+export const request = async <T = void>(config: AxiosRequestConfig, refreshToken = true): Promise<T> => {
   if(!config.method)
     config.method = "GET";
   const auth = authentication();

@@ -12,12 +12,12 @@ interface TokenResponse {
 /**
  * 用户名密码登录
  */
-export const login = (data: TokenRequest) =>
+export const login = (data: TokenRequest): Promise<string> =>
   rawRequest<TokenResponse>({ url: "/token", data, method: "POST" })
     .then(resp => resp.data.token);
 
 /**
  * 刷新token
  */
-export const refresh = () =>
+export const refresh = (): Promise<string> =>
   request<TokenResponse>({ url: "/token" }, false).then(({ token }) => token);

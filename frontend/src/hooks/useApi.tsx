@@ -18,18 +18,40 @@ interface Options {
   success?: string;
 }
 
-export type UseApiDom<T> =
-  { alt: ReactElement | null } |
-  { alt?: undefined; data: T }
+type UseApiDomPartial<T> =
+  { alt: ReactElement | null } | { alt?: undefined; data: T };
+
+export type UseApiDom<T> = UseApiDomPartial<T> & { error?: Error };
 
 type UseApiReturnType<T extends any[], R> =
-  [UseApiDom<R> & { error?: Error }, (...args: T) => Promise<R | undefined>];
+  [UseApiDom<R>, (...args: T) => Promise<R | undefined>];
 
 const isAxiosError = (error: Error): error is AxiosError =>
   (error as AxiosError).isAxiosError;
 
 /**
- * 将api请求包装为hooks。比`useAsync`多用`message.error`提示错误，以及立即后台开始调用的功能。
+ * 由于当`Options.immediate`设置为`true`时，`useApi`的`asyncFunc`不接受任何参数，
+ * 因此创建这个type guard以绕过类型检查
+ */
+const isImmediateCallback = <T extends any[], R>(func: (...args: T) => R, immediate: boolean): func is () => R =>
+  immediate;
+
+/**
+ * 将api请求包装为hooks。在`useAsync`基础上继续包装，比`useAsync`多用`message.error`提示错误，
+ * 以及立即后台开始调用的功能。
+ *
+ * @param fn 最好是`src/api`里的那些REST API请求函数，其他函数也可以。请自行确保`fn`的依赖数据都在`deps`内
+ * @param deps 异步函数的依赖列表，用法同`useCallback`
+ * @param options 异步动作的选项，有三个：
+ *          immediate: 异步动作是否在hook创建时立即开始执行。若为true，则fn应该为一个0参数函数
+ *          reportError: 异步动作出错时是否使用`message.error`报错
+ *          success: 成功时弹出的提示文字。为undefined则不提示
+ * @return [response, asyncFunc]
+ *          response: 异步函数的结果状态，异步动作未开始时为undefined。具有三个属性：
+ *            alt: 为一个ReactElement。当异步函数正在执行中或者出现错误时不为undefined，此时外层组件应该返回它的内容作为渲染结果。
+ *            error: 当异步函数出现错误时，捕获的异常。没有错误则为undefined
+ *            data: 异步函数正常结束时返回的数据。当alt和error都为undefined时才可用
+ *          asyncFunc: 同`useAsync`的返回结果
  */
 export const useApi = <T extends any[], R>(
   fn: (...args: T) => Promise<R>,
@@ -37,7 +59,7 @@ export const useApi = <T extends any[], R>(
   options?: Options
 ): UseApiReturnType<T, R> => {
 
-  const [result, setResult] = useState<UseApiDom<R> & { error?: Error }>({ alt: null });
+  const [result, setResult] = useState<UseApiDom<R>>({ alt: null });
   const [state, asyncFunc] = useAsync(fn, deps);
   const isMounted = useMounted();
   const dispatch = useDispatch();
@@ -46,8 +68,8 @@ export const useApi = <T extends any[], R>(
   const { immediate = true, reportError = true, success } = options ?? {};
 
   useEffect(() => {
-    if (immediate)
-      (asyncFunc as any)();
+    if (isImmediateCallback(asyncFunc, immediate))
+      void asyncFunc();
   }, [immediate, asyncFunc]);
 
   useEffect(() => {
@@ -55,9 +77,9 @@ export const useApi = <T extends any[], R>(
       return;
     if (state.error) {
       if (reportError)
-        message.error(state.error.message);
+        void message.error(state.error.message);
     } else if (success !== undefined)
-      message.success(success);
+      void message.success(success);
   // 无视`isMounted`的deps警告
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [state, reportError]);
@@ -110,6 +132,14 @@ interface CachableOptions extends Options {
 /**
  * 在`useApi`的基础上，加一层缓存，若请求的对象没有更新，则不向服务器请求完整内容，
  * 而是从`store`中读取上一次获得的数据。
+ *
+ * @param fn 同上
+ * @param deps 同上
+ * @param options 在`useApi`的options的基础上，添加了两个属性：
+ *          cacheKey: 用于标记缓存的键值，自行保证唯一性
+ *          mtimeGetter: 请求对象是否发生更新的动作，即根据对象的id获取其最近修改时间。
+ * @template T 要求T必须具有`Entity`的两个属性
+ * @return 同上
  */
 export const useApiCached = <T extends Entity>(
   fn: () => Promise<T>,
@@ -134,5 +164,5 @@ export const useApiCached = <T extends Entity>(
     dispatch(write(cacheKey, latest));
     console.log(`重新获取 ${cacheKey}`);
     return latest;
-  }, [...deps, cacheKey], options);
+  }, [...(deps as unknown[]), cacheKey], options);
 };

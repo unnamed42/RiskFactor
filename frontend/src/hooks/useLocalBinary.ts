@@ -1,6 +1,8 @@
 import { useRef, useEffect, useCallback } from "react";
 
-export const useLocalBinary = (filename: string) => {
+type DownloadAction = (data: BlobPart[]) => void;
+
+export const useLocalBinary = (filename: string): [DownloadAction] => {
   const href = useRef<HTMLAnchorElement>();
 
   useEffect(() => {

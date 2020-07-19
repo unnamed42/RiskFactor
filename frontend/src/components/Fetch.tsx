@@ -32,7 +32,7 @@ interface CacheableProps {
   updated: (id: IdType) => Promise<number>;
 }
 
-type P<T> = DefaultProps<T> & (T extends Checkable ? Partial<CacheableProps> : {});
+type P<T> = DefaultProps<T> & (T extends Checkable ? Partial<CacheableProps> : Empty);
 
 const isAxiosError = (err: Error): err is AxiosError =>
   (err as Partial<AxiosError>).isAxiosError == true;
@@ -73,14 +73,14 @@ export function Fetch<R>({ fetch, children, placeholder, ...rest }: P<R>): React
   }, [cacheKey, updated, dispatch]);
 
   useEffect(() => {
-    fetchFn();
+    void fetchFn();
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
     if (state && !state.loading) {
       if (state.error != undefined) {
-        message.error(state.error.message);
+        void message.error(state.error.message);
         if (isUnauthorized(state.error))
           dispatch(logout());
       }

@@ -8,23 +8,25 @@ export interface AnswerInfo {
   modifiedAt: number;
 }
 
-export const getAnswer = (answerId: ApiIdType) =>
-  request<any>({ url: `/answers/${answerId}` });
+export const getAnswer = (answerId: ApiIdType): Promise<any> =>
+  request({ url: `/answers/${answerId}` });
 
-export const answerModifiedAt = (answerId: ApiIdType) =>
-  request<number>({ url: `/answers/${answerId}/modifiedAt` });
+export const answerModifiedAt = (answerId: ApiIdType): Promise<number> =>
+  request({ url: `/answers/${answerId}/modifiedAt` });
 
 /**
  * 获取现有的回答的列表
  */
-export const getAnswerList = (schemaId: ApiIdType) =>
-  request<AnswerInfo[]>({ url: "/answers", params: { schemaId } });
+export const getAnswerList = (schemaId: ApiIdType): Promise<AnswerInfo[]> =>
+  request({ url: "/answers", params: { schemaId } });
 
-export const createAnswer = (schemaId: ApiIdType, data: any) =>
-  request<IdResponse>({ url: "/answers", data, params: { schemaId }, method: "POST" });
+export const createAnswer = (schemaId: ApiIdType, data: any): Promise<IdResponse> =>
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+  request({ url: "/answers", data, params: { schemaId }, method: "POST" });
 
-export const updateAnswer = (answerId: ApiIdType, data: any) =>
+export const updateAnswer = (answerId: ApiIdType, data: any): Promise<void> =>
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
   request({ url: `/answers/${answerId}`, data, method: "PUT" });
 
-export const removeAnswer = (answerId: ApiIdType) =>
+export const removeAnswer = (answerId: ApiIdType): Promise<void> =>
   request({ url: `/answers/${answerId}`, method: "DELETE" });

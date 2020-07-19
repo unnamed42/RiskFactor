@@ -7,7 +7,8 @@ import {
 } from "@ant-design/icons";
 
 import style from "@/styles/panel.mod.less";
-import { SidebarMenu, UserDropdown } from "@/components";
+import { SidebarMenu } from "./SideBarMenu";
+import { UserDropdown } from "./UserDropdown";
 
 const mappings = [{
   path: "/app/accounts",

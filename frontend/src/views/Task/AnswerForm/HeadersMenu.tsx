@@ -19,7 +19,7 @@ const renderItems = (headers: any, parent = "") => Object.entries(headers).map((
   </Menu.SubMenu>
 });
 
-export const openKey = (obj: any) => {
+export const openKey = (obj: any): string[] => {
   const path: string[] = [];
   // 自headers层级结构找到第一个叶子节点
   while (obj !== null) {
@@ -32,7 +32,7 @@ export const openKey = (obj: any) => {
       break;
     obj = v;
   }
-  // 如果是空，返回undefined；否则为 [一级header]/[二级header]/[三级header]...
+  // 如果是空，返回[]；否则为 [一级header]/[二级header]/[三级header]...
   return path ? [path[0], path.join("/")] : [];
 };
 
@@ -45,7 +45,7 @@ export const HeadersMenu: FC<HeadersMenuProps> = ({ headers, onChange }) => {
 
   return <Menu mode="inline" style={menuStyle}
     defaultOpenKeys={open ? [open] : undefined}
-    onSelect={({ key }) => onChange?.(key)}>
+    onSelect={({ key }) => onChange?.(key.toString())}>
     {renderItems(headers)}
   </Menu>;
 };

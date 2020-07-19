@@ -14,6 +14,10 @@ interface P {
   avatarUrl?: string;
 }
 
+/**
+ * 圆角用户头像和旁边小三角按钮和单击弹出菜单
+ * @param avatarUrl 头像的URL,可以不填，不填以默认头像代替
+ */
 export const UserDropdown: FC<P> = ({ avatarUrl }) => {
   const auth = useSelector((state: StoreType) => state.auth);
   const dispatch = useDispatch();

@@ -1,17 +1,19 @@
+/* eslint-disable @typescript-eslint/explicit-module-boundary-types */
 import React, { Component } from "react";
 
 interface State {
   hasError: boolean;
 }
 
-export class ErrorBoundary extends Component<{}, State> {
+// 用于报错，没什么大用
+export class ErrorBoundary extends Component<Empty, State> {
 
-  constructor(props: {}) {
+  constructor(props: Empty) {
     super(props);
     this.state = { hasError: false };
   }
 
-  static getDerivedStateFromError(error: Error) {
+  static getDerivedStateFromError(_error: Error) {
     return { hasError: true };
   }
 

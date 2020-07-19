@@ -6,7 +6,7 @@ import { fieldUpdated } from "@/hooks";
 
 export const Demo: FC = () => {
 
-  const [value, setValue] = useState<string>();
+  const [value, _] = useState<string>();
   const [form] = Form.useForm();
 
   const namePath = ["$1"];
@@ -46,6 +46,7 @@ export const Demo: FC = () => {
       }
     </Form.Item>
     <Form.Item label="fixed" shouldUpdate={fieldUpdated("fuck")}>
+      {/* eslint-disable-next-line @typescript-eslint/restrict-template-expressions */}
       {form => <Input value={`${form.getFieldValue("fuck")}-1`} disabled/> }
     </Form.Item>
     <Form.List name="list">

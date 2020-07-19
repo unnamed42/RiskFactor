@@ -11,6 +11,8 @@ interface P extends ButtonProps {
 /**
  * 按钮按下后，等待一段时间才能再次click
  * 可用于请求验证码的按钮，请求一次之后60s以内不能再次请求
+ * @param interval 点击之后间隔多久才能再次点击
+ * @param text 点击前显示的文字，效果类似于`<button>text</button>`
  */
 export const TimedButton: FC<P> = ({ interval, text, ...props }) => {
   const [waiting, setWaiting] = useState(false);

@@ -64,7 +64,7 @@ export const FieldExpression: FC<P> = ({ rule: { id, placeholder } }) => {
     const [type, expr] = placeholder.split(":");
     if (type === "var") {
       const namePath = ["#vars", expr];
-      return [expr, form => form.getFieldValue(namePath)];
+      return [expr, form => (form.getFieldValue(namePath) as string | undefined)];
     } else if (type === "expr") {
       const variables = expr.split(" ").filter(s => s.startsWith("$"));
       return [variables, form => evalExpr(expr, form)];

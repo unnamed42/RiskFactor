@@ -7,7 +7,7 @@ import { Store } from "rc-field-form/es/interface";
 
 import { StoreType } from "@/redux";
 import * as authStore from "@/redux/auth";
-import { login } from "@/api";
+import { login, TokenRequest } from "@/api";
 import { useAsync } from "@/hooks";
 
 import style from "@/styles/login-form.mod.less";
@@ -37,14 +37,14 @@ export const LoginForm: FC = () => {
   const [state, requestLogin] = useAsync(login, []);
 
   const doLogin = (values: Store) => {
-    const { username, password } = values;
-    requestLogin({ username, password });
+    const { username, password } = values as TokenRequest;
+    void requestLogin({ username, password });
   };
 
   useEffect(() => {
     if (state && !state.loading) {
       if (state.error !== undefined)
-        message.error(state.error.message);
+        void message.error(state.error.message);
       else
         // 外层根据token的更新会重定向至Referer页面
         dispatch(authStore.login(state.data));

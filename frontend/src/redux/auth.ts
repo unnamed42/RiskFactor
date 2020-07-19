@@ -1,5 +1,5 @@
 import type { Reducer, Action } from "redux";
-// eslint-disable-next-line @typescript-eslint/camelcase
+
 import jwt_decode from "jwt-decode";
 
 import type { IdType } from "@/api";

@@ -20,9 +20,10 @@ interface P {
 
 const FormContext = createContext({} as FormInstance);
 
-export const useFormInstance = () => useContext(FormContext);
+export const useFormInstance = (): FormInstance =>
+  useContext(FormContext);
 
-export const FieldForm: FC<P> = ({ schema, header, answers, answerId, onValuesChange, onFinish }) => {
+export const FieldForm: FC<P> = ({ schema, header, answerId, onValuesChange, onFinish }) => {
   const [form] = Form.useForm();
 
   const [, fetchValues] = useApi(getAnswer, [], { immediate: false });
@@ -49,8 +50,8 @@ export const FieldForm: FC<P> = ({ schema, header, answers, answerId, onValuesCh
 
   useEffect(() => {
     if (answerId !== undefined)
-      fetchValues(answerId).then(values => form.setFieldsValue(values));
-  }, [answerId]);
+      void fetchValues(answerId).then(values => form.setFieldsValue(values));
+  }, [form, answerId, fetchValues]);
 
   useEffect(() => {
     if(answerId !== undefined)

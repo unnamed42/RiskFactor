@@ -19,17 +19,17 @@ export type RuleInfo =
   RuleChoices | RuleSelect | RuleEither | RuleTable |
   RuleLabel | RuleHeader;
 
-export const getSchemas = () =>
-  request<SchemaInfo[]>({ url: "/schema" });
+export const getSchemas = (): Promise<SchemaInfo[]> =>
+  request({ url: "/schema" });
 
-export const schemaModifiedTime = (schemaId: ApiIdType) =>
-  request<number>({ url: `/schema/${schemaId}/modifiedAt` });
+export const schemaModifiedTime = (schemaId: ApiIdType): Promise<number> =>
+  request({ url: `/schema/${schemaId}/modifiedAt` });
 
-export const getSchemaInfo = (schemaId: ApiIdType) =>
-  request<SchemaInfo>({ url: `/schema/${schemaId}` });
+export const getSchemaInfo = (schemaId: ApiIdType): Promise<SchemaInfo> => 
+  request({ url: `/schema/${schemaId}` });
 
-export const getSchemaDetail = (schemaId: ApiIdType) =>
-  request<SchemaDetail>({ url: `/schema/${schemaId}/detail` });
+export const getSchemaDetail = (schemaId: ApiIdType): Promise<SchemaDetail> => 
+  request({ url: `/schema/${schemaId}/detail` });
 
 
 /*

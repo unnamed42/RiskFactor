@@ -9,4 +9,5 @@ export const fieldUpdated = (path: NamePath): Checker => {
   return (prev, curr) => get(prev, path) == get(curr, path);
 }
 
+// eslint-disable-next-line react-hooks/exhaustive-deps
 export const useFieldUpdated = (path: NamePath): Checker => useCallback(fieldUpdated(path), [path]);

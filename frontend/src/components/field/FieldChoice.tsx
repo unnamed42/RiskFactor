@@ -31,7 +31,7 @@ export const FieldChoice: FC<P> = ({ rule: { choices, type, customizable }, name
 
   // 选中了“其他”，启用自定义输入选项
   const otherSelected = (form: FormInstance) => {
-    const selected = form.getFieldValue(namePath);
+    const selected = form.getFieldValue(namePath) as unknown;
     if (!selected) return false;
     // 为Array则是多选，否则是单选
     return (isArray(selected) && selected.includes(choices.length)) ||

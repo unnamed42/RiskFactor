@@ -29,7 +29,7 @@ const fetch = async (schemaId: ApiIdType) => {
   const schemaSource = await getSchemaDetail(schemaId);
   // 问题header -> header下属的list
   const schema: Record<string, RuleInfo[]> = {};
-  const headers: any = {};
+  const headers: Record<string, unknown> = {};
 
   const dfs = (list: RuleInfo[], namePath: string) => {
     for (const rule of list) {
@@ -87,7 +87,7 @@ export const AnswerForm: FC = () => {
         <PageHeader title="返回数据页" onBack={() => history.replace(`/task/${schemaId}/answers`)} />
         <FieldForm schema={schema} header={header} answerId={answerId}
           onValuesChange={changes => answerRef.current = { ...answerRef.current, ...changes }}
-          onFinish={() => { const value = (() => answerRef.current)(); submit(value); }}
+          onFinish={() => { const value = (() => answerRef.current)(); void submit(value); }}
         />
       </Layout.Content>
     </Layout>
