@@ -8,7 +8,8 @@ import com.tjh.riskfactor.repository.*
 
 /**
  * 用于[org.springframework.security.access.prepost.PreAuthorize]的访问权限表达式。
- * 某些请求会特殊自行处理实体id不存在的情况，有些则没有，所以对不存在id的处理会有不同
+ *
+ * 某些请求会特殊处理实体id不存在的情况，有些则没有，所以对不存在id的处理会有不同
  */
 @Component("checker")
 class PermissionEvaluator(

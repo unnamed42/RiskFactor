@@ -49,7 +49,7 @@ class TokenController(
      * 不需要包含多余信息，因为token中已经编码了用户名和用户id
      *
      * @param body 请求体，格式如上
-     * @return token应答，格式如上
+     * @return token 应答，格式如上
      */
     @PostMapping("/token")
     fun requestToken(@RequestBody body: TokenRequest): TokenResponse {
@@ -59,7 +59,7 @@ class TokenController(
     }
 
     /**
-     * 已登录用户用这个请求来刷新自己的token以避免token过时失效
+     * 已登录用户用这个请求来刷新自己的token以避免token过时失效。
      */
     @GetMapping("/token")
     fun refreshToken(auth: Authentication): TokenResponse =

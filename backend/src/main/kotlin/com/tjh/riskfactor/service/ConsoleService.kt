@@ -20,6 +20,9 @@ data class Globals(
 @Repository
 interface GlobalsRepository: JpaRepository<Globals, String>
 
+/**
+ * 负责在[GlobalsRepository]的数据库表中插入flag。应该取个更贴切的名字
+ */
 @Service
 class ConsoleService(
     private val globals: GlobalsRepository,

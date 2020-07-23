@@ -46,6 +46,9 @@ class ApplicationConfig(
         disable(Hibernate5Module.Feature.USE_TRANSIENT_ANNOTATION)
     }
 
+    /**
+     * 启用Jackson的kotlin支持
+     */
     @Bean
     fun kotlinModule() = KotlinModule()
 
@@ -72,7 +75,7 @@ class ApplicationConfig(
     }
 
     /**
-     * CORS shut up
+     * 完全禁用CORS
      */
     override fun addCorsMappings(registry: CorsRegistry) {
         super.addCorsMappings(registry)
@@ -85,6 +88,9 @@ class ApplicationConfig(
         auth.authenticationProvider(daoAuthenticationProvider())
     }
 
+    /**
+     * 配置REST风格API。
+     */
     override fun configure(http: HttpSecurity) {
         http.cors().and()
             .httpBasic().disable()

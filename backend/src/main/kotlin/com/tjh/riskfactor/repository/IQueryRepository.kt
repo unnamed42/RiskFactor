@@ -71,7 +71,7 @@ fun <E, Id, R> R.findLazy(id: Id): E where R: JpaRepository<E, Id> =
     this.getOne(id)
 
 /**
- * 提取实体的一个属性
+ * 提取实体的一个属性。如果[id]对应实体不存在，不抛出异常而是返回`null`。
  * @param id 实体的ID
  * @param property 属性提取器
  */

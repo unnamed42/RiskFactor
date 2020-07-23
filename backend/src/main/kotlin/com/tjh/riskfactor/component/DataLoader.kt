@@ -15,6 +15,11 @@ import com.tjh.riskfactor.component.loader.SchemaLoader
 
 import java.io.InputStream
 
+/**
+ * 在服务初次启动时，解析resources里提供的预定义数据，加载进数据库。为了达到自动启动的目的，继承于[CommandLineRunner]。
+ *
+ * 为了达到只执行一次的目的，使用[ConsoleService]（应该起个更好的名字）在数据库中设置好once标签。
+ */
 @Component
 class DataLoader(
     private val accountLoader: AccountLoader,

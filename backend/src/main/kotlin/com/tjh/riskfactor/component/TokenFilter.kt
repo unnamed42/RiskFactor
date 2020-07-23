@@ -16,6 +16,9 @@ import javax.servlet.FilterChain
 import javax.servlet.http.HttpServletRequest
 import javax.servlet.http.HttpServletResponse
 
+/**
+ * 检查请求中是否带有JWT，有的话放进权限信息中，没有则继续[FilterChain]。除了公开可访问的API之外，均拒绝请求。
+ */
 @Component
 class TokenFilter(
     private val service: TokenService,

@@ -37,15 +37,12 @@ class TokenService(
         generateToken((auth.principal as AccountDetails).id, auth.name)
 
     fun getAuthentication(token: String): Authentication {
-        val username = parseClaims(token).subject
+        val username = parser.parseClaimsJws(token).body.subject
         val details = service.loadUserByUsername(username)
         return UsernamePasswordAuthenticationToken(details, "", details.authorities)
     }
 
     internal fun resolveToken(req: HttpServletRequest): String? =
         req.getHeader("Authorization")?.takeIf { it.startsWith(BEARER) }?.substring(BEARER.length)
-
-    private fun parseClaims(token: String) =
-        parser.parseClaimsJws(token).body
 
 }

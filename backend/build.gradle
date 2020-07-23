@@ -1,14 +1,14 @@
 buildscript {
   ext {
-    kotlinVersion = "1.3.71"
-    springBootVersion = "2.2.6.RELEASE"
+    kotlinVersion = "1.3.72"
+    springBootVersion = "2.3.1.RELEASE"
 
-    jacksonKotlinVersion = "2.10.2"
+    jacksonKotlinVersion = "2.10.5"
     kotlinLoggingVersion = "1.7.8"
-    jjwtVersion = "0.11.0"
+    jjwtVersion = "0.11.2"
 
     kotlinJpaDslVersion = "2.0.0-rc.1"
-    JpaDslProjectionVersion = "2.0.0"
+    JpaDslProjectionVersion = "2.0.1"
   }
   repositories {
     jcenter()
@@ -21,6 +21,7 @@ buildscript {
   }
 }
 
+// replace repositories with aliyun
 allprojects {
   repositories {
     maven {
