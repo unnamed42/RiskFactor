@@ -12,9 +12,10 @@ import type { FieldProps } from ".";
  * 将表达式求值
  * @param expr 后缀表达式
  * @param form ant design form实例
- * @return 表达式求值无错误发生，且结果不为`NaN`时返回该数值，其他情况返回`undefined`
+ * @param precision 返回字符串的表达形式的精度
+ * @return 表达式求值无错误发生，且结果不为`NaN`时以字符串形式返回该数值，其他情况返回`undefined`
  */
-const evalExpr = (expr: string, form: FormInstance): string | undefined => {
+const evalExpr = (expr: string, form: FormInstance, precision = 3): string | undefined => {
   const parseOperand = (operand: string) =>
     Number(operand.startsWith("$") ? (console.log(operand, form.getFieldValue(operand)), form.getFieldValue(operand)) : operand);
   const isDigit = (ch: number) =>
@@ -42,7 +43,7 @@ const evalExpr = (expr: string, form: FormInstance): string | undefined => {
     } else
       stack.push(parseOperand(s));
   }
-  return stack.length === 1 && !isNaN(stack[0]) ? stack[0].toPrecision(3): undefined;
+  return stack.length === 1 && !isNaN(stack[0]) ? stack[0].toPrecision(precision) : undefined;
 };
 
 type P = FieldProps<RuleExpression>;

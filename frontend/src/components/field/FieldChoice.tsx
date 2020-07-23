@@ -13,7 +13,7 @@ type P = FieldProps<RuleChoices>;
 
 /**
  * 将多项单选（Radio）和多项多选（Checkbox）合并在一起，因为大量代码是相同的
- * 唯一区别在于被选内容`chosen`，Radio只允许选一个（因此chosen是长度为1的数组），Checkbox可以是多个长
+ * 唯一区别在于被选内容`chosen`，Radio只允许选一个（因此chosen是长度为1的数组），Checkbox可以是多个
  */
 export const FieldChoice: FC<P> = ({ rule: { choices, type, customizable }, namePath }) => {
   // if (!choices)

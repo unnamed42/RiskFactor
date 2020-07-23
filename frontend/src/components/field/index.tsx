@@ -45,6 +45,15 @@ const fieldType = (type: RuleInfo["type"]): FC<FieldProps<any>> => {
   }
 };
 
+/**
+ * 根据给定规则渲染前端界面，为配合ant-design使用，所有表单项需要包裹在`Form.Item`中。
+ * 该组件就负责根据`rule.type`提供由`Form.Item`包裹好的DatePicker, Input等组件，
+ * 并设置好最终提交结果key-value中的key
+ *
+ * @param rule 规则，具体详见后端对应部分
+ * @param namePath 外部调用不需要的参数，用于设置key
+ * @param noStyle 外部调用不需要的参数，用于控制`Form.Item`
+ */
 export const Field: FC<P> = ({ rule, namePath, noStyle }) => {
   const { type, id, label } = rule;
   const FieldInternal = fieldType(type);

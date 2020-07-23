@@ -14,6 +14,9 @@ import { useApi, useData } from "@/hooks";
 const renderIsAdmin = (isAdmin: boolean | undefined) =>
   isAdmin ? <CheckOutlined /> : null;
 
+/**
+ * 渲染当前用户可见的用户列表
+ */
 export const AccountList: FC = () => {
   const [resp] = useApi(userInfoList, []);
   const [, deleteUser] = useApi(du, [], { success: "删除成功", immediate: false });
@@ -21,17 +24,11 @@ export const AccountList: FC = () => {
   const auth = useSelector((state: StoreType) => state.auth);
   const dispatch = useDispatch();
   const history = useHistory();
-  const [_, setSelected] = useState<Array<number | string>>([]);
+  const [selected, setSelected] = useState<Array<number | string>>([]);
   const [source, setSource] = useData(resp);
 
   if (resp.alt !== undefined)
     return resp.alt;
-
-  // const rowSelection: TableRowSelection<UserInfo> = {
-  //   type: "checkbox",
-  //   selectedRowKeys: selected,
-  //   onChange: setSelected
-  // };
 
   const renderAction = (_: any, item: UserInfo) => {
     const deleteThis = async () => {
@@ -51,7 +48,7 @@ export const AccountList: FC = () => {
   };
 
   return <Table dataSource={source} loading={source === undefined}
-                // rowSelection={rowSelection}
+                rowSelection={{ type: "checkbox", selectedRowKeys: selected, onChange: setSelected }}
                 tableLayout="fixed" rowKey="id">
     <Table.Column align="center" title="UID" dataIndex="id" />
     <Table.Column align="center" title="用户名" dataIndex="username" />

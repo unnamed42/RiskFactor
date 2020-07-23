@@ -1,5 +1,6 @@
 import React, { FC, lazy, Suspense } from "react";
 import { Switch } from "react-router-dom";
+import { useRouteMatch } from "react-router";
 
 import { PrivateRoute, Loading } from "@/components";
 
@@ -8,8 +9,10 @@ const Accounts = lazy(() => import(/* webpackChunkName: "accounts" */"@/views/Ac
 const AnswerForm = lazy(() => import(/* webpackChunkName: "ansform" */"@/views/Task/AnswerForm"));
 
 import { MainPanel } from "./MainPanel";
-import { useRouteMatch } from "react-router";
 
+/**
+ * 应用的主页面，问卷填写等等功能都是经由主页面调用不同组件来展示
+ */
 export const App: FC = () => {
   const { url } = useRouteMatch();
   return <MainPanel>

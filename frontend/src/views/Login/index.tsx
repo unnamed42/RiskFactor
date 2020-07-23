@@ -21,8 +21,6 @@ export const Login: FC = () => {
   if(token !== null)
     return <Redirect to={state?.from ?? "/"} />;
 
-  console.log(style);
-
   return <>
     <div className={style.background}/>
     <div className={style.container}>
@@ -31,6 +29,7 @@ export const Login: FC = () => {
         <LoginForm />
       </div>
     </div>
+    {/* 测试效果用的组件，仅在development模式出现 */}
     { process.env.NODE_ENV === "development" ? <Demo/> : null }
   </>;
 };

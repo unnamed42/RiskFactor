@@ -1,14 +1,15 @@
 import React, { FC } from "react";
 
-import { Layout } from "antd";
+import { Layout, Menu } from "antd";
 import {
   UserOutlined, DatabaseOutlined,
   AreaChartOutlined, ExportOutlined
 } from "@ant-design/icons";
 
 import style from "@/styles/panel.mod.less";
-import { SidebarMenu } from "./SideBarMenu";
-import { UserDropdown } from "./UserDropdown";
+import { UserDropdown } from "@/components";
+import { useRouteMatch } from "react-router";
+import { Link } from "react-router-dom";
 
 const mappings = [{
   path: "/app/accounts",
@@ -28,22 +29,36 @@ const mappings = [{
   label: "批量导出"
 }];
 
+const first = [mappings[0].path];
+
 /**
- * 主窗口组件
+ * 主窗口组件，提供顶栏和侧边菜单，中间部分需要显示其他组件
  */
-export const MainPanel: FC = ({ children }) => <Layout className={style.panel}>
-  <Layout.Sider className={style.sider}>
-    <div className={style.logo}/>
-    <SidebarMenu mappings={mappings}/>
-  </Layout.Sider>
-  <Layout>
-    <Layout.Header className={style.header}>
-      <div className={style.navbar}>
-        <UserDropdown/>
-      </div>
-    </Layout.Header>
-    <Layout.Content className={style.contentContainer}>
-      {children}
-    </Layout.Content>
-  </Layout>
-</Layout>;
+export const MainPanel: FC = ({ children }) => {
+  const { url } = useRouteMatch();
+
+  return <Layout className={style.panel}>
+    <Layout.Sider className={style.sider}>
+      <div className={style.logo}/>
+      <Menu theme="dark" mode="inline" defaultSelectedKeys={first} selectedKeys={[url]}>
+        {
+          mappings.map(({ path, icon, label }) =>
+            <Menu.Item key={path}>
+              <Link to={path}>{icon}{label}</Link>
+            </Menu.Item>
+          )
+        }
+      </Menu>
+    </Layout.Sider>
+    <Layout>
+      <Layout.Header className={style.header}>
+        <div className={style.navbar}>
+          <UserDropdown/>
+        </div>
+      </Layout.Header>
+      <Layout.Content className={style.contentContainer}>
+        {children}
+      </Layout.Content>
+    </Layout>
+  </Layout>;
+};

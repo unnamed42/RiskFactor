@@ -17,7 +17,14 @@ const submitFile = async (url: string, files: FileList) => {
 };
 
 /**
- * @return 返回第一个是所选文件列表，第二个是触发文件选择框，第三个是发送文件至`url`
+ * 创建浏览器文件选择框
+ *
+ * @param extensions 文件扩展名筛选器
+ * @param multiple 是否可以多选
+ * @return [files, showChooser, sendFile]:
+ *            files: 被选中的文件
+ *            showChooser: 函数，调用后弹出文件选择框
+ *            sendFile: 函数，(url: string) => Promise<void>，将所有选中文件发送给`url`
  */
 export const useFileChooser = ({
   extensions,

@@ -1,10 +1,10 @@
 declare module "*.less" {
-  const style: { [name: string]: string };
+  const style: Record<string, string>;
   export default style;
 }
 
 declare module "*.css" {
-  const style: { [name: string]: string };
+  const style: Record<string, string>;
   export default style;
 }
 

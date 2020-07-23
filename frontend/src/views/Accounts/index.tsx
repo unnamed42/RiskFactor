@@ -1,7 +1,7 @@
 import React, { FC, CSSProperties, useState } from "react";
 import { useSelector } from "react-redux";
 
-import { Form, Button, Modal } from "antd";
+import { Form, Button, Modal, message } from "antd";
 import { PlusOutlined, UserSwitchOutlined } from "@ant-design/icons";
 
 import { AccountList } from "./AccountList";
@@ -18,6 +18,9 @@ const button: CSSProperties = {
   marginRight: 5
 };
 
+/**
+ * 用户管理界面：添加/删除按钮、用户列表、信息修改弹窗
+ */
 export const Accounts: FC = () => {
   const [visible, setVisible] = useState(false);
   const [target, setTarget] = useState<IdType>();
@@ -30,14 +33,14 @@ export const Accounts: FC = () => {
     try {
       fields = await form.validateFields();
     } catch (err) {
-      console.log("errors");
+      void message.error((err as Error).message);
       return;
     }
-    const request = target === undefined ?
-      createUser(fields as any) :
-      updateUser(target, fields);
-    await request;
+    await (target === undefined ?
+      createUser(fields as any) : updateUser(target, fields)
+    );
     setVisible(false);
+    // TODO: 使用一种更加合适的刷新当前组件的方法
     window.location.reload();
   }, [target]);
 

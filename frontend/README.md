@@ -2,6 +2,8 @@
 
 在此目录下运行`yarn run start`就会打开浏览器窗口。这是development构建，代码修改会直接热更新体现出来。要求本地机器上有一个运行在`8090`端口的后端服务器，否则前端界面无法正常使用。
 
+也可以使用docker方式启动，但对开发机内存要求较高。
+
 ## 如何构建
 
 在此目录下运行`yarn run build`就会将前端全部生成在`dist`文件夹内，打包上传服务器即可，和部署静态网站类似。
@@ -45,7 +47,7 @@ const renderItem = (info: SchemaInfo) => <List.Item>
 
 * `index.html`：React应用启动需要的html骨架，`<html>`里的内容尽量不要改。
 * `index.ts`：React应用的骨架，主要是配置主体的应用路由、redux
-* `config.ts`：存放一些全局设置用的变量。我是如此配置的，将来看它不爽可以换成`NODE_ENV`里设置。
+* `config.ts`：存放一些全局设置用的变量。将来看它不爽可以换成`NODE_ENV`里设置。
 * `plugins.ts`：全局生效的框架配置。目前是配置了`dayjs`的locale，里面还有被注释掉的`whyDidYouRender`的配置，需要的时候可以打开。
 
 剩余文件夹作用如下：
@@ -74,10 +76,11 @@ const renderItem = (info: SchemaInfo) => <List.Item>
 
 React App打开时默认页面是登录页面，对应页面组件是`src/views/Login/index.tsx`。
 
-登录后或者已经存在有效登录信息时跳转主页面，对应组件是`src/views/App/index.tsx`。但这只是界面骨架，只提供路由、顶栏、侧栏菜单，中间部分真正内容要看`views`文件夹其他的组件。11
+登录后或者已经存在有效登录信息时跳转主页面，对应组件是`src/views/App/index.tsx`。但这只是界面骨架，只提供路由、顶栏、侧栏菜单，中间部分真正内容要看`views`文件夹其他的组件。
 
 ## 其他
 
 * 由于使用了`babel-plugin-transform-async-to-promises`，所以所有的async-await都会翻译成Promise而非generator
 * 由于开启了`@typescript-eslint/no-floating-promises`，所以意为在后台执行的Promise前面要加个`void`，如`void message.error("出现错误")`
 * `redux`是配合`localforage`和`redux-persist`使用的，因此React App重新加载之后`redux`状态也不会丢失
+* 部分组件是`export`和`export default`同时使用，这部分组件是需要延迟加载的。`export default`导出的组件是延迟加载必需的步骤

@@ -5,8 +5,8 @@ import dayjs from "dayjs";
 import { List, Avatar } from "antd";
 
 import { SchemaInfo, getSchemas } from "@/api";
+import { useApi } from "@/hooks";
 import { datePattern } from "@/config";
-import { Fetch } from "@/components";
 
 import style from "@/styles/schema-list.mod.less";
 import briefcase from "@public/briefcase.png";
@@ -20,7 +20,14 @@ const renderItem = (info: SchemaInfo) => <List.Item>
     </span>} />
 </List.Item>;
 
-export const SchemaList: FC = () => <Fetch fetch={getSchemas}>
-  {({ data }) =>
-    <List<SchemaInfo> dataSource={data} className={style.list} renderItem={renderItem} />}
-</Fetch>;
+export const SchemaList: FC = () => {
+  const [state, ] = useApi(getSchemas, []);
+
+  if(state === undefined || state.error)
+    return null;
+  if(state.alt !== undefined)
+    return state.alt;
+
+  return <List<SchemaInfo> dataSource={state.data} className={style.list}
+                           renderItem={renderItem} />;
+};
