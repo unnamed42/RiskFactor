@@ -5,8 +5,8 @@ import { useRouteMatch } from "react-router";
 import { PrivateRoute, Loading } from "@/components";
 
 import { AnswerList } from "@/views/Task/AnswerList";
-const Accounts = lazy(() => import(/* webpackChunkName: "accounts" */"@/views/Accounts"));
-const AnswerForm = lazy(() => import(/* webpackChunkName: "ansform" */"@/views/Task/AnswerForm"));
+const Accounts = lazy(() => import("@/views/Accounts"));
+const AnswerForm = lazy(() => import("@/views/Task/AnswerForm"));
 
 import { MainPanel } from "./MainPanel";
 

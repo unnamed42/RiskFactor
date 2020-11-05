@@ -1,15 +1,14 @@
-const merge = require("webpack-merge");
+const { merge } = require("webpack-merge");
 const common = require("./webpack.base");
 const { BundleAnalyzerPlugin } = require("webpack-bundle-analyzer");
 const TerserPlugin = require("terser-webpack-plugin");
-const OptimizeCSSAssetsPlugin = require("optimize-css-assets-webpack-plugin");
+const CssMinimizerPlugin = require('css-minimizer-webpack-plugin');
 const CompressionWebpackPlugin = require("compression-webpack-plugin");
 
 module.exports = merge(common, {
   mode: "production",
   plugins: [
     new CompressionWebpackPlugin({
-      filename: "[path].gz[query]",
       algorithm: "gzip",
       test: /\.(js|css)$/,
     }),
@@ -21,6 +20,7 @@ module.exports = merge(common, {
   optimization: {
     minimize: true,
     minimizer: [
+      `...`,
       new TerserPlugin({
         terserOptions: {
           compress: {
@@ -28,7 +28,7 @@ module.exports = merge(common, {
           }
         }
       }),
-      new OptimizeCSSAssetsPlugin({})
+      new CssMinimizerPlugin()
     ],
     splitChunks: {
       cacheGroups: {

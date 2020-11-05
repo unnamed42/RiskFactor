@@ -9,7 +9,9 @@ module.exports = {
     ["@babel/preset-react", {
       development: process.env.NODE_ENV === "development"
     }],
-    "@babel/preset-typescript"
+    ["@babel/preset-typescript", {
+      onlyRemoveTypeImports: true // recommended for fork-ts-webpack-plugin
+    }]
   ],
   plugins: [
     ["@babel/plugin-transform-typescript", { allowDeclareFields: true }],

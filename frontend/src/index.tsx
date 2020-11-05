@@ -9,9 +9,9 @@ import "@/plugins";
 import { persistor, store } from "@/redux";
 import { Loading, PrivateRoute, ErrorBoundary } from "@/components";
 
-const Login = lazy(() => import(/* webpackChunkName: "login" */"@/views/Login"));
-const Home = lazy(() => import(/* webpackChunkName: "home" */"@/views/Home"));
-const App = lazy(() => import(/* webpackChunkName: "app" */"@/views/App"));
+const Login = lazy(() => import("@/views/Login"));
+const Home = lazy(() => import("@/views/Home"));
+const App = lazy(() => import("@/views/App"));
 
 const Routes = () => <Router>
   <Suspense fallback={<Loading />}>

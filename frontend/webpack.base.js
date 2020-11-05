@@ -20,8 +20,8 @@ module.exports = {
   entry: join(root, "/src/index.tsx"),
   output: {
     path: join(root, "/dist"),
-    filename: "static/[name].[hash:5].js",
-    chunkFilename: "static/[name].[hash:5].js",
+    filename: "static/[name].[fullhash:5].js",
+    chunkFilename: "static/[name].[fullhash:5].js",
     publicPath: ""
   },
   resolve: {
@@ -54,12 +54,9 @@ module.exports = {
             options: {
               modules: {
                 auto: /\.mod\.(le|c)ss$/i,
-                localIdentName: process.env.NODE_ENV === "development" ?
-                  "[path][name]__[local]--[hash:base64:5]" :
-                  "[hash:base64:8]",
+                exportLocalsConvention: "camelCaseOnly",
               },
               importLoaders: 2,
-              localsConvention: "camelCaseOnly",
               esModule: true
             }
           },
@@ -95,12 +92,22 @@ module.exports = {
       minify: true
     }),
     new MiniCssExtractPlugin({
-      filename: "static/[name].[hash:5].css",
-      chunkFilename: "static/[name].[hash:5].css",
+      filename: "static/[name].[fullhash:5].css",
+      chunkFilename: "static/[name].[fullhash:5].css",
       ignoreOrder: true,
     }),
     new ForkTsCheckerWebpackPlugin({
-      eslint: true
+      typescript: {
+        diagnosticOptions: {
+          semantic: true,
+          syntactic: true,
+        },
+        mode: "write-references",
+      },
+      eslint: {
+        enabled: true,
+        files: "./src/**/*.{ts,tsx}"
+      }
     })
   ],
 };

@@ -51,7 +51,7 @@ export const Demo: FC = () => {
     </Form.Item>
     <Form.List name="list">
       {
-        (fields, { add, remove }) => <>
+        (fields, { add, remove: _ }) => <>
           {
             fields.map((field, idx) => <React.Fragment key={field.key}>
               <Form.Item name={[idx, "item"]} label="item" >
