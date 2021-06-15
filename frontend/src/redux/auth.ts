@@ -35,7 +35,7 @@ type UpdateInfoAction = Action<"auth/update"> & { username: string };
  * 解析jwt当中的数据
  */
 const parseToken = (token: string) => {
-  const jwt = jwt_decode(token) as JsonWebToken;
+  const jwt: JsonWebToken = jwt_decode(token);
   return { username: jwt.sub, userId: jwt.idt, expiry: jwt.exp, issuedAt: jwt.iat };
 };
 

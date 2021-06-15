@@ -8,6 +8,7 @@ import { AccountList } from "./AccountList";
 import { AccountForm } from "./AccountForm";
 import { useAsync } from "@/hooks";
 import { updateUser, createUser, IdType } from "@/api";
+import type { CreateUserRequest, UpdateUserRequest } from "@/api";
 import type { StoreType } from "@/redux";
 
 const buttonLine: CSSProperties = {
@@ -26,7 +27,7 @@ export const Accounts: FC = () => {
   const [target, setTarget] = useState<IdType>();
 
   const auth = useSelector((store: StoreType) => store.auth);
-  const [form] = Form.useForm();
+  const [form] = Form.useForm<UpdateUserRequest | CreateUserRequest>();
 
   const [state, submit] = useAsync(async () => {
     let fields;
@@ -37,7 +38,7 @@ export const Accounts: FC = () => {
       return;
     }
     await (target === undefined ?
-      createUser(fields as any) : updateUser(target, fields)
+      createUser(fields as CreateUserRequest) : updateUser(target, fields)
     );
     setVisible(false);
     // TODO: 使用一种更加合适的刷新当前组件的方法
