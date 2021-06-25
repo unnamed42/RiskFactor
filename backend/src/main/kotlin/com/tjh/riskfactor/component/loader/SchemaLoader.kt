@@ -20,7 +20,7 @@ class SchemaLoader(
 
     @Transactional
     fun loadFromSchema(models: List<SchemaModel>) =
-        models.forEach(this::loadFromSchema)
+        models.forEach{ this.loadFromSchema(it) }
 
     private fun loadFromSchema(schema: SchemaModel) {
         // 带ref引用的规则 RuleModel::ref -> Rule

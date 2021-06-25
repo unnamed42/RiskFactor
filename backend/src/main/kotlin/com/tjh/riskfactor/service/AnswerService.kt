@@ -149,7 +149,7 @@ class AnswerService(
             }
             traverse = nextTraverse
         }
-        answerValues.deleteInBatch(remove)
+        answerValues.deleteAllInBatch(remove)
     }
 
     @Transactional
